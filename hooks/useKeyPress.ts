@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 
-export function useKeyPress(targetKey: string): boolean {
+export function useKeyPress(targetKey: string, callback?: () => void): boolean {
   const [keyPressed, setKeyPressed] = useState(false);
 
   useEffect(() => {
     const downHandler = ({ key }: KeyboardEvent) => {
       if (key === targetKey) {
         setKeyPressed(true);
+        callback?.();
       }
     };
 
@@ -23,7 +24,7 @@ export function useKeyPress(targetKey: string): boolean {
       window.removeEventListener('keydown', downHandler);
       window.removeEventListener('keyup', upHandler);
     };
-  }, [targetKey]);
+  }, [targetKey, callback]);
 
   return keyPressed;
 } 
