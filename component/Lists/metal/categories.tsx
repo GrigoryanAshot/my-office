@@ -25,4 +25,19 @@ const Categories: React.FC<CategoriesProps> = ({ categories }) => {
   );
 };
 
-export default Categories; 
+export default Categories;
+
+export const categories = [
+  {
+    id: "1",
+    name: "Մետաղյա դեկորներ",
+    description: "Մետաղյա պատի դեկորներ",
+    image: "/images/categories/metal-decor.jpg"
+  },
+  {
+    id: "2",
+    name: "Փայտյա դեկորներ",
+    description: "Փայտյա պատի դեկորներ",
+    image: "/images/categories/wood-decor.jpg"
+  }
+]; 

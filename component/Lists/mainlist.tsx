@@ -47,6 +47,29 @@ const mainCategories = [
   }
 ];
 
+export const furnitureData = [
+  {
+    id: 1,
+    name: "Սեղան 1",
+    url: "/furniture/table/1",
+    imageUrl: "/images/furniture/table1.jpg",
+    price: "150000 դրամ",
+    description: "Փայտյա սեղան",
+    type: "սեղան",
+    isAvailable: true
+  },
+  {
+    id: 2,
+    name: "Աթոռ 1",
+    url: "/furniture/chair/1",
+    imageUrl: "/images/furniture/chair1.jpg",
+    price: "50000 դրամ",
+    description: "Փայտյա աթոռ",
+    type: "աթոռ",
+    isAvailable: true
+  }
+];
+
 const MainList = () => {
   const [groupedCategories, setGroupedCategories] = useState<GroupedCategories>({
     furniture: [],
