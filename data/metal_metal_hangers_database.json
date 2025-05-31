@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "dvdf",
+      "description": "dfbdfg",
+      "price": "75000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748534072/ay4e2kbkrbiw4cpbpyxm.jpg",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703983/dgaqd3uzx8iknuxnpznz.png"
+      ],
+      "isAvailable": true,
+      "url": "/other/hangers/1",
+      "type": "dfvdfvfv"
+    }
+  ],
+  "types": [
+    "dfvdfvfv"
+  ]
+}

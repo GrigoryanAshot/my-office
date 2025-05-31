@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "sdvsdv",
+      "description": "sdvsdv",
+      "price": "95626",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748707330/njhgouaiwj0aqxygyewf.png",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748707333/uazalpudojldplejay3h.png"
+      ],
+      "type": "dfbfb",
+      "url": "poufs/1",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "adfaf",
+    "dfbfb"
+  ]
+}

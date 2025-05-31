@@ -1,0 +1,128 @@
+{
+  "furniture": {
+    "id": "furniture",
+    "name": "Սեղաններ և աթոռներ",
+    "url": "/furniture",
+    "imageUrl": "https://i.postimg.cc/zfLnFdK2/gate.png",
+    "order": 1
+  },
+  "furniture_tables": {
+    "id": "furniture_tables",
+    "name": "Սեղաններ",
+    "url": "/furniture/tables",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747392894/furniture/u79kqcr04anmjcbzhqiy.png",
+    "order": 2
+  },
+  "furniture_chairs": {
+    "id": "furniture_chairs",
+    "name": "Աթոռներ",
+    "url": "/furniture/chairs",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747392948/furniture/zueez5dzkxpzi3ad0lyy.png",
+    "order": 3
+  },
+  "doors": {
+    "id": "doors",
+    "name": "Փափուկ կահույք",
+    "url": "/doors",
+    "imageUrl": "https://i.postimg.cc/CMXsFGdw/1b46b74c-60fd-4f2d-90c4-199f627a9da8.jpg",
+    "order": 2
+  },
+  "doors_sofas": {
+    "id": "doors_sofas",
+    "name": "Բազմոցներ",
+    "url": "/softfurniture/sofas",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646004/furniture/usgvdgfy3o6jxzzpb8p2.png",
+    "order": 3
+  },
+  "doors_armchairs": {
+    "id": "doors_armchairs",
+    "name": "Բազկաթոռեր",
+    "url": "/softfurniture/armchairs",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646017/furniture/rg6hdwtjvm5g5s0ouezn.png",
+    "order": 4
+  },
+  "doors_poufs": {
+    "id": "doors_poufs",
+    "name": "Պուֆիկներ",
+    "url": "/softfurniture/poufs",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646034/furniture/p5gqejqztcdvbuz8mfel.png",
+    "order": 5
+  },
+  "windows": {
+    "id": "windows",
+    "name": "Պահարաններ և ավելին",
+    "url": "/wardrobesandmore",
+    "imageUrl": "https://i.postimg.cc/FF7xrvmd/9b132849cf151713ae4672aac52a0a31.jpg",
+    "order": 3
+  },
+  "windows_wardrobes": {
+    "id": "windows_wardrobes",
+    "name": "Պահարաններ",
+    "url": "/wardrobesandmore/wardrobes",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646123/furniture/dinoc8tezhdvvppfihgm.png",
+    "order": 4
+  },
+  "windows_shelving": {
+    "id": "windows_shelving",
+    "name": "Դարակաշարեր",
+    "url": "/wardrobesandmore/shelving",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646136/furniture/ajbs1jxmjrtuuqje7uka.jpg",
+    "order": 5
+  },
+  "windows_chests": {
+    "id": "windows_chests",
+    "name": "Տումբաներ և Կոմոդներ",
+    "url": "/wardrobesandmore/chests",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646145/furniture/os0fc92gchpddfet5cs1.jpg",
+    "order": 6
+  },
+  "metal": {
+    "id": "metal",
+    "name": "Այլ",
+    "url": "/other",
+    "imageUrl": "https://i.postimg.cc/zfLnFdK2/gate.png",
+    "order": 4
+  },
+  "doors_doors_takht": {
+    "id": "doors_doors_takht",
+    "name": "Թախտեր",
+    "url": "/softfurniture/takht",
+    "imageUrl": "https://i.postimg.cc/CMXsFGdw/1b46b74c-60fd-4f2d-90c4-199f627a9da8.jpg",
+    "order": 8
+  },
+  "metal_metal_wall_decor": {
+    "id": "metal_metal_wall_decor",
+    "name": "Պատի դեկորներ",
+    "url": "/other/wall_decor",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747995133/furniture/kg9ovg15x0jdjyugww3x.png",
+    "order": 5
+  },
+  "metal_metal_hangers": {
+    "id": "metal_metal_hangers",
+    "name": "Կախիչներ",
+    "url": "/other/hangers",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747995150/furniture/bkzmmwsz7x00fbrmntjq.jpg",
+    "order": 6
+  },
+  "metal_metal_podium": {
+    "id": "metal_metal_podium",
+    "name": "Ամբիոն",
+    "url": "/other/podium",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747995165/furniture/elz7rrgv9y5oiksjkd8w.jpg",
+    "order": 7
+  },
+  "metal_Գրատախտակ": {
+    "id": "metal_Գրատախտակ",
+    "name": "Գրատախտակ",
+    "url": "/other/whiteboard",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748075769/furniture/sk94fvhxxu7dezh0ryvy.jpg",
+    "order": 18
+  },
+  "windows_windows_takhtir": {
+    "id": "windows_windows_takhtir",
+    "name": "Տակդիրներ",
+    "url": "/wardrobesandmore/stands",
+    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748443026/furniture/olk3h3frhd0juyf1jxtg.jpg",
+    "order": 7
+  }
+}

@@ -1,0 +1,1 @@
+// This file will be removed. The logic will be moved to app/softfurniture/takht/page.tsx. 

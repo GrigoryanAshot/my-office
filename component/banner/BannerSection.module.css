@@ -1,0 +1,12 @@
+.banner-price-bottom-right {
+  position: absolute;
+  top: 320px;
+  right: 0;
+  padding: 20px;
+  color: white;
+  font-weight: bold;
+  font-size: 2rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  z-index: 9999;
+  pointer-events: none;
+} 

@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "dcdfdf",
+      "description": "cdfdf",
+      "price": "656554",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748704095/fr5bywfte3yx4ubxvayp.jpg",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748704098/pyrebjb7t79xzfspv0z4.webp"
+      ],
+      "isAvailable": true,
+      "type": "dfdfdfdf",
+      "url": "/other/wall_decor/1"
+    }
+  ],
+  "types": [
+    "knnknk",
+    "asfasf",
+    "dfdfdfdf"
+  ]
+}

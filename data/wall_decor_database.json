@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "asfasf",
+      "description": "afsasf",
+      "price": "745222",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748704450/qsvihuuq0dm7llxjlbjo.png",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748704455/gcm4s9cuywiyviixwdse.png"
+      ],
+      "type": "",
+      "url": "wall-decor/1",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "Մետաղական",
+    "Փայտե",
+    "Ակրիլային",
+    "afasf"
+  ]
+}

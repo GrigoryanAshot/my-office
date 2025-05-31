@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": 1748605916571,
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748605924/cvolzwkeq0emx3996kl2.jpg",
+      "title": "Սուրճի սեղան",
+      "description": "Հարմարավետ սուրճի սեղան։\nՉափերը 100սմ․x120սմ",
+      "price": "45000",
+      "link": ""
+    },
+    {
+      "id": 1748606081111,
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748606103/jtmzrnyv8w8qxwlkspjd.jpg",
+      "title": "Տնօրենի սեղան",
+      "description": "ագսդգսդգսդգ",
+      "price": "190000",
+      "link": ""
+    }
+  ]
+}

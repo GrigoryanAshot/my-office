@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "asfasf",
+      "description": "asfasf",
+      "price": "65456",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748694419/ir0l02c9lvubzkbefct9.webp",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703954/pgcby4576ftf2rtzn9xv.jpg"
+      ],
+      "type": "asfafsafs",
+      "url": "",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "asfafsafs"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "sdgsdg",
+      "description": "sdgsdg",
+      "price": "855525",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748706215/xj8kxzgzst8ip99gx1ip.png",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748706218/mcqunkobeh2bcdcxfawz.png"
+      ],
+      "type": "adsfdsff",
+      "url": "whiteboard/1",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "adsfdsff"
+  ]
+}
