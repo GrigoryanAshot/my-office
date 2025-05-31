@@ -2,7 +2,7 @@
 
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
-import styles from '@/app/softfurniture/sofas/[id]/TableDetail.module.css';
+import styles from './TableDetail.module.css';
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
