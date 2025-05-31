@@ -39,10 +39,11 @@ export async function GET() {
       { message: 'Test email sent successfully' },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Test email error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: 'Failed to send test email', details: error.message },
+      { error: 'Failed to send test email', details: errorMessage },
       { status: 500 }
     );
   }
