@@ -15,4 +15,8 @@ const MetalPodium: React.FC<MetalPodiumProps> = ({ id }) => {
   );
 };
 
-export default MetalPodium; 
+export default MetalPodium;
+
+export const furnitureData = [];
+
+export const categories = []; 
