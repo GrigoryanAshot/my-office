@@ -198,7 +198,7 @@ const NavigationSection = ({ position, btnPosition, navRef }: Props) => {
 
       <CallOrderPopup 
         isOpen={isPopupOpen} 
-        onClose={() => setIsPopupOpen(false)} 
+        onClose={() => setIsPopupOpen(false)}
       />
     </div>
   );

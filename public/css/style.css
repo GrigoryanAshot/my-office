@@ -16688,15 +16688,6 @@ select.select_js.form-select {
   border: 4px solid #08ebe8;
 }
 
-.tf__footer_3 .tf__footer_apply .apply_btn:hover {
-  background: var(--colorBlack);
-  color: var(--colorWhite);
-}
-
-.tf__footer_3 .tf__footer_overlay {
-  background-color: #191e24f7;
-}
-
 .tf__footer_3 .tf__footer_content form button {
   background: var(--colorGreen);
 }
