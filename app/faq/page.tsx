@@ -8,7 +8,7 @@ import { getFaq } from '@/sanity/sanity.query'
 
 export const metadata: Metadata = {
     title: "Eduor FAQ",
-    description: "Developed by Azizur Rahman",
+    description: "Developed by Ashot Grigoryan",
   }
 const page = async() => {
   const faqData: FaqType[] = await getFaq();

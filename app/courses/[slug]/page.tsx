@@ -9,9 +9,14 @@ import { getCourse } from '@/sanity/sanity.query';
  
 export const metadata: Metadata = {
   title: "My-Office.am",
-  title: "Eduor Course Details",
-  description: "Developed by Azizur Rahman",
-}
+  description: "Developed by Ashot Grigoryan",
+  openGraph: {
+    title: 'Course Details',
+    description: 'View detailed information about this course',
+    type: 'website',
+  },
+};
+
 const page = async({ params }: { params: { slug: string } }) => {
     const course: CourseType[] = await getCourse();
     const courseDesc = course.find((item) => item.slug === params.slug); // Use 'slug' here
@@ -20,7 +25,9 @@ const page = async({ params }: { params: { slug: string } }) => {
     <Layout>
     <BreadcrumbSection header="Course Details" title="Course Details" />
     {courseDesc ? (
-      <CourseDetailSection courseData={courseDesc} courseDataArray={course}/>
+      <CourseDetailSection
+        course={courseDesc}
+      />
     ) : (
       <ErrorSection type="Course" />
     )}

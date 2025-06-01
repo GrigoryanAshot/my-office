@@ -9,7 +9,7 @@ import { getEvent } from '@/sanity/sanity.query'
 
 export const metadata: Metadata = {
     title: "Eduor Event Details",
-    description: "Developed by Azizur Rahman",
+    description: "Developed by Ashot Grigoryan",
   }
 const page = async({ params } : { params : { slug: string } }) => {
     const eventData: EventType[] = await getEvent()
