@@ -4,14 +4,15 @@ import path from 'path';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const filePath = path.join(process.cwd(), 'data', 'chests_database.json');
     const fileContents = fs.readFileSync(filePath, 'utf8');
     const data = JSON.parse(fileContents);
     
-    const item = data.items.find((item: any) => item.id === parseInt(params.id));
+    const item = data.items.find((item: any) => item.id === parseInt(id));
     
     if (!item) {
       return new NextResponse('Item not found', { status: 404 });

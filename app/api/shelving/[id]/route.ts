@@ -4,15 +4,16 @@ import path from "path";
 
 const shelvingDataPath = path.join(process.cwd(), "data", "shelving_database.json");
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     if (!fs.existsSync(shelvingDataPath)) {
       return NextResponse.json({ error: "Shelving data not found" }, { status: 404 });
     }
     const data = fs.readFileSync(shelvingDataPath, "utf8");
     const parsed = JSON.parse(data);
     const shelving = (parsed.items || []).find(
-      (item: any) => String(item.id) === String(params.id)
+      (item: any) => String(item.id) === String(id)
     );
     if (!shelving) {
       return NextResponse.json({ error: "Shelving item not found" }, { status: 404 });
