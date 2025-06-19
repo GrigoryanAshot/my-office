@@ -9,11 +9,35 @@ import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
 
+interface FurnitureItem {
+  id: number;
+  name: string;
+  url: string;
+  imageUrl: string;
+  price: string;
+  description: string;
+  type: string;
+  isAvailable: boolean;
+}
+
 export default function MetalPodiumDetailPage() {
   const params = useParams();
-  const id = Number(params.id);
   
-  const item = furnitureData.find(item => item.id === id);
+  if (!params?.id) {
+    return (
+      <>
+        <NavbarSection style="" logo="/images/logo.png" />
+        <div className={styles.mainContainer} style={{ marginTop: '100px', textAlign: 'center' }}>
+          <h1>Ապրանքը չի գտնվել</h1>
+        </div>
+        <FooterSection />
+        <ScrollToTopButton style="" />
+      </>
+    );
+  }
+
+  const id = Number(params.id);
+  const item = furnitureData.find(item => item.id === id) as FurnitureItem | undefined;
 
   if (!item) {
     return (

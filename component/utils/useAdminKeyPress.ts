@@ -1,25 +1,41 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import AdminVerificationPopup from '@/component/AdminVerificationPopup';
 
 export const useAdminKeyPress = () => {
-  const [isAdminPopupOpen, setIsAdminPopupOpen] = useState(false);
+  const [isVerificationPopupOpen, setIsVerificationPopupOpen] = useState(false);
 
   useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      // Check for Ctrl + Alt + A
-      if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 'a') {
-        event.preventDefault(); // Prevent default browser behavior
-        setIsAdminPopupOpen(true);
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      
+      // Check if the clicked element or its parent contains the target text
+      const hasTargetText = (element: HTMLElement): boolean => {
+        if (element.textContent?.toLowerCase().includes('պատվիրել զանգ')) {
+          return true;
+        }
+        if (element.parentElement) {
+          return hasTargetText(element.parentElement);
+        }
+        return false;
+      };
+
+      if (event.ctrlKey && event.altKey && hasTargetText(target)) {
+        event.preventDefault();
+        console.log('Admin shortcut triggered - opening verification popup');
+        setIsVerificationPopupOpen(true);
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    document.addEventListener('click', handleClick);
+    return () => {
+      document.removeEventListener('click', handleClick);
+    };
   }, []);
 
   return {
-    isAdminPopupOpen,
-    setIsAdminPopupOpen
+    isVerificationPopupOpen,
+    setIsVerificationPopupOpen
   };
 }; 

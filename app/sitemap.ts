@@ -4,7 +4,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.my-office.am';
   
   // Common routes
-  const routes = [
+  const routePaths = [
     '',
     '/about',
     '/contact',
@@ -14,21 +14,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/faq',
     '/privacy-policy',
     '/terms-of-service',
-  ].map(route => ({
-    url: `${baseUrl}${route}`,
+  ];
+
+  const routes = routePaths.map(path => ({
+    url: `${baseUrl}${path}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
-    priority: route === '' ? 1 : 0.8,
+    priority: path === '' ? 1.0 : 0.8,
   }));
 
   // Language-specific routes
   const languages = ['en', 'hy'];
   const languageRoutes = languages.flatMap(lang => 
-    routes.map(route => ({
-      url: `${baseUrl}/${lang}${route}`,
+    routePaths.map(path => ({
+      url: `${baseUrl}/${lang}${path}`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
-      priority: route === '' ? 1 : 0.8,
+      priority: path === '' ? 1.0 : 0.8,
     }))
   );
 

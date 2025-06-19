@@ -1,0 +1,14 @@
+.admin-type-delete-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.admin-type-delete-btn:hover {
+  background: #c82333;
+} 

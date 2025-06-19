@@ -6,10 +6,25 @@
       "price": "45000",
       "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748534947/furniture/tcfqdc1q8v8reytifcvt.webp",
       "images": [],
-      "type": "dssdfsdf",
+      "type": "",
       "url": "/other/metal_podium/1",
       "isAvailable": true,
       "id": 1
+    },
+    {
+      "id": 2,
+      "name": "aaaa",
+      "description": "aaaa",
+      "price": "525265",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750342029/gr3eioverddmajcvkjk1.png",
+      "images": [],
+      "type": "aaaa",
+      "url": "podium/2",
+      "isAvailable": true
     }
+  ],
+  "types": [
+    "աաաա",
+    "aaaa"
   ]
 }

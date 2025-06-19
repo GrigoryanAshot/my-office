@@ -1,11 +1,17 @@
 import React from 'react';
 
-interface MetalPodiumProps {
-  id: string;
-  // Add other props as needed
+interface FurnitureItem {
+  id: number;
+  name: string;
+  url: string;
+  imageUrl: string;
+  price: string;
+  description: string;
+  type: string;
+  isAvailable: boolean;
 }
 
-const MetalPodium: React.FC<MetalPodiumProps> = ({ id }) => {
+const MetalPodium: React.FC<{ id: string }> = ({ id }) => {
   return (
     <div>
       <h1>Metal Podium Details</h1>
@@ -17,6 +23,6 @@ const MetalPodium: React.FC<MetalPodiumProps> = ({ id }) => {
 
 export default MetalPodium;
 
-export const furnitureData = [];
+export const furnitureData: FurnitureItem[] = [];
 
 export const categories = []; 

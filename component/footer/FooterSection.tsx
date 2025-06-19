@@ -14,7 +14,7 @@ const FooterSection = () => {
                 
                 </Link>
                 <p>
-                Լոֆթ ոճի կահույք "Ջերմ Օջախ"-ի կողմից
+                Գրասենյակային կահույք My-Office.am-ից
                 </p>
                 <ul className="d-flex flex-wrap">
                   <li>

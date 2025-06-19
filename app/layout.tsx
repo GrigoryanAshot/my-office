@@ -4,11 +4,14 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "react-toastify/dist/ReactToastify.css";
 import "@/public/css/style.css";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 import { Providers } from "@/redux/provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
+import AdminKeyPressWrapper from '@/component/AdminKeyPressWrapper';
+// import GlobalAdminShortcut from '@/component/GlobalAdminShortcut';
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -118,6 +121,8 @@ export default function RootLayout({
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
             </div>
           }>
+            <AdminKeyPressWrapper />
+            {/* <GlobalAdminShortcut /> */}
             {children}
           </Suspense>
           <ToastContainer 

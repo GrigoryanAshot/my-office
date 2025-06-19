@@ -9,7 +9,7 @@
       "images": [
         "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703813/x0x1h3b3lzcxkkhivrst.jpg"
       ],
-      "type": "afafs",
+      "type": "",
       "url": "/softfurniture/takht/1",
       "isAvailable": true
     },
@@ -20,12 +20,25 @@
       "price": "75000",
       "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748539615/zphyiy0waoglkjnrz066.jpg",
       "images": [],
-      "type": "afafs",
+      "type": "",
       "url": "/softfurniture/takht/2",
+      "isAvailable": true
+    },
+    {
+      "id": 3,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "1111",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909823/ufdgk3f5pnbicss2efim.png",
+      "images": [],
+      "type": "dddd",
+      "url": "/furniture/chairs/3",
       "isAvailable": true
     }
   ],
   "types": [
-    "afafs"
+    "afafs",
+    "dddd",
+    "aaa"
   ]
 }

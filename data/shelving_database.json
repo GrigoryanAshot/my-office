@@ -20,8 +20,19 @@
       "price": "2511",
       "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748636543/fvbrvtwnvecqiwibcn2d.jpg",
       "images": [],
-      "type": "ffas",
+      "type": "",
       "url": "",
+      "isAvailable": true
+    },
+    {
+      "id": 3,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "55222",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750339477/ildjdnscxkdfs5oba4qf.png",
+      "images": [],
+      "type": "hhhh",
+      "url": "shelving/3",
       "isAvailable": true
     }
   ],
@@ -29,6 +40,7 @@
     "սդֆսդվ",
     "զդվսդգսգ",
     "cxcc",
-    "ffas"
+    "ffas",
+    "hhhh"
   ]
 }

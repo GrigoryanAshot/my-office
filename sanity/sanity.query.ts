@@ -68,7 +68,8 @@ export async function getTeam() {
       designation,
       "slug": slug.current,
       about,
-      phone
+      phone,
+      imgSrc {alt, "image": asset->url}
     }`
   );
 }

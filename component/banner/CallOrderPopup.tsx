@@ -20,15 +20,14 @@ const CallOrderPopup: React.FC<CallOrderPopupProps> = ({ isOpen, onClose }) => {
     setError('');
 
     try {
-      const response = await fetch('https://formspree.io/f/xvgaqnol', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name: formData.name,
-          phone: formData.phone,
-          _subject: 'Նոր պատվեր զանգի համար'
+          phone: formData.phone
         }),
       });
 

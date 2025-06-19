@@ -1,67 +1,88 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { prisma } from '@/lib/prisma';
 
-const wardrobesDataPath = path.join(process.cwd(), 'data', 'wardrobes_database.json');
-
-if (!fs.existsSync(path.join(process.cwd(), 'data'))) {
-  fs.mkdirSync(path.join(process.cwd(), 'data'), { recursive: true });
-}
-
-if (!fs.existsSync(wardrobesDataPath)) {
-  try {
-    const initialData = { items: [], types: [] };
-    fs.writeFileSync(wardrobesDataPath, JSON.stringify(initialData, null, 2), 'utf8');
-  } catch (error) {
-    console.error('Error creating wardrobes_database.json:', error);
-  }
-}
-
+// GET all wardrobes and types
 export async function GET() {
   try {
-    if (!fs.existsSync(wardrobesDataPath)) {
-      return NextResponse.json({ error: 'Wardrobes data not found' }, { status: 404 });
-    }
-    const data = fs.readFileSync(wardrobesDataPath, 'utf8');
-    let parsedData;
-    try {
-      parsedData = JSON.parse(data);
-    } catch (parseError) {
-      return NextResponse.json({ error: 'Failed to parse wardrobes data' }, { status: 500 });
-    }
-    if (!parsedData || typeof parsedData !== 'object') parsedData = { items: [], types: [] };
-    if (!Array.isArray(parsedData.items)) parsedData.items = [];
-    if (!Array.isArray(parsedData.types)) parsedData.types = [];
-    return NextResponse.json(parsedData);
+    const wardrobes = await prisma.wardrobe.findMany({
+      include: { type: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    const types = await prisma.wardrobeType.findMany({ orderBy: { name: 'asc' } });
+    
+    // Transform wardrobes to match frontend expectations
+    const transformedWardrobes = wardrobes.map(wardrobe => ({
+      ...wardrobe,
+      imageUrl: wardrobe.image, // Map 'image' to 'imageUrl' for frontend compatibility
+      type: wardrobe.type?.name || '' // Map type object to type name string
+    }));
+    
+    return NextResponse.json({ items: transformedWardrobes, types });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to read wardrobes data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch wardrobes', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
 
+// POST: create a new wardrobe or type, or delete a type
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    if (!data || typeof data !== 'object') return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
-    if (!Array.isArray(data.items)) return NextResponse.json({ error: 'Items must be an array' }, { status: 400 });
-    if (!Array.isArray(data.types)) return NextResponse.json({ error: 'Types must be an array' }, { status: 400 });
-    let currentData;
-    try {
-      const fileContent = fs.readFileSync(wardrobesDataPath, 'utf8');
-      currentData = JSON.parse(fileContent);
-    } catch (error) {
-      currentData = { items: [], types: [] };
+    
+    // Handle type deletion
+    if (data.action === 'deleteType' && data.typeName) {
+      try {
+        // Find the type by name
+        const typeToDelete = await prisma.wardrobeType.findFirst({
+          where: { name: data.typeName }
+        });
+        
+        if (!typeToDelete) {
+          return NextResponse.json({ error: 'Type not found' }, { status: 404 });
+        }
+        
+        // Delete the type (this will fail if there are wardrobes using it)
+        await prisma.wardrobeType.delete({
+          where: { id: typeToDelete.id }
+        });
+        
+        return NextResponse.json({ success: true });
+      } catch (error) {
+        // If deletion fails due to foreign key constraint, handle it gracefully
+        if (error instanceof Error && error.message.includes('Foreign key constraint')) {
+          return NextResponse.json({ 
+            error: 'Cannot delete type because it is being used by one or more wardrobes. Please remove the type from all wardrobes first.' 
+          }, { status: 400 });
+        }
+        return NextResponse.json({ error: 'Failed to delete type', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+      }
     }
-    const updatedData = {
-      items: data.items,
-      types: Array.from(new Set([...currentData.types, ...data.types]))
-    };
-    try {
-      fs.writeFileSync(wardrobesDataPath, JSON.stringify(updatedData, null, 2), 'utf8');
-    } catch (error) {
-      return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+    
+    const typeName = data.typeName || data.name;
+    if (typeName && !data.typeId) {
+      // Create a new wardrobe type
+      const newType = await prisma.wardrobeType.create({
+        data: { name: typeName },
+      });
+      return NextResponse.json({ success: true, type: newType });
+    } else if (data.name) {
+      // Create a new wardrobe
+      const newWardrobe = await prisma.wardrobe.create({
+        data: {
+          name: data.name,
+          description: data.description || '',
+          image: data.image || '',
+          price: data.price || null,
+          images: data.images || [],
+          isAvailable: data.isAvailable !== undefined ? data.isAvailable : true,
+          url: data.url || null,
+          typeId: data.typeId || null,
+        },
+      });
+      return NextResponse.json({ success: true, wardrobe: newWardrobe });
+    } else {
+      return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
     }
-    return NextResponse.json({ success: true, data: updatedData });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to process request', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create item', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 } 

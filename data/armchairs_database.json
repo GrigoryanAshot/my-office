@@ -1,21 +1,20 @@
 {
   "items": [
     {
-      "id": 1,
-      "name": "adf",
-      "description": "afasfaf",
-      "price": "78200",
-      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748432501/qjiw2kinhrwjbrkktakm.jpg",
-      "images": [
-        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703729/nwoiwacyv2jw6a4e4qrh.jpg",
-        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703733/aqz0z2kx0mqds9qamxaz.webp"
-      ],
-      "type": "afafs",
-      "url": "/softfurniture/armchairs/1",
+      "id": 2,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "1111",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909767/uitvp4ap0gszegxhxr2q.png",
+      "images": [],
+      "type": "dddd",
+      "url": "/furniture/chairs/2",
       "isAvailable": true
     }
   ],
   "types": [
-    "afafs"
+    "afafs",
+    "dddd",
+    "aa"
   ]
 }

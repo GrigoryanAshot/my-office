@@ -22,6 +22,27 @@ interface MetalWallDecorItem {
 export default function MetalWallDecorDetailPage() {
   const params = useParams();
   const router = useRouter();
+
+  if (!params?.id) {
+    return (
+      <div>
+        <NavbarSection style="" logo="/images/logo.png" />
+        <div className={styles.wrapper}>
+          <div className={styles.container}>
+            <div className={styles.error}>
+              <h2>Ապրանքը չի գտնվել</h2>
+              <p>Խնդրում ենք ստուգել URL-ը կամ վերադառնալ գլխավոր էջ</p>
+              <button onClick={() => router.push('/')} className={styles.backButton}>
+                Վերադառնալ գլխավոր էջ
+              </button>
+            </div>
+          </div>
+        </div>
+        <FooterSection />
+      </div>
+    );
+  }
+
   const id = params.id;
   const [item, setItem] = useState<MetalWallDecorItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,9 +68,7 @@ export default function MetalWallDecorDetailPage() {
       }
     };
 
-    if (id) {
-      fetchItem();
-    }
+    fetchItem();
   }, [id]);
 
   const openModal = (index: number) => {
@@ -154,7 +173,10 @@ export default function MetalWallDecorDetailPage() {
       )}
 
       {showCallOrderPopup && (
-        <CallOrderPopup onClose={() => setShowCallOrderPopup(false)} />
+        <CallOrderPopup 
+          isOpen={showCallOrderPopup} 
+          onClose={() => setShowCallOrderPopup(false)} 
+        />
       )}
 
       <FooterSection />

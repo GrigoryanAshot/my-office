@@ -44,6 +44,37 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
+    
+    // Handle type management
+    if (data.action === 'deleteType' && data.typeName) {
+      const currentData = JSON.parse(fs.readFileSync(shelvingDataPath, 'utf8'));
+      const updatedTypes = currentData.types.filter((type: string) => type !== data.typeName);
+      const updatedItems = currentData.items.map((item: any) => 
+        item.type === data.typeName ? { ...item, type: '' } : item
+      );
+      
+      const updatedData = {
+        items: updatedItems,
+        types: updatedTypes
+      };
+      
+      fs.writeFileSync(shelvingDataPath, JSON.stringify(updatedData, null, 2));
+      return NextResponse.json({ success: true });
+    }
+    
+    // Handle adding new type
+    if (data.typeName && !data.name) {
+      const currentData = JSON.parse(fs.readFileSync(shelvingDataPath, 'utf8'));
+      if (!currentData.types.includes(data.typeName)) {
+        currentData.types.push(data.typeName);
+        fs.writeFileSync(shelvingDataPath, JSON.stringify(currentData, null, 2));
+        return NextResponse.json({ success: true, type: { name: data.typeName } });
+      } else {
+        return NextResponse.json({ error: 'Type already exists' }, { status: 400 });
+      }
+    }
+    
+    // Handle regular item operations
     if (!data || typeof data !== 'object') return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
     if (!Array.isArray(data.items)) return NextResponse.json({ error: 'Items must be an array' }, { status: 400 });
     if (!Array.isArray(data.types)) return NextResponse.json({ error: 'Types must be an array' }, { status: 400 });

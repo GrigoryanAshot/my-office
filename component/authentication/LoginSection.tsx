@@ -10,8 +10,8 @@ const LoginSection = () => {
         <div className="row wow fadeInUp">
           <div className="col-xxl-5 col-xl-6 col-md-9 col-lg-7 m-auto">
             <div className="tf__login_area">
-              <h2>Welcome to Eduor!</h2>
-              <p>sign in to continue</p>
+              <h2>Բարի գալուստ admin</h2>
+              <p>Խնդրում ենք մուտքագրել ձեր տվյալները</p>
               <LoginForm />
               <p className="or">
                 <span>or</span>

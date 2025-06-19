@@ -12,9 +12,9 @@ const mainCategories = [
     imageUrl: 'https://i.postimg.cc/zfLnFdK2/gate.png'
   },
   {
-    id: 'doors',
+    id: 'softfurniture',
     name: 'Փափուկ կահույք',
-    url: '/doors',
+    url: '/softfurniture',
     imageUrl: 'https://i.postimg.cc/CMXsFGdw/1b46b74c-60fd-4f2d-90c4-199f627a9da8.jpg'
   },
   {

@@ -1,6 +1,9 @@
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
-export default function WindowsRedirect() {
+export default async function WindowsRedirect() {
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll();
   redirect('/wardrobesandmore');
   return null;
 }

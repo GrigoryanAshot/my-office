@@ -58,12 +58,12 @@ export default function SubCategoryPage() {
 
   return (
     <main className="min-h-screen">
-      <NavbarSection />
+      <NavbarSection position="ms-auto" btnPosition={false} />
       <div className="pt-20 pb-10">
         <SubCategoryGrid items={items} categoryName={categoryName} />
       </div>
       <FooterSection />
-      <ScrollToTopButton />
+      <ScrollToTopButton style="tf__scroll_btn" />
     </main>
   );
 } 

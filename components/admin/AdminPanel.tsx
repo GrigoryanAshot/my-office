@@ -50,12 +50,25 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
             <button onClick={handleAddType} style={{ padding: '8px 16px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4 }}>Ավելացնել տեսակ</button>
           </div>
           <ul style={{ listStyle: 'none', padding: 0 }}>
-            {types.map(type => (
-              <li key={type} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <span>{type}</span>
-                <button onClick={() => handleDeleteType(type)} style={{ background: '#dc3545', color: 'white', border: 'none', borderRadius: 4, padding: '2px 8px', fontSize: 12 }}>Ջնջել</button>
-              </li>
-            ))}
+            {types.map(type => {
+              if (typeof type === 'string') {
+                return (
+                  <li key={type} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span>{type}</span>
+                    <button onClick={() => handleDeleteType(type)} style={{ background: '#dc3545', color: 'white', border: 'none', borderRadius: 4, padding: '2px 8px', fontSize: 12 }}>Ջնջել</button>
+                  </li>
+                );
+              } else if (type && typeof type === 'object' && 'id' in type && 'name' in type) {
+                return (
+                  <li key={type.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span>{type.name}</span>
+                    <button onClick={() => handleDeleteType(type.name)} style={{ background: '#dc3545', color: 'white', border: 'none', borderRadius: 4, padding: '2px 8px', fontSize: 12 }}>Ջնջել</button>
+                  </li>
+                );
+              } else {
+                return null;
+              }
+            })}
           </ul>
         </div>
         {!activeAction && (
@@ -207,9 +220,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
                     style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
                   >
                     <option value="">Ընտրեք տեսակ</option>
-                    {types.map(type => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
+                    {types.map(type => {
+                      if (typeof type === 'string') {
+                        return (
+                          <option key={type} value={type}>{type}</option>
+                        );
+                      } else if (type && typeof type === 'object' && 'id' in type && 'name' in type) {
+                        return (
+                          <option key={type.id} value={type.name}>{type.name}</option>
+                        );
+                      } else {
+                        return null;
+                      }
+                    })}
                   </select>
                 </div>
                 <div>
@@ -230,7 +253,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
                     onClick={() => {
                       setSelectedItem(null);
                       setNewItem({
-                        id: 0,
+                        id: '',
                         name: '',
                         description: '',
                         price: '',
@@ -292,7 +315,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
                       )}
                     </td>
                     <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>{item.name}</td>
-                    <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>{item.type}</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>{
+                      (typeof item.type === 'object' && item.type !== null && 'name' in item.type)
+                        ? (item.type as { name: string }).name
+                        : (typeof item.type === 'string' ? item.type : '')
+                    }</td>
                     <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>{item.price}</td>
                     <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>
                       {item.isAvailable ? 'Առկա է' : 'Պատվիրել'}

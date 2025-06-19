@@ -40,7 +40,7 @@ export default function ChairsPage() {
         setItems(items);
         
         // Calculate max price from data
-        const maxPrice = Math.max(...items.map(item => parseInt(item.price.replace(/[^0-9]/g, ''))));
+        const maxPrice = Math.max(...items.map((item: FurnitureItem) => parseInt(item.price.replace(/[^0-9]/g, ''))));
         setPriceRange(prev => ({ ...prev, max: maxPrice }));
         setTempPriceRange(prev => ({ ...prev, max: maxPrice }));
       } catch (error) {

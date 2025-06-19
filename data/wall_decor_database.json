@@ -12,12 +12,24 @@
       "type": "",
       "url": "wall-decor/1",
       "isAvailable": true
+    },
+    {
+      "id": 2,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "5252",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750340101/tebytnbfav1bd9c8pfth.png",
+      "images": [],
+      "type": "dddd",
+      "url": "wall-decor/2",
+      "isAvailable": true
     }
   ],
   "types": [
     "Մետաղական",
     "Փայտե",
     "Ակրիլային",
-    "afasf"
+    "afasf",
+    "dddd"
   ]
 }

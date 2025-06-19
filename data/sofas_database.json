@@ -25,10 +25,34 @@
       "type": "asfasfasf",
       "url": "/furniture/sofas/3",
       "isAvailable": true
+    },
+    {
+      "id": 4,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "1111",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909724/ovbx8ep0ieerntdpf3hz.png",
+      "images": [],
+      "type": "dddd",
+      "url": "/furniture/chairs/4",
+      "isAvailable": true
+    },
+    {
+      "id": 5,
+      "name": "asfaf",
+      "description": "asfasf",
+      "price": "25000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749979822/dg6jf29iofpi6eegt2xa.png",
+      "images": [],
+      "type": "asfasfasf",
+      "url": "sofas/5",
+      "isAvailable": true
     }
   ],
   "types": [
     "afasfasf",
-    "asfasfasf"
+    "asfasfasf",
+    "dddd",
+    "aa"
   ]
 }

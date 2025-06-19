@@ -32,10 +32,23 @@
       "type": "ator",
       "url": "/furniture/chairs/3",
       "isAvailable": true
+    },
+    {
+      "id": 4,
+      "name": "aass",
+      "description": "asfas",
+      "price": "4500",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749986188/dhmjie2ftghtq7eagthx.webp",
+      "images": [],
+      "type": "",
+      "url": "/furniture/chairs/4",
+      "isAvailable": true
     }
   ],
   "types": [
     "ator",
-    "xekavar"
+    "xekavar",
+    "dddd",
+    "asas"
   ]
 }

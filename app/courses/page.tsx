@@ -15,7 +15,7 @@ const page = async() => {
   return (
     <Layout>
         <BreadcrumbSection header='All Course' title='All Course'/>
-        {course && <AllCourseSection courseData={course}/>}
+        {course && <AllCourseSection courses={course}/>}
     </Layout>
   )
 }

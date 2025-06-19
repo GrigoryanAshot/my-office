@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 interface AdminLoginPopupProps {
   isOpen: boolean;
@@ -15,6 +17,7 @@ const AdminLoginPopup: React.FC<AdminLoginPopupProps> = ({ isOpen, onClose, onLo
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,16 +25,32 @@ const AdminLoginPopup: React.FC<AdminLoginPopupProps> = ({ isOpen, onClose, onLo
     setError('');
 
     try {
-      // Here we'll add the actual authentication logic later
-      // For now, using a simple check
-      if (credentials.username === 'admin' && credentials.password === 'admin123') {
-        onLogin();
-        onClose();
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Login failed');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success('Login successful');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        router.push('/admin-panel');
+        router.refresh();
       } else {
-        setError('Սխալ մուտքանուն կամ գաղտնաբառ');
+        throw new Error('Login failed');
       }
     } catch (err) {
-      setError('Սխալ է տեղի ունեցել: Խնդրում ենք փորձել կրկին');
+      setError(err instanceof Error ? err.message : 'Սխալ է տեղի ունեցել: Խնդրում ենք փորձել կրկին');
+      toast.error(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setIsLoading(false);
     }

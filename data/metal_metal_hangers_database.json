@@ -11,10 +11,22 @@
       ],
       "isAvailable": true,
       "url": "/other/hangers/1",
-      "type": "dfvdfvfv"
+      "type": ""
+    },
+    {
+      "id": 2,
+      "name": "ddd",
+      "description": "dddd",
+      "price": "5555",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750340143/oky1quvn3uahepew5dk7.png",
+      "images": [],
+      "isAvailable": true,
+      "url": "/other/hangers/2",
+      "type": "dddd"
     }
   ],
   "types": [
-    "dfvdfvfv"
+    "dfvdfvfv",
+    "dddd"
   ]
 }

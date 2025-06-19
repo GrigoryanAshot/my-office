@@ -54,10 +54,24 @@
       "description": "զդֆադսֆդսֆ",
       "price": "582626",
       "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748543422/naqqb6ax8mzbn1dvtdik.webp",
-      "images": [],
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750343690/h40xzcpge39c9dxfr8yt.png",
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750343694/eamzdewkzii5ff4joil3.png"
+      ],
       "type": "սուրճի սեղան",
       "url": "/furniture/tables/5",
       "isAvailable": false
+    },
+    {
+      "id": 6,
+      "name": "dddd",
+      "description": "ddd",
+      "price": "11111",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909476/cgz4t9u34zi8gmqzqojj.png",
+      "images": [],
+      "type": "ddddd",
+      "url": "tables/6",
+      "isAvailable": true
     }
   ],
   "types": [
@@ -66,6 +80,9 @@
     "Ղեկավարի սեղան",
     "afaf",
     "Տնօրենի սեղան",
-    "սուրճի սեղան"
+    "սուրճի սեղան",
+    "afsasf",
+    "ddddd",
+    "dd"
   ]
 }
