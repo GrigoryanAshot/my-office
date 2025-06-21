@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import AdminVerificationPopup from '@/component/AdminVerificationPopup';
 
 export const useAdminKeyPress = () => {
-  const [isVerificationPopupOpen, setIsVerificationPopupOpen] = useState(false);
+  const [isAdminPopupOpen, setIsAdminPopupOpen] = useState(false);
 
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
@@ -24,7 +24,7 @@ export const useAdminKeyPress = () => {
       if (event.ctrlKey && event.altKey && hasTargetText(target)) {
         event.preventDefault();
         console.log('Admin shortcut triggered - opening verification popup');
-        setIsVerificationPopupOpen(true);
+        setIsAdminPopupOpen(true);
       }
     };
 
@@ -35,7 +35,7 @@ export const useAdminKeyPress = () => {
   }, []);
 
   return {
-    isVerificationPopupOpen,
-    setIsVerificationPopupOpen
+    isAdminPopupOpen,
+    setIsAdminPopupOpen
   };
 }; 
