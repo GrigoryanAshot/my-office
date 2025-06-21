@@ -13,7 +13,8 @@ export const metadata: Metadata = {
 }
 const page = async({ params }: { params: { slug: string } }) => {
     const blogData: BlogType[] = await getBlog();
-    const blogDesc = blogData.find((item) => item.slug === params.slug);
+    const blog = await params;
+    const blogDesc = blogData.find((item) => item.slug === blog.slug);
   return (
     <Layout>
         <BreadcrumbSection header='Blog Details' title='Blog Details'/>
