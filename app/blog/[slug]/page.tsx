@@ -11,10 +11,10 @@ export const metadata: Metadata = {
   title: "My-Office.am",
   description: "My-Office.am - Office Furniture",
 }
-const page = async({ params }: { params: { slug: string } }) => {
+const page = async({ params: paramsPromise }: { params: Promise<{ slug: string }> }) => {
     const blogData: BlogType[] = await getBlog();
-    const blog = await params;
-    const blogDesc = blogData.find((item) => item.slug === blog.slug);
+    const params = await paramsPromise;
+    const blogDesc = blogData.find((item) => item.slug === params.slug);
   return (
     <Layout>
         <BreadcrumbSection header='Blog Details' title='Blog Details'/>
