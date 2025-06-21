@@ -11,8 +11,9 @@ export const metadata: Metadata = {
     title: "My-Office.am",
     description: "My-Office.am - Office Furniture",
   }
-const page = async({ params } : { params : { slug: string} }) => {
+const page = async({ params:paramsPromise } : { params : Promise<{ slug: string}> }) => {
     const teamData: TeamType[] = await getTeam();
+    const params = await paramsPromise;
     const teamDesc = teamData.find((item) => item.slug === params.slug);
   return (
     <Layout>
