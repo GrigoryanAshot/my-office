@@ -3,10 +3,10 @@ import { categories } from '@/component/Lists/furniture/categories';
 
 export async function GET(
   request: Request,
-  { params }: { params: { category: string } }
+  { params }: { params: Promise<{ category: string }> }
 ) {
   try {
-    const category = params.category;
+    const { category } = await params;
     // Map the URL parameter to the correct category key
     const categoryKey = category === 'tables' ? 'furniture_tables' : 
                        category === 'chairs' ? 'furniture_chairs' : 
