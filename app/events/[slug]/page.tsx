@@ -11,8 +11,9 @@ export const metadata: Metadata = {
     title: "Eduor Event Details",
     description: "Developed by Ashot Grigoryan",
   }
-const page = async({ params } : { params : { slug: string } }) => {
+const page = async({ params: paramsPromise } : { params : Promise<{ slug: string }> }) => {
     const eventData: EventType[] = await getEvent()
+    const params = await paramsPromise;
     const eventDesc = eventData.find((item) => item.slug === params.slug)
   return (
     <Layout>
