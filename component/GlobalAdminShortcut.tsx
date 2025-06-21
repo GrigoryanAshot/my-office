@@ -1,26 +1,20 @@
 "use client";
-import { useState } from "react";
 import AdminEmailLoginPopup from "@/component/admin/AdminEmailLoginPopup";
+import { useAdminLoginKeyPress } from "./utils/useAdminLoginKeyPress";
 
 export default function GlobalAdminShortcut() {
-  const [showPopup, setShowPopup] = useState(false);
+  const { isAdminLoginPopupOpen, setIsAdminLoginPopupOpen } = useAdminLoginKeyPress();
 
   const handleAdminLogin = () => {
-    setShowPopup(false);
+    setIsAdminLoginPopupOpen(false);
     window.location.href = '/admin-panel';
   };
 
   return (
     <>
-      <button
-        onClick={() => setShowPopup(true)}
-        className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
-      >
-        Admin Login
-      </button>
       <AdminEmailLoginPopup
-        isOpen={showPopup}
-        onClose={() => setShowPopup(false)}
+        isOpen={isAdminLoginPopupOpen}
+        onClose={() => setIsAdminLoginPopupOpen(false)}
         onLogin={handleAdminLogin}
       />
     </>
