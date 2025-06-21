@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
 
-export default function TestCookieRead() {
-  const allCookies = cookies().getAll();
+export default async function TestCookieRead() {
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll();
   return (
     <div>
       <h1>Server Cookies</h1>
