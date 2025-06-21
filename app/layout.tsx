@@ -11,6 +11,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
 import AdminKeyPressWrapper from '@/component/AdminKeyPressWrapper';
+import GlobalAdminShortcut from '@/component/GlobalAdminShortcut';
 // import GlobalAdminShortcut from '@/component/GlobalAdminShortcut';
 
 const inter = Inter({ 
@@ -122,7 +123,7 @@ export default function RootLayout({
             </div>
           }>
             <AdminKeyPressWrapper />
-            {/* <GlobalAdminShortcut /> */}
+            <GlobalAdminShortcut />
             {children}
           </Suspense>
           <ToastContainer 
