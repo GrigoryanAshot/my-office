@@ -17,8 +17,9 @@ export const metadata: Metadata = {
   },
 };
 
-const page = async({ params }: { params: { slug: string } }) => {
+const page = async({ params: paramsPromise }: { params: Promise<{ slug: string }> }) => {
     const course: CourseType[] = await getCourse();
+    const params = await paramsPromise;
     const courseDesc = course.find((item) => item.slug === params.slug); // Use 'slug' here
 
   return (
