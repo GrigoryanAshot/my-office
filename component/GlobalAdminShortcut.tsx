@@ -1,10 +1,8 @@
 "use client";
 import { useState } from "react";
 import AdminEmailLoginPopup from "@/component/admin/AdminEmailLoginPopup";
-import { useAdminKeyPress } from '@/component/utils/useAdminKeyPress';
 
 export default function GlobalAdminShortcut() {
-  const { isAdminPopupOpen, setIsAdminPopupOpen } = useAdminKeyPress();
   const [showPopup, setShowPopup] = useState(false);
 
   const handleAdminLogin = () => {
@@ -21,8 +19,8 @@ export default function GlobalAdminShortcut() {
         Admin Login
       </button>
       <AdminEmailLoginPopup
-        isOpen={showPopup || isAdminPopupOpen}
-        onClose={() => { setShowPopup(false); setIsAdminPopupOpen(false); }}
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
         onLogin={handleAdminLogin}
       />
     </>
