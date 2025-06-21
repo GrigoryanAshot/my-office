@@ -2,21 +2,22 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-const DATA_PATH = path.join(process.cwd(), 'data', 'poufs_database.json');
+const poufsDataPath = path.join(process.cwd(), 'data', 'poufs_database.json');
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    if (!fs.existsSync(DATA_PATH)) {
+    const { id } = await params;
+    if (!fs.existsSync(poufsDataPath)) {
       return NextResponse.json({ error: 'Poufs data not found' }, { status: 404 });
     }
-    const data = fs.readFileSync(DATA_PATH, 'utf-8');
+    const data = fs.readFileSync(poufsDataPath, 'utf8');
     const parsed = JSON.parse(data);
-    const item = (parsed.items || []).find((item: any) => String(item.id) === String(params.id));
+    const item = (parsed.items || []).find((item: any) => String(item.id) === String(id));
     if (!item) {
-      return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Pouf not found' }, { status: 404 });
     }
     return NextResponse.json(item);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch pouf item' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch pouf' }, { status: 500 });
   }
 } 
