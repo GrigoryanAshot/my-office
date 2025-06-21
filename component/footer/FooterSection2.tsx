@@ -1,3 +1,4 @@
+// Trigger Vercel rebuild - Fixed banner page TypeScript error - v3
 import Link from "next/link";
 import React from "react";
 
