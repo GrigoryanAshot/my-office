@@ -1,19 +1,31 @@
 // Upstash Redis client for storing verification codes.
 import { Redis } from '@upstash/redis';
 
-const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
-const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+let redis: Redis | undefined;
 
-if (!redisUrl || !redisToken) {
-  // This will cause the build to fail if the variables are not set.
-  throw new Error('FATAL: Upstash Redis URL or Token is not set in environment variables.');
+/**
+ * Initializes and returns a singleton Redis client.
+ * This function ensures that the client is only created once, at runtime,
+ * when the environment variables are available.
+ */
+function getRedisClient(): Redis {
+  if (!redis) {
+    const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+    const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+    if (!redisUrl || !redisToken) {
+      // This will now only run if the variables are missing at runtime.
+      throw new Error('FATAL: Upstash Redis URL or Token is not set in environment variables.');
+    }
+
+    // Manually initialize the Redis client.
+    redis = new Redis({
+      url: redisUrl,
+      token: redisToken,
+    });
+  }
+  return redis;
 }
-
-// Manually initialize the Redis client.
-const redis = new Redis({
-  url: redisUrl,
-  token: redisToken,
-});
 
 // Track verified users for admin panel access
 const verifiedUsers = new Map<string, { verifiedAt: number; expiresAt: number }>();
@@ -26,10 +38,9 @@ export const verificationStorage = {
    * @param expiresAt The timestamp when the code expires.
    */
   set: async (email: string, code: string, expiresAt: number) => {
-    // Calculate the Time-To-Live (TTL) in seconds.
+    const client = getRedisClient();
     const ttl = Math.ceil((expiresAt - Date.now()) / 1000);
-    // Use a prefix to prevent key collisions.
-    await redis.set(`verification:${email}`, code, { ex: ttl });
+    await client.set(`verification:${email}`, code, { ex: ttl });
   },
   
   /**
@@ -38,8 +49,8 @@ export const verificationStorage = {
    * @returns The stored code or null if not found.
    */
   get: async (email: string) => {
-    const code = await redis.get<string>(`verification:${email}`);
-    // The structure is simplified as Redis handles expiry.
+    const client = getRedisClient();
+    const code = await client.get<string>(`verification:${email}`);
     return code ? { code, expiresAt: 0 } : null; 
   },
   
@@ -48,7 +59,8 @@ export const verificationStorage = {
    * @param email The user's email.
    */
   delete: async (email: string) => {
-    await redis.del(`verification:${email}`);
+    const client = getRedisClient();
+    await client.del(`verification:${email}`);
   },
   
   /**
@@ -56,8 +68,9 @@ export const verificationStorage = {
    * @param email The user's email.
    */
   markVerified: async (email: string) => {
+    const client = getRedisClient();
     const ttl = 24 * 60 * 60; // 24 hours in seconds.
-    await redis.set(`verified:${email}`, "true", { ex: ttl });
+    await client.set(`verified:${email}`, "true", { ex: ttl });
   },
   
   /**
@@ -66,7 +79,8 @@ export const verificationStorage = {
    * @returns True if verified, false otherwise.
    */
   isVerified: async (email: string) => {
-    const result = await redis.get<string>(`verified:${email}`);
+    const client = getRedisClient();
+    const result = await client.get<string>(`verified:${email}`);
     return result === "true";
   },
   
@@ -75,7 +89,8 @@ export const verificationStorage = {
    * @param email The user's email.
    */
   removeVerification: async (email: string) => {
-    await redis.del(`verified:${email}`);
+    const client = getRedisClient();
+    await client.del(`verified:${email}`);
   },
 
   // The following functions are no longer needed as Redis handles cleanup,
