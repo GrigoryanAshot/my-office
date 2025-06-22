@@ -8,6 +8,11 @@ function generateVerificationCode(): string {
 }
 
 export async function POST(request: Request) {
+  // ==> TEMPORARY DEBUGGING: Log all available environment variables
+  console.log("--- VERCEL RUNTIME ENVIRONMENT VARIABLES ---");
+  console.log(process.env);
+  console.log("------------------------------------------");
+  
   try {
     const { email } = await request.json();
 
