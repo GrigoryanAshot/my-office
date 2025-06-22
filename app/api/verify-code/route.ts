@@ -11,10 +11,10 @@ export async function POST(request: Request) {
 
     // Debug logging
     console.log(`Verification attempt for ${email} with code: ${code}`);
-    console.log(`All stored codes:`, verificationStorage.debug());
+    console.log(`All stored codes:`, await verificationStorage.debug());
 
     // Get stored verification data
-    const storedData = verificationStorage.get(email);
+    const storedData = await verificationStorage.get(email);
 
     if (!storedData) {
       console.log(`No verification code found for ${email}`);
@@ -22,13 +22,6 @@ export async function POST(request: Request) {
     }
 
     console.log(`Stored data for ${email}:`, storedData);
-
-    // Check if code has expired
-    if (Date.now() > storedData.expiresAt) {
-      console.log(`Code expired for ${email}`);
-      verificationStorage.delete(email);
-      return NextResponse.json({ error: 'Verification code has expired' }, { status: 400 });
-    }
 
     // Check if code matches
     if (storedData.code !== code) {
@@ -39,8 +32,8 @@ export async function POST(request: Request) {
     console.log(`Verification successful for ${email}`);
 
     // Code is valid - remove it from storage and mark user as verified
-    verificationStorage.delete(email);
-    verificationStorage.markVerified(email);
+    await verificationStorage.delete(email);
+    await verificationStorage.markVerified(email);
 
     // Create response with success
     const response = NextResponse.json({ 

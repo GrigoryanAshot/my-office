@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
     // Store the code
-    verificationStorage.set(email, code, expiresAt);
+    await verificationStorage.set(email, code, expiresAt);
     
     // Debug logging
     console.log(`Verification code generated for ${email}: ${code}`);
