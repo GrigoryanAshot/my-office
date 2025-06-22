@@ -1,9 +1,19 @@
 // Upstash Redis client for storing verification codes.
 import { Redis } from '@upstash/redis';
 
-// Initialize Redis client from environment variables.
-// The '!' tells TypeScript that we are sure these variables will be present.
-const redis = Redis.fromEnv();
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+if (!redisUrl || !redisToken) {
+  // This will cause the build to fail if the variables are not set.
+  throw new Error('FATAL: Upstash Redis URL or Token is not set in environment variables.');
+}
+
+// Manually initialize the Redis client.
+const redis = new Redis({
+  url: redisUrl,
+  token: redisToken,
+});
 
 // Track verified users for admin panel access
 const verifiedUsers = new Map<string, { verifiedAt: number; expiresAt: number }>();
