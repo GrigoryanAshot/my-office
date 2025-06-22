@@ -4,10 +4,17 @@ import { Redis } from '@upstash/redis';
 
 const ADMIN_EMAIL = 'myofficearmenia@gmail.com';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+let redis: Redis | undefined;
+
+function getRedisClient(): Redis {
+  if (!redis) {
+    redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    });
+  }
+  return redis;
+}
 
 export async function POST(request: Request) {
   try {
@@ -25,17 +32,18 @@ export async function POST(request: Request) {
     console.log('Generated code:', code);
 
     // Store the code in Redis with 5-minute expiration
+    const redisClient = getRedisClient();
     const key = `admin_code:${email}`;
-    await redis.set(key, code, { ex: 300 });
+    await redisClient.set(key, code, { ex: 300 });
     console.log('Stored code in Redis with key:', key);
 
-    // Check if Gmail credentials are set
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
-      console.error('Missing Gmail credentials:', {
-        hasUser: !!process.env.GMAIL_USER,
-        hasPassword: !!process.env.GMAIL_PASS
-      });
-      throw new Error('Gmail credentials not configured');
+    // Check if email credentials are set
+    const emailUser = process.env.EMAIL_USER;
+    const emailPass = process.env.EMAIL_PASS;
+
+    if (!emailUser || !emailPass) {
+      console.error('Missing email credentials in environment variables.');
+      throw new Error('Email credentials not configured');
     }
 
     console.log('Creating email transporter...');
@@ -43,14 +51,14 @@ export async function POST(request: Request) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
+        user: emailUser,
+        pass: emailPass,
       },
     });
 
     console.log('Sending email...');
     await transporter.sendMail({
-      from: process.env.GMAIL_USER,
+      from: emailUser,
       to: email,
       subject: 'Your Admin Login Code',
       text: `Your admin login code is: ${code}`,
