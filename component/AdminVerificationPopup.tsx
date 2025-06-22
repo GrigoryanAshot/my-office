@@ -21,6 +21,9 @@ const AdminVerificationPopup: React.FC<AdminVerificationPopupProps> = ({ isOpen,
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    
+    // ==> CLIENT-SIDE DEBUGGING
+    console.log('[CLIENT] Attempting to send verification code to /api/send-verification');
 
     try {
       const response = await fetch('/api/send-verification', {
@@ -31,13 +34,21 @@ const AdminVerificationPopup: React.FC<AdminVerificationPopupProps> = ({ isOpen,
         body: JSON.stringify({ email }),
       });
 
+      // ==> CLIENT-SIDE DEBUGGING
+      console.log('[CLIENT] Fetch response received. Status:', response.status, 'OK:', response.ok);
+      const responseBody = await response.text(); // Use text() to avoid JSON parse error if body is not JSON
+      console.log('[CLIENT] Response body:', responseBody);
+
       if (!response.ok) {
-        throw new Error('Failed to send verification code');
+        // Construct a more informative error
+        throw new Error(`Failed to send verification code. Status: ${response.status}. Body: ${responseBody}`);
       }
 
       setStep('verification');
       setSuccess('Ստուգման կոդը ուղարկվել է Ձեր էլ․ փոստին');
     } catch (err) {
+      // ==> CLIENT-SIDE DEBUGGING
+      console.error('[CLIENT] An error occurred in handleSendCode:', err);
       setError('Սխալ է տեղի ունեցել: Խնդրում ենք փորձել կրկին');
     } finally {
       setIsLoading(false);
