@@ -1,3 +1,4 @@
+// Upstash Redis client for storing verification codes.
 import { Redis } from '@upstash/redis';
 
 // Initialize Redis client from environment variables.
