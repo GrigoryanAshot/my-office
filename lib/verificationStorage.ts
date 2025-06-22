@@ -1,13 +1,5 @@
 import { Redis } from '@upstash/redis';
 
-// ==> ADDED FOR DEBUGGING
-console.log('--- Redis Initialization ---');
-console.log(`UPSTASH_REDIS_REST_URL is present: ${!!process.env.UPSTASH_REDIS_REST_URL}`);
-console.log(`UPSTASH_REDIS_REST_TOKEN is present: ${!!process.env.UPSTASH_REDIS_REST_TOKEN}`);
-if (process.env.UPSTASH_REDIS_REST_URL) {
-    console.log(`URL prefix: ${process.env.UPSTASH_REDIS_REST_URL.substring(0, 20)}`);
-}
-
 // Initialize Redis client from environment variables.
 // The '!' tells TypeScript that we are sure these variables will be present.
 const redis = Redis.fromEnv();
