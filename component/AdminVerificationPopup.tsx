@@ -78,11 +78,12 @@ const AdminVerificationPopup: React.FC<AdminVerificationPopupProps> = ({ isOpen,
 
       setSuccess('Ստուգումը հաջող է: Ուղղորդվում եք ադմին պանել...');
       
-      // Redirect to admin panel after 2 seconds
+      // Redirect to admin panel after 3 seconds to ensure cookie is set
       setTimeout(() => {
-        router.push('/admin-panel');
+        // Force a hard redirect to ensure the cookie is picked up
+        window.location.href = '/admin-panel';
         onClose();
-      }, 2000);
+      }, 3000);
     } catch (err) {
       setError('Սխալ ստուգման կոդ: Խնդրում ենք փորձել կրկին');
     } finally {

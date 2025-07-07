@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
+import { sendVerificationEmail } from '@/lib/emailConfig';
 import { verificationStorage } from '@/lib/verificationStorage';
 
 // Generate a 6-digit verification code
@@ -37,42 +37,8 @@ export async function POST(request: Request) {
     // ==> ADDED FOR DEBUGGING
     console.log(`Is EMAIL_USER configured: ${!!process.env.EMAIL_USER}`);
 
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    // Email content
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Ադմին մուտքի ստուգման կոդ',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #333; text-align: center;">Ադմին մուտքի ստուգման կոդ</h2>
-          <p style="color: #666; font-size: 16px;">
-            Ձեր 6-նիշանոց ստուգման կոդը՝
-          </p>
-          <div style="background-color: #f5f5f5; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-            <span style="font-size: 32px; font-weight: bold; color: #4a90e2; letter-spacing: 4px;">${code}</span>
-          </div>
-          <p style="color: #666; font-size: 14px;">
-            Այս կոդը վավեր է 10 րոպե: Եթե դուք չեք փորձել մուտք գործել ադմին պանել, ապա անտեսեք այս նամակը:
-          </p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-          <p style="color: #999; font-size: 12px; text-align: center;">
-            Այս նամակը ուղարկվել է ավտոմատ կերպով, խնդրում ենք չպատասխանել:
-          </p>
-        </div>
-      `,
-    };
-
-    // Send email
-    await transporter.sendMail(mailOptions);
+    // Send email using the new email configuration
+    await sendVerificationEmail(email, code);
 
     return NextResponse.json({ 
       success: true, 
@@ -89,8 +55,20 @@ export async function POST(request: Request) {
       console.error('[Nodemailer Error Code]', (error as { code: string }).code);
     }
 
+    // Provide more specific error messages based on the error type
+    let errorMessage = 'Սխալ է տեղի ունեցել: Խնդրում ենք փորձել կրկին';
+    
+    if (error && typeof error === 'object' && 'code' in error) {
+      const errorCode = (error as { code: string }).code;
+      if (errorCode === 'EAUTH') {
+        errorMessage = 'Էլ․ փոստի կարգավորումները սխալ են: Խնդրում ենք կապնվել ադմինիստրատորի հետ';
+      } else if (errorCode === 'ECONNECTION') {
+        errorMessage = 'Կապի խնդիր: Խնդրում ենք ստուգել ինտերնետ կապը';
+      }
+    }
+
     return NextResponse.json(
-      { error: 'Failed to send verification code' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

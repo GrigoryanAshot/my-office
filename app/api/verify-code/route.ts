@@ -9,27 +9,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email and code are required' }, { status: 400 });
     }
 
-    // Debug logging
-    console.log(`Verification attempt for ${email} with code: ${code}`);
-    console.log(`All stored codes:`, await verificationStorage.debug());
+    // Debug logging (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Verification attempt for ${email} with code: ${code}`);
+      console.log(`All stored codes:`, await verificationStorage.debug());
+    }
 
     // Get stored verification data
     const storedData = await verificationStorage.get(email);
 
     if (!storedData) {
-      console.log(`No verification code found for ${email}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`No verification code found for ${email}`);
+      }
       return NextResponse.json({ error: 'No verification code found for this email' }, { status: 400 });
     }
 
-    console.log(`Stored data for ${email}:`, storedData);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Stored data for ${email}:`, storedData);
+    }
 
     // Check if code matches
-    if (storedData.code !== code) {
-      console.log(`Code mismatch for ${email}. Expected: ${storedData.code}, Received: ${code}`);
+    if (String(storedData.code) !== String(code)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Code mismatch for ${email}. Expected: ${storedData.code}, Received: ${code}`);
+      }
       return NextResponse.json({ error: 'Invalid verification code' }, { status: 400 });
     }
 
-    console.log(`Verification successful for ${email}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Verification successful for ${email}`);
+    }
 
     // Code is valid - remove it from storage and mark user as verified
     await verificationStorage.delete(email);

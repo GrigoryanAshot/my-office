@@ -3,7 +3,7 @@ import "@/public/css/all.min.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "react-toastify/dist/ReactToastify.css";
-import "@/public/css/style.css";
+import "../public/css/style.css";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import { Providers } from "@/redux/provider";
