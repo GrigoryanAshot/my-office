@@ -1,88 +1,45 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { Redis } from '@upstash/redis';
 
-// Use a single database file for takht
-const takhtDataPath = path.join(process.cwd(), 'data', 'takht_database.json');
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
-// Ensure the data directory exists
-if (!fs.existsSync(path.join(process.cwd(), 'data'))) {
-  fs.mkdirSync(path.join(process.cwd(), 'data'), { recursive: true });
-}
-
-// Initialize takht_database.json if it doesn't exist
-if (!fs.existsSync(takhtDataPath)) {
-  try {
-    const initialData = { items: [], types: [] };
-    fs.writeFileSync(takhtDataPath, JSON.stringify(initialData, null, 2), 'utf8');
-  } catch (error) {
-    console.error('Error creating takht_database.json:', error);
-  }
-}
+const DATA_KEY = 'takht:data';
 
 export async function GET() {
   try {
-    if (!fs.existsSync(takhtDataPath)) {
-      const initialData = { items: [], types: [] };
-      fs.writeFileSync(takhtDataPath, JSON.stringify(initialData, null, 2), 'utf8');
+    const dataStr = await redis.get(DATA_KEY);
+    let data: { items: any[]; types: any[] };
+    if (typeof dataStr === 'string') {
+      try {
+        data = JSON.parse(dataStr);
+        if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
+          data = { items: [], types: [] };
+        }
+      } catch {
+        data = { items: [], types: [] };
+      }
+    } else {
+      data = { items: [], types: [] };
     }
-    const data = fs.readFileSync(takhtDataPath, 'utf8');
-    let parsedData;
-    try {
-      parsedData = JSON.parse(data);
-    } catch (parseError) {
-      const initialData = { items: [], types: [] };
-      fs.writeFileSync(takhtDataPath, JSON.stringify(initialData, null, 2), 'utf8');
-      parsedData = initialData;
-    }
-    if (!parsedData || typeof parsedData !== 'object') {
-      parsedData = { items: [], types: [] };
-    }
-    if (!Array.isArray(parsedData.items)) {
-      parsedData.items = [];
-    }
-    if (!Array.isArray(parsedData.types)) {
-      parsedData.types = [];
-    }
-    return NextResponse.json(parsedData);
+    return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to read takht data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to read data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    if (!data || typeof data !== 'object') {
+    // Validate structure
+    if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
       return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
     }
-    if (!Array.isArray(data.items)) {
-      return NextResponse.json({ error: 'Items must be an array' }, { status: 400 });
-    }
-    if (!Array.isArray(data.types)) {
-      return NextResponse.json({ error: 'Types must be an array' }, { status: 400 });
-    }
-    let currentData;
-    try {
-      const fileContent = fs.readFileSync(takhtDataPath, 'utf8');
-      currentData = JSON.parse(fileContent);
-    } catch (error) {
-      currentData = { items: [], types: [] };
-    }
-    const updatedData = {
-      items: data.items,
-      types: Array.from(new Set([...currentData.types, ...data.types]))
-    };
-    try {
-      fs.writeFileSync(takhtDataPath, JSON.stringify(updatedData, null, 2), 'utf8');
-    } catch (error) {
-      return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
-    }
-    return NextResponse.json({ success: true, data: updatedData });
+    await redis.set(DATA_KEY, JSON.stringify(data));
+    return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ 
-      error: 'Failed to process request', 
-      details: error instanceof Error ? error.message : String(error) 
-    }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 } 
