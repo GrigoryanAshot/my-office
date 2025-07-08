@@ -63,7 +63,7 @@ export default function AdminLoginPopup() {
       const data = await response.json();
       localStorage.setItem('adminToken', data.token);
       toast.success('Login successful');
-      router.push('/admin');
+      router.push('/admin-panel');
     } catch (error) {
       toast.error(`Invalid password. ${3 - attempts} attempts remaining.`);
     } finally {

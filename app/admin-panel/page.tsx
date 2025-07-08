@@ -4,6 +4,7 @@ import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Redis } from '@upstash/redis';
 
 // DEBUG: Check if new code is running
 console.log("ADMIN PANEL JS LOADED - NEW VERSION");
