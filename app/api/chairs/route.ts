@@ -11,7 +11,19 @@ const DATA_KEY = 'chairs:data';
 export async function GET() {
   try {
     const dataStr = await redis.get(DATA_KEY);
-    const data = dataStr ? JSON.parse(dataStr) : { items: [], types: [] };
+    let data: { items: any[]; types: any[] };
+    if (typeof dataStr === 'string') {
+      try {
+        data = JSON.parse(dataStr);
+        if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
+          data = { items: [], types: [] };
+        }
+      } catch {
+        data = { items: [], types: [] };
+      }
+    } else {
+      data = { items: [], types: [] };
+    }
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to read data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
