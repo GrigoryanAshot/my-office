@@ -5,6 +5,9 @@ import FooterSection from '@/component/footer/FooterSection';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+// DEBUG: Check if new code is running
+console.log("ADMIN PANEL JS LOADED - NEW VERSION");
+
 export default function AdminPanel() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -84,7 +87,7 @@ export default function AdminPanel() {
           </button>
           <button 
             style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-            onClick={() => router.push('http://localhost:3000/admin-panel/sale')}
+            onClick={() => router.push('/admin-panel/sale')}
           >
             Ակցիայի ապրանքներ
           </button>
@@ -93,13 +96,13 @@ export default function AdminPanel() {
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/tables')}
+              onClick={() => router.push('/admin-panel/tables')}
             >
               Սեղաններ
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/chairs')}
+              onClick={() => router.push('/admin-panel/chairs')}
             >
               Աթոռներ
             </button>
@@ -109,25 +112,25 @@ export default function AdminPanel() {
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/sofas')}
+              onClick={() => router.push('/admin-panel/sofas')}
             >
               Բազմոցներ
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/armchairs')}
+              onClick={() => router.push('/admin-panel/armchairs')}
             >
               Բազկաթոռներ
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/poufs')}
+              onClick={() => router.push('/admin-panel/poufs')}
             >
               Պուֆիկներ
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/takht')}
+              onClick={() => router.push('/admin-panel/takht')}
             >
               Թախտեր
             </button>
@@ -137,25 +140,25 @@ export default function AdminPanel() {
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/wardrobes')}
+              onClick={() => router.push('/admin-panel/wardrobes')}
             >
               Պահարաններ
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/shelving')}
+              onClick={() => router.push('/admin-panel/shelving')}
             >
               Դարակաշարեր
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/chests')}
+              onClick={() => router.push('/admin-panel/chests')}
             >
               Տումբաներ և կոմոդներ
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/stands')}
+              onClick={() => router.push('/admin-panel/stands')}
             >
               Տակդիրներ
             </button>
@@ -165,25 +168,25 @@ export default function AdminPanel() {
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/walldecor')}
+              onClick={() => router.push('/admin-panel/walldecor')}
             >
               Պատի դեկորներ
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/hangers')}
+              onClick={() => router.push('/admin-panel/hangers')}
             >
               Կախիչներ
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/podium')}
+              onClick={() => router.push('/admin-panel/podium')}
             >
               Ամբիոն
             </button>
             <button 
               style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}
-              onClick={() => router.push('http://localhost:3000/admin-panel/whiteboard')}
+              onClick={() => router.push('/admin-panel/whiteboard')}
             >
               Գրատախտակ
             </button>
