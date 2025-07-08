@@ -1,42 +1,33 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { Redis } from '@upstash/redis';
 
-const standsDataPath = path.join(process.cwd(), 'data', 'stands_database.json');
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
-if (!fs.existsSync(path.join(process.cwd(), 'data'))) {
-  fs.mkdirSync(path.join(process.cwd(), 'data'), { recursive: true });
-}
-
-if (!fs.existsSync(standsDataPath)) {
-  try {
-    const initialData = { items: [], types: [] };
-    fs.writeFileSync(standsDataPath, JSON.stringify(initialData, null, 2), 'utf8');
-  } catch (error) {
-    console.error('Error creating stands_database.json:', error);
-  }
-}
+const DATA_KEY = 'stands:data';
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), 'data', 'stands_database.json');
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    const data = JSON.parse(fileContents);
+    const dataStr = await redis.get(DATA_KEY);
+    const data = dataStr ? JSON.parse(dataStr) : { items: [], types: [] };
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching stands:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json({ error: 'Failed to read data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const filePath = path.join(process.cwd(), 'data', 'stands_database.json');
     const data = await request.json();
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    // Validate structure
+    if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
+      return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
+    }
+    await redis.set(DATA_KEY, JSON.stringify(data));
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error saving stands:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 } 

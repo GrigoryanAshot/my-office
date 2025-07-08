@@ -1,73 +1,56 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { Redis } from '@upstash/redis';
 
-const chestsDataPath = path.join(process.cwd(), 'data', 'chests_database.json');
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
-if (!fs.existsSync(path.join(process.cwd(), 'data'))) {
-  fs.mkdirSync(path.join(process.cwd(), 'data'), { recursive: true });
-}
-
-if (!fs.existsSync(chestsDataPath)) {
-  try {
-    const initialData = { items: [], types: [] };
-    fs.writeFileSync(chestsDataPath, JSON.stringify(initialData, null, 2), 'utf8');
-  } catch (error) {
-    console.error('Error creating chests_database.json:', error);
-  }
-}
+const DATA_KEY = 'chests:data';
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), 'data', 'chests_database.json');
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    const data = JSON.parse(fileContents);
+    const dataStr = await redis.get(DATA_KEY);
+    const data = dataStr ? JSON.parse(dataStr) : { items: [], types: [] };
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching chests:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json({ error: 'Failed to read data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const filePath = path.join(process.cwd(), 'data', 'chests_database.json');
     const data = await request.json();
-    
-    // Handle type management
+    let currentDataStr = await redis.get(DATA_KEY);
+    let currentData = currentDataStr ? JSON.parse(currentDataStr) : { items: [], types: [] };
+
+    // Handle type deletion
     if (data.action === 'deleteType' && data.typeName) {
-      const currentData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      const updatedTypes = currentData.types.filter((type: string) => type !== data.typeName);
-      const updatedItems = currentData.items.map((item: any) => 
-        item.type === data.typeName ? { ...item, type: '' } : item
-      );
-      
-      const updatedData = {
-        items: updatedItems,
-        types: updatedTypes
-      };
-      
-      fs.writeFileSync(filePath, JSON.stringify(updatedData, null, 2));
+      const updatedTypes = currentData.types.filter((type) => type !== data.typeName);
+      const updatedItems = currentData.items.map((item) => item.type === data.typeName ? { ...item, type: '' } : item);
+      const updatedData = { items: updatedItems, types: updatedTypes };
+      await redis.set(DATA_KEY, JSON.stringify(updatedData));
       return NextResponse.json({ success: true });
     }
-    
+
     // Handle adding new type
     if (data.typeName && !data.name) {
-      const currentData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       if (!currentData.types.includes(data.typeName)) {
         currentData.types.push(data.typeName);
-        fs.writeFileSync(filePath, JSON.stringify(currentData, null, 2));
+        await redis.set(DATA_KEY, JSON.stringify(currentData));
         return NextResponse.json({ success: true, type: { name: data.typeName } });
       } else {
         return NextResponse.json({ error: 'Type already exists' }, { status: 400 });
       }
     }
-    
+
     // Handle regular item operations
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
+      return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
+    }
+    await redis.set(DATA_KEY, JSON.stringify(data));
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error saving chests:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 } 

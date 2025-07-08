@@ -1,94 +1,56 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { Redis } from '@upstash/redis';
 
-const dataFilePath = path.join(process.cwd(), 'data', 'podium_database.json');
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
-// Ensure the data directory exists
-if (!fs.existsSync(path.join(process.cwd(), 'data'))) {
-  fs.mkdirSync(path.join(process.cwd(), 'data'));
-}
-
-// Initialize the file if it doesn't exist
-if (!fs.existsSync(dataFilePath)) {
-  fs.writeFileSync(dataFilePath, JSON.stringify({ items: [], types: [] }));
-}
-
-// Helper function to ensure valid data structure
-function ensureValidData(data: any) {
-  if (!data || typeof data !== 'object') {
-    return { items: [], types: [] };
-  }
-  return {
-    items: Array.isArray(data.items) ? data.items : [],
-    types: Array.isArray(data.types) ? data.types : []
-  };
-}
-
-// Helper function to read and validate data
-function readValidData() {
-  try {
-    const data = fs.readFileSync(dataFilePath, 'utf8');
-    const parsedData = JSON.parse(data);
-    return ensureValidData(parsedData);
-  } catch (error) {
-    console.error('Error reading podium data, initializing with default structure:', error);
-    const defaultData = { items: [], types: [] };
-    fs.writeFileSync(dataFilePath, JSON.stringify(defaultData, null, 2));
-    return defaultData;
-  }
-}
+const DATA_KEY = 'podium:data';
 
 export async function GET() {
   try {
-    const data = readValidData();
+    const dataStr = await redis.get(DATA_KEY);
+    const data = dataStr ? JSON.parse(dataStr) : { items: [], types: [] };
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error reading podium data:', error);
-    return NextResponse.json({ error: 'Failed to read podium data' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to read data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    
-    // Handle type management
+    let currentDataStr = await redis.get(DATA_KEY);
+    let currentData = currentDataStr ? JSON.parse(currentDataStr) : { items: [], types: [] };
+
+    // Handle type deletion
     if (data.action === 'deleteType' && data.typeName) {
-      const currentData = readValidData();
-      const updatedTypes = currentData.types.filter((type: string) => type !== data.typeName);
-      const updatedItems = currentData.items.map((item: any) => 
-        item.type === data.typeName ? { ...item, type: '' } : item
-      );
-      
-      const updatedData = {
-        items: updatedItems,
-        types: updatedTypes
-      };
-      
-      fs.writeFileSync(dataFilePath, JSON.stringify(updatedData, null, 2));
+      const updatedTypes = currentData.types.filter((type) => type !== data.typeName);
+      const updatedItems = currentData.items.map((item) => item.type === data.typeName ? { ...item, type: '' } : item);
+      const updatedData = { items: updatedItems, types: updatedTypes };
+      await redis.set(DATA_KEY, JSON.stringify(updatedData));
       return NextResponse.json({ success: true });
     }
-    
+
     // Handle adding new type
     if (data.typeName && !data.name) {
-      const currentData = readValidData();
       if (!currentData.types.includes(data.typeName)) {
         currentData.types.push(data.typeName);
-        fs.writeFileSync(dataFilePath, JSON.stringify(currentData, null, 2));
+        await redis.set(DATA_KEY, JSON.stringify(currentData));
         return NextResponse.json({ success: true, type: { name: data.typeName } });
       } else {
         return NextResponse.json({ error: 'Type already exists' }, { status: 400 });
       }
     }
-    
+
     // Handle regular item operations
-    const currentData = readValidData();
-    const updatedData = ensureValidData(data);
-    fs.writeFileSync(dataFilePath, JSON.stringify(updatedData, null, 2));
+    if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
+      return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
+    }
+    await redis.set(DATA_KEY, JSON.stringify(data));
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error writing podium data:', error);
-    return NextResponse.json({ error: 'Failed to write podium data' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 } 
