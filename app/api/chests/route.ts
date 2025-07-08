@@ -11,7 +11,19 @@ const DATA_KEY = 'chests:data';
 export async function GET() {
   try {
     const dataStr = await redis.get(DATA_KEY);
-    const data = dataStr ? JSON.parse(dataStr) : { items: [], types: [] };
+    let data: { items: any[]; types: any[] };
+    if (typeof dataStr === 'string') {
+      try {
+        data = JSON.parse(dataStr);
+        if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
+          data = { items: [], types: [] };
+        }
+      } catch {
+        data = { items: [], types: [] };
+      }
+    } else {
+      data = { items: [], types: [] };
+    }
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to read data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
@@ -22,12 +34,24 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
     let currentDataStr = await redis.get(DATA_KEY);
-    let currentData = currentDataStr ? JSON.parse(currentDataStr) : { items: [], types: [] };
+    let currentData: { items: any[]; types: any[] };
+    if (typeof currentDataStr === 'string') {
+      try {
+        currentData = JSON.parse(currentDataStr);
+        if (!currentData || typeof currentData !== 'object' || !Array.isArray(currentData.items) || !Array.isArray(currentData.types)) {
+          currentData = { items: [], types: [] };
+        }
+      } catch {
+        currentData = { items: [], types: [] };
+      }
+    } else {
+      currentData = { items: [], types: [] };
+    }
 
     // Handle type deletion
     if (data.action === 'deleteType' && data.typeName) {
-      const updatedTypes = currentData.types.filter((type) => type !== data.typeName);
-      const updatedItems = currentData.items.map((item) => item.type === data.typeName ? { ...item, type: '' } : item);
+      const updatedTypes = currentData.types.filter((type: string) => type !== data.typeName);
+      const updatedItems = currentData.items.map((item: any) => item.type === data.typeName ? { ...item, type: '' } : item);
       const updatedData = { items: updatedItems, types: updatedTypes };
       await redis.set(DATA_KEY, JSON.stringify(updatedData));
       return NextResponse.json({ success: true });

@@ -11,7 +11,19 @@ const DATA_KEY = 'items:data';
 export async function GET(request: Request) {
   try {
     const dataStr = await redis.get(DATA_KEY);
-    const items = dataStr ? JSON.parse(dataStr) : [];
+    let items: any[];
+    if (typeof dataStr === 'string') {
+      try {
+        items = JSON.parse(dataStr);
+        if (!Array.isArray(items)) {
+          items = [];
+        }
+      } catch {
+        items = [];
+      }
+    } else {
+      items = [];
+    }
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
     const filteredItems = type ? items.filter((item: any) => item.type === type) : items;
