@@ -1,3 +1,4 @@
+// Trivial change: force redeploy to ensure /api/tables2 is used everywhere
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
