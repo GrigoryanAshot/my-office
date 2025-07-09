@@ -471,7 +471,7 @@ export const useAdminPanel = (apiEndpoint: string) => {
       }
 
       // Special handling for tables endpoint
-      if (apiEndpoint.includes('tables')) {
+      if (apiEndpoint.includes('tables2')) {
         const response = await fetch(apiEndpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -484,7 +484,8 @@ export const useAdminPanel = (apiEndpoint: string) => {
         }
         const data = await response.json();
         if (data.success) {
-          // Refetch data to get the updated types list
+          setNewType('');
+          // Refetch data after adding type
           try {
             const refetchResponse = await fetch(apiEndpoint);
             if (refetchResponse.ok) {
@@ -494,11 +495,8 @@ export const useAdminPanel = (apiEndpoint: string) => {
             }
           } catch (refetchError) {
             console.error('Error refetching data after adding type:', refetchError);
-            // Fallback: manually add the type to the state
-            setTypes([...types, newType.trim()]);
           }
         }
-        setNewType('');
         return;
       }
 
