@@ -10,14 +10,14 @@
     "id": "furniture_tables",
     "name": "Սեղաններ",
     "url": "/furniture/tables",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747392894/furniture/u79kqcr04anmjcbzhqiy.png",
+    "imageUrl": "/images/table.png",
     "order": 2
   },
   "furniture_chairs": {
     "id": "furniture_chairs",
     "name": "Աթոռներ",
     "url": "/furniture/chairs",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747392948/furniture/zueez5dzkxpzi3ad0lyy.png",
+    "imageUrl": "/images/chair.png",
     "order": 3
   },
   "doors": {
@@ -31,21 +31,21 @@
     "id": "doors_sofas",
     "name": "Բազմոցներ",
     "url": "/softfurniture/sofas",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646004/furniture/usgvdgfy3o6jxzzpb8p2.png",
+    "imageUrl": "/images/sofa.png",
     "order": 3
   },
   "doors_armchairs": {
     "id": "doors_armchairs",
     "name": "Բազկաթոռեր",
     "url": "/softfurniture/armchairs",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646017/furniture/rg6hdwtjvm5g5s0ouezn.png",
+    "imageUrl": "/images/armchair.png",
     "order": 4
   },
   "doors_poufs": {
     "id": "doors_poufs",
     "name": "Պուֆիկներ",
     "url": "/softfurniture/poufs",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646034/furniture/p5gqejqztcdvbuz8mfel.png",
+    "imageUrl": "/images/pouf.png",
     "order": 5
   },
   "windows": {
@@ -59,21 +59,21 @@
     "id": "windows_wardrobes",
     "name": "Պահարաններ",
     "url": "/wardrobesandmore/wardrobes",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646123/furniture/dinoc8tezhdvvppfihgm.png",
+    "imageUrl": "/images/wardrobe.png",
     "order": 4
   },
   "windows_shelving": {
     "id": "windows_shelving",
     "name": "Դարակաշարեր",
     "url": "/wardrobesandmore/shelving",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646136/furniture/ajbs1jxmjrtuuqje7uka.jpg",
+    "imageUrl": "/images/shelving.png",
     "order": 5
   },
   "windows_chests": {
     "id": "windows_chests",
     "name": "Տումբաներ և Կոմոդներ",
     "url": "/wardrobesandmore/chests",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646145/furniture/os0fc92gchpddfet5cs1.jpg",
+    "imageUrl": "/images/chest.png",
     "order": 6
   },
   "metal": {
@@ -87,42 +87,42 @@
     "id": "doors_doors_takht",
     "name": "Թախտեր",
     "url": "/softfurniture/takht",
-    "imageUrl": "https://i.postimg.cc/CMXsFGdw/1b46b74c-60fd-4f2d-90c4-199f627a9da8.jpg",
+    "imageUrl": "/images/takht.png",
     "order": 8
   },
   "metal_metal_wall_decor": {
     "id": "metal_metal_wall_decor",
     "name": "Պատի դեկորներ",
     "url": "/other/wall_decor",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747995133/furniture/kg9ovg15x0jdjyugww3x.png",
+    "imageUrl": "/images/walldecor.png",
     "order": 5
   },
   "metal_metal_hangers": {
     "id": "metal_metal_hangers",
     "name": "Կախիչներ",
     "url": "/other/hangers",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747995150/furniture/bkzmmwsz7x00fbrmntjq.jpg",
+    "imageUrl": "/images/hanger.png",
     "order": 6
   },
   "metal_metal_podium": {
     "id": "metal_metal_podium",
     "name": "Ամբիոն",
     "url": "/other/podium",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747995165/furniture/elz7rrgv9y5oiksjkd8w.jpg",
+    "imageUrl": "/images/podium.png",
     "order": 7
   },
   "metal_Գրատախտակ": {
     "id": "metal_Գրատախտակ",
     "name": "Գրատախտակ",
     "url": "/other/whiteboard",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748075769/furniture/sk94fvhxxu7dezh0ryvy.jpg",
+    "imageUrl": "/images/whiteboard.png",
     "order": 18
   },
   "windows_windows_takhtir": {
     "id": "windows_windows_takhtir",
     "name": "Տակդիրներ",
     "url": "/wardrobesandmore/stands",
-    "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748443026/furniture/olk3h3frhd0juyf1jxtg.jpg",
+    "imageUrl": "/images/stand.png",
     "order": 7
   }
 }

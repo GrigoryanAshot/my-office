@@ -8,6 +8,8 @@
   padding: 2rem;
   max-width: 1600px;
   margin: 0 auto;
+  justify-items: center;
+  align-items: center;
 }
 
 /* Furniture page specific grid */
@@ -18,6 +20,8 @@
   padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
+  justify-items: center;
+  align-items: center;
 }
 
 .furnitureGrid .card {
@@ -239,13 +243,15 @@
 
 /* Main Categories Grid */
 .mainCategoriesGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
+  display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
 }
 
 /* Furniture page specific grid */
@@ -257,6 +263,8 @@
   justify-content: center;
   max-width: 850px;
   margin: 0 auto;
+  justify-items: center;
+  align-items: center;
 }
 
 .mainCategoriesGrid .card {
@@ -319,6 +327,8 @@
   max-width: 1600px;
   margin: 0 auto;
   justify-content: center;
+  justify-items: center;
+  align-items: center;
 }
 
 .itemDetails {
@@ -581,4 +591,36 @@
   margin: 20px;
   line-height: 1.4;
   text-align: center;
+}
+
+/* Desktop only - make grid items 25% smaller */
+@media (min-width: 1201px) {
+  .furniturePageGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 900px;
+  }
+  
+  .furniturePageGrid .card {
+    max-width: 250px;
+    margin: 0 auto;
+  }
+  
+  .furniturePageGrid .image {
+    height: 225px;
+  }
+  
+  .furniturePageGrid .price {
+    font-size: 20px;
+    margin: 18px;
+  }
+}
+
+.fewItems {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: nowrap;         /* Prevent wrapping */
+  overflow-x: auto;          /* Allow horizontal scroll if needed */
 }

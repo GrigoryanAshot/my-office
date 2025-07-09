@@ -6,7 +6,7 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-const DATA_KEY = 'tables:data';
+const DATA_KEY = 'tables:data:test';
 
 // Add a simple test function to verify Redis connection
 async function testRedisConnection() {
@@ -35,21 +35,27 @@ export async function GET() {
     if (typeof dataStr === 'string') {
       try {
         data = JSON.parse(dataStr);
-        if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
-          console.log('Invalid data structure, using defaults');
-          data = { items: [], types: [] };
-        }
       } catch (parseError) {
-        console.error('Error parsing data from Redis:', parseError);
         data = { items: [], types: [] };
       }
+    } else if (typeof dataStr === 'object' && dataStr !== null && 'items' in dataStr && 'types' in dataStr) {
+      data = dataStr as { items: any[]; types: any[] };
     } else {
-      console.log('No data found in Redis, using defaults');
+      data = { items: [], types: [] };
+    }
+    if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
       data = { items: [], types: [] };
     }
     
     console.log('Returning data:', data);
-    return NextResponse.json(data);
+    return NextResponse.json({
+      ...data,
+      debug: {
+        redisUrl: process.env.UPSTASH_REDIS_REST_URL || 'not set',
+        redisToken: process.env.UPSTASH_REDIS_REST_TOKEN ? process.env.UPSTASH_REDIS_REST_TOKEN.slice(0, 8) + '...' : 'not set',
+        redisKey: DATA_KEY
+      }
+    });
   } catch (error) {
     console.error('Error in GET handler:', error);
     return NextResponse.json({ error: 'Failed to read data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
@@ -65,73 +71,48 @@ export async function POST(request: Request) {
     // Always get the current data first
     let currentDataStr = await redis.get(DATA_KEY);
     let currentData: { items: any[]; types: any[] } = { items: [], types: [] };
-    let parseError = null;
     if (typeof currentDataStr === 'string') {
       try {
         currentData = JSON.parse(currentDataStr);
-        if (!currentData || typeof currentData !== 'object' || !Array.isArray(currentData.items) || !Array.isArray(currentData.types)) {
-          currentData = { items: [], types: [] };
-        }
-      } catch (err) {
-        parseError = err instanceof Error ? err.message : String(err);
+      } catch {
         currentData = { items: [], types: [] };
       }
+    } else if (typeof currentDataStr === 'object' && currentDataStr !== null && 'items' in currentDataStr && 'types' in currentDataStr) {
+      currentData = currentDataStr as { items: any[]; types: any[] };
     }
 
-    // Handle type deletion
-    if (data.action === 'deleteType' && data.typeName) {
-      const updatedTypes = currentData.types.filter((type: string) => type !== data.typeName);
-      const updatedItems = currentData.items.map((item: any) => item.type === data.typeName ? { ...item, type: '' } : item);
-      const updatedData = { items: updatedItems, types: updatedTypes };
-      await redis.set(DATA_KEY, JSON.stringify(updatedData));
-      const afterSet = await redis.get(DATA_KEY);
-      return NextResponse.json({
-        debug: {
-          action: 'deleteType',
-          dataReceived: data,
-          currentData,
-          updatedData,
-          afterSet,
-          redisConnected,
-          parseError
-        },
-        success: true
-      });
-    }
-
-    // Handle adding new type
+    // If typeName is present, always merge with existing types
     if (data.typeName && !data.name) {
-      let typeAdded = false;
-      if (!currentData.types.includes(data.typeName)) {
-        currentData.types.push(data.typeName);
-        await redis.set(DATA_KEY, JSON.stringify(currentData));
-        typeAdded = true;
-      }
-      const afterSet = await redis.get(DATA_KEY);
-      return NextResponse.json({
-        debug: {
-          action: 'addType',
-          dataReceived: data,
-          currentData,
-          afterSet,
-          typeAdded,
-          redisConnected,
-          parseError
-        },
-        success: typeAdded,
-        type: { name: data.typeName }
-      });
+      data.types = Array.from(new Set([...(currentData.types || []), data.typeName]));
     }
 
-    // Handle adding/updating items or types
-    let updatedItems = currentData.items;
+    // Merge logic for types
     let updatedTypes = currentData.types;
-    if (Array.isArray(data.items)) {
-      updatedItems = data.items;
+    if (Array.isArray(data.types) && data.types.length > 0) {
+      updatedTypes = Array.from(new Set([...(currentData.types || []), ...data.types]));
     }
-    if (Array.isArray(data.types)) {
-      updatedTypes = data.types;
+
+    // Merge logic for items
+    let updatedItems = currentData.items;
+    if (Array.isArray(data.items) && data.items.length > 0) {
+      // Merge unique items by id (or by value if no id)
+      const existingItems = currentData.items || [];
+      const newItems = data.items;
+      const mergedItems = [...existingItems];
+      newItems.forEach((item: any) => {
+        if (item && item.id !== undefined) {
+          if (!mergedItems.some((i: any) => i.id === item.id)) {
+            mergedItems.push(item);
+          }
+        } else {
+          if (!mergedItems.some((i: any) => JSON.stringify(i) === JSON.stringify(item))) {
+            mergedItems.push(item);
+          }
+        }
+      });
+      updatedItems = mergedItems;
     }
+
     const finalData = { items: updatedItems, types: updatedTypes };
     await redis.set(DATA_KEY, JSON.stringify(finalData));
     const afterSet = await redis.get(DATA_KEY);
@@ -142,12 +123,77 @@ export async function POST(request: Request) {
         currentData,
         finalData,
         afterSet,
-        redisConnected,
-        parseError
+        redisConnected
       },
       success: true
     });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const redisConnected = await testRedisConnection();
+    const { typeName, typeIndex, itemId } = await request.json();
+
+    // Get current data
+    let currentDataStr = await redis.get(DATA_KEY);
+    let currentData: { items: any[]; types: any[] } = { items: [], types: [] };
+    if (typeof currentDataStr === 'string') {
+      try {
+        currentData = JSON.parse(currentDataStr);
+      } catch {
+        currentData = { items: [], types: [] };
+      }
+    } else if (typeof currentDataStr === 'object' && currentDataStr !== null && 'items' in currentDataStr && 'types' in currentDataStr) {
+      currentData = currentDataStr as { items: any[]; types: any[] };
+    }
+
+    let updatedTypes = [...(currentData.types || [])];
+    let updatedItems = [...(currentData.items || [])];
+
+    // Delete by typeName
+    if (typeName) {
+      updatedTypes = updatedTypes.filter(type => type !== typeName);
+    }
+    // Delete by type index
+    else if (typeof typeIndex === 'number' && typeIndex >= 0 && typeIndex < updatedTypes.length) {
+      updatedTypes.splice(typeIndex, 1);
+    }
+    // Delete by item ID
+    else if (itemId) {
+      updatedItems = updatedItems.filter(item => item.id !== itemId);
+    }
+    // Delete all if no specific deletion criteria
+    else if (!typeName && typeIndex === undefined && !itemId) {
+      updatedTypes = [];
+      updatedItems = [];
+    }
+
+    const finalData = { items: updatedItems, types: updatedTypes };
+    await redis.set(DATA_KEY, JSON.stringify(finalData));
+
+    return NextResponse.json({
+      success: true,
+      deletedType: typeName || (typeof typeIndex === 'number' ? currentData.types[typeIndex] : null),
+      deletedItemId: itemId,
+      remainingTypes: updatedTypes,
+      remainingItems: updatedItems,
+      debug: {
+        action: 'delete',
+        typeName,
+        typeIndex,
+        itemId,
+        currentData,
+        finalData,
+        redisConnected
+      }
+    });
+  } catch (error) {
+    return NextResponse.json({ 
+      error: 'Failed to delete data', 
+      details: error instanceof Error ? error.message : String(error) 
+    }, { status: 500 });
   }
 }

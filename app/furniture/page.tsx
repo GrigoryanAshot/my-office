@@ -36,7 +36,7 @@ export default function FurniturePage() {
       <NavbarSection style="" logo="images/logo.png" />
       <div className={styles.categoryTitle}>Սեղաններ և աթոռներ</div>
       <section className={styles.mainContainer}>
-        <div className={styles.furniturePageGrid} style={{ justifyContent: 'center' }}>
+        <div className={`${styles.furniturePageGrid} ${subCategories.length <= 2 ? styles.fewItems : ''}`} style={{ justifyContent: 'center' }}>
           {subCategories.map((category) => (
             <Link href={category.url} key={category.id} className={styles.card}>
               <img src={category.imageUrl} alt={category.name} className={styles.image} />

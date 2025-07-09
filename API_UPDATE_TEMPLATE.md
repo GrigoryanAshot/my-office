@@ -1,3 +1,24 @@
+# API Update Template for Admin Panel Subcategories
+
+## Overview
+All admin panel subcategory APIs need to be updated to use the improved merge logic instead of the old overwrite logic.
+
+## APIs That Need Updating
+Based on the grep search, these APIs are still using the old overwrite logic:
+
+1. `app/api/stands/route.ts`
+2. `app/api/takht/route.ts` 
+3. `app/api/shelving/route.ts`
+4. `app/api/poufs/route.ts`
+5. `app/api/podium/route.ts`
+6. `app/api/armchairs/route.ts`
+7. `app/api/chests/route.ts`
+
+## Template for Each API Update
+
+Replace the entire content of each `route.ts` file with this template (replace `{CATEGORY}` with the category name):
+
+```typescript
 import { NextResponse } from 'next/server';
 import { Redis } from '@upstash/redis';
 
@@ -6,7 +27,7 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-const DATA_KEY = 'shelving:data';
+const DATA_KEY = '{CATEGORY}:data';
 
 // Add a simple test function to verify Redis connection
 async function testRedisConnection() {
@@ -197,4 +218,29 @@ export async function DELETE(request: Request) {
       details: error instanceof Error ? error.message : String(error) 
     }, { status: 500 });
   }
-} 
+}
+```
+
+## Category Names to Use
+- `stands` → `stands:data`
+- `takht` → `takht:data`
+- `shelving` → `shelving:data`
+- `poufs` → `poufs:data`
+- `podium` → `podium:data`
+- `armchairs` → `armchairs:data`
+- `chests` → `chests:data`
+
+## What This Fixes
+✅ **Merging instead of overwriting**: New types/items are merged with existing ones
+✅ **DELETE functionality**: Can delete types and items by name, index, or ID
+✅ **Better error handling**: More robust error handling and debugging
+✅ **Redis connection testing**: Verifies Redis connection before operations
+✅ **Debug information**: Returns detailed debug info for troubleshooting
+
+## Testing
+After updating each API, test with:
+1. POST a new type: `{"typeName": "test"}`
+2. POST another type: `{"typeName": "test2"}`
+3. GET to verify both types are present
+4. DELETE a type: `{"typeName": "test"}`
+5. GET to verify deletion worked 

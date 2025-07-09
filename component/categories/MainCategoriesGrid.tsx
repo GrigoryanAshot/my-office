@@ -9,32 +9,32 @@ const mainCategories = [
     id: 'furniture',
     name: 'Սեղաններ և աթոռներ',
     url: '/furniture',
-    imageUrl: 'https://i.postimg.cc/zfLnFdK2/gate.png'
+    imageUrl: '/images/grid1.png'
   },
   {
     id: 'softfurniture',
     name: 'Փափուկ կահույք',
     url: '/softfurniture',
-    imageUrl: 'https://i.postimg.cc/CMXsFGdw/1b46b74c-60fd-4f2d-90c4-199f627a9da8.jpg'
+    imageUrl: '/images/grid2.png'
   },
   {
     id: 'windows',
     name: 'Պահարաններ և ավելին',
     url: '/windows',
-    imageUrl: 'https://i.postimg.cc/FF7xrvmd/9b132849cf151713ae4672aac52a0a31.jpg'
+    imageUrl: '/images/grid3.png'
   },
   {
     id: 'metal',
     name: 'Այլ',
     url: '/other',
-    imageUrl: 'https://i.postimg.cc/zfLnFdK2/gate.png'
+    imageUrl: '/images/grid4.png'
   }
 ];
 
 const MainCategoriesGrid = () => {
   return (
     <section className={styles.mainContainer}>
-      <div className={styles.mainCategoriesGrid}>
+      <div className={`${styles.mainCategoriesGrid} ${mainCategories.length <= 2 ? styles.fewItems : ''}`}>
         {mainCategories.map((category) => (
           <Link href={category.url} key={category.id} className={styles.card}>
             <img src={category.imageUrl} alt={category.name} className={styles.image} />

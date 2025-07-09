@@ -22,25 +22,25 @@ const categories = [
     id: 'windows_wardrobes',
     name: 'Պահարաններ',
     url: '/wardrobesandmore/wardrobes',
-    imageUrl: 'https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646123/furniture/dinoc8tezhdvvppfihgm.png',
+    imageUrl: '/images/wardrobe.png',
   },
   {
     id: 'windows_shelving',
     name: 'Դարակաշարեր',
     url: '/wardrobesandmore/shelving',
-    imageUrl: 'https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646136/furniture/ajbs1jxmjrtuuqje7uka.jpg',
+    imageUrl: '/images/shelving.png',
   },
   {
     id: 'windows_chests',
     name: 'Տումբաներ և Կոմոդներ',
     url: '/wardrobesandmore/chests',
-    imageUrl: 'https://res.cloudinary.com/dpbsyoxw8/image/upload/v1747646145/furniture/os0fc92gchpddfet5cs1.jpg',
+    imageUrl: '/images/chest.png',
   },
   {
     id: 'windows_windows_takhtir',
     name: 'Տակդիրներ',
     url: '/wardrobesandmore/stands',
-    imageUrl: 'https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748443026/furniture/olk3h3frhd0juyf1jxtg.jpg',
+    imageUrl: '/images/stand.png',
   },
 ];
 

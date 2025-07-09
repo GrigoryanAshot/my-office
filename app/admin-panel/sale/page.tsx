@@ -81,13 +81,33 @@ export default function SaleSliderAdminPage() {
     setEditItem(defaultItem);
     // Save to API
     try {
-      await fetch('/api/sale-slider', {
+      const requestBody = { 
+        items: updatedItems,
+        types: [] // Add empty types array to match API expectations
+      };
+      
+      console.log('Sending data to sale-slider API:', requestBody);
+      
+      const response = await fetch('/api/sale-slider', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: updatedItems }),
+        body: JSON.stringify(requestBody),
       });
+      
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error:', errorText);
+        throw new Error(`Failed to save: ${response.status} ${errorText}`);
+      }
+      
+      const responseData = await response.json();
+      console.log('API Response:', responseData);
+      
     } catch (err) {
-      alert('Չհաջողվեց պահպանել փոփոխությունները');
+      console.error('Save error:', err);
+      alert(`Չհաջողվեց պահպանել փոփոխությունները: ${err instanceof Error ? err.message : String(err)}`);
     }
   };
 
@@ -108,7 +128,10 @@ export default function SaleSliderAdminPage() {
     fetch('/api/sale-slider', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: updatedItems }),
+      body: JSON.stringify({ 
+        items: updatedItems,
+        types: [] // Add empty types array to match API expectations
+      }),
     });
   };
 

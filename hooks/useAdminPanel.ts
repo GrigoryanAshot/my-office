@@ -241,13 +241,22 @@ export const useAdminPanel = (apiEndpoint: string) => {
           )
         : [...currentItems, itemWithImage];
 
+      const requestBody = {
+        items: updatedItems,
+        types: updatedTypes
+      };
+      
+      console.log('Sending data to API:', {
+        endpoint: apiEndpoint,
+        requestBody,
+        updatedItemsCount: updatedItems.length,
+        updatedTypesCount: updatedTypes.length
+      });
+      
       const saveResponse = await fetch(apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: updatedItems,
-          types: updatedTypes
-        })
+        body: JSON.stringify(requestBody)
       });
       if (!saveResponse.ok) {
         const errorText = await saveResponse.text();
@@ -255,17 +264,16 @@ export const useAdminPanel = (apiEndpoint: string) => {
         throw new Error(`Failed to save item: ${errorText}`);
       }
       // Refetch items and types after saving
-      if (apiEndpoint.includes('tables2')) {
-        try {
-          const refetch = await fetch(apiEndpoint);
-          if (refetch.ok) {
-            const data = await refetch.json();
-            setItems(data.items || []);
-            setTypes(data.types || []);
-          }
-        } catch (e) { 
-          console.error('Error refetching data:', e);
+      try {
+        const refetch = await fetch(apiEndpoint);
+        if (refetch.ok) {
+          const data = await refetch.json();
+          console.log('Refetched data after saving:', data);
+          setItems(data.items || []);
+          setTypes(data.types || []);
         }
+      } catch (e) { 
+        console.error('Error refetching data:', e);
       }
       setSelectedItem(null);
       setNewItem({
@@ -292,45 +300,23 @@ export const useAdminPanel = (apiEndpoint: string) => {
     }
 
     try {
-      // Special handling for wardrobes endpoint
-      if (apiEndpoint.includes('wardrobes')) {
-        const response = await fetch(`${apiEndpoint}/${id}`, {
-          method: 'DELETE',
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error('Failed to delete wardrobe:', errorData);
-          throw new Error(`Failed to delete wardrobe: ${errorData}`);
-        }
-        
-        // Remove the item from local state
-        setItems(prevItems => prevItems.filter(item => item.id !== id));
-        return;
-      }
-
-      // Default handling for other endpoints (file-based)
-      let latestItems: FurnitureItem[] = [];
-      let latestTypes: (string | TypeObject)[] = [];
-      try {
-        const response = await fetch(apiEndpoint);
-        if (response.ok) {
-          const data = await response.json();
-          latestItems = data.items || [];
-          latestTypes = data.types || [];
-        }
-      } catch (e) { /* fallback to local state if fetch fails */ }
-      
-      const updatedItems = latestItems.filter((item: FurnitureItem) => item.id !== id);
+      // Use DELETE method for all endpoints
       const response = await fetch(apiEndpoint, {
-        method: 'POST',
+        method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: updatedItems, types: latestTypes })
+        body: JSON.stringify({ itemId: id })
       });
+      
       if (!response.ok) {
-        throw new Error('Failed to delete item');
+        const errorData = await response.text();
+        console.error('Failed to delete item:', errorData);
+        throw new Error(`Failed to delete item: ${errorData}`);
       }
-      setItems(updatedItems);
+      
+      // Remove the item from local state
+      setItems(prevItems => prevItems.filter(item => item.id !== id));
+      
+      console.log('Item deleted successfully:', id);
     } catch (error) {
       console.error('Error deleting item:', error);
       alert('Failed to delete item. Please try again.');
