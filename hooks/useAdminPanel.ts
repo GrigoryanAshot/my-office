@@ -255,19 +255,18 @@ export const useAdminPanel = (apiEndpoint: string) => {
         throw new Error(`Failed to save item: ${errorText}`);
       }
       // Refetch items and types after saving
-      try {
-        const refetch = await fetch(apiEndpoint);
-        if (refetch.ok) {
-          const data = await refetch.json();
-          console.log('Refetched data after saving:', data);
-          setItems(data.items || []);
-          setTypes(data.types || []);
+      if (apiEndpoint.includes('tables2')) {
+        try {
+          const refetch = await fetch(apiEndpoint);
+          if (refetch.ok) {
+            const data = await refetch.json();
+            setItems(data.items || []);
+            setTypes(data.types || []);
+          }
+        } catch (e) { 
+          console.error('Error refetching data:', e);
         }
-      } catch (e) { 
-        console.error('Error refetching data:', e);
       }
-      setItems(updatedItems);
-      setTypes(updatedTypes);
       setSelectedItem(null);
       setNewItem({
         id: '',
