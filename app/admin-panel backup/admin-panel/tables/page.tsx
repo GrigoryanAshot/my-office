@@ -8,7 +8,7 @@ const TablesPage: React.FC = () => {
     <AdminPanel
       title="Սեղանների կառավարում"
       description="Այստեղ կարող եք ավելացնել, խմբագրել և ջնջել սեղաններ"
-      apiEndpoint="/api/tables"
+      apiEndpoint="/api/tables2"
     />
   );
 };

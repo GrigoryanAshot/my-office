@@ -36,7 +36,7 @@ export default function TablesPage() {
       setError(null);
       try {
         console.log('Fetching tables data...');
-        const response = await fetch('/api/tables', {
+        const response = await fetch('/api/tables2', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

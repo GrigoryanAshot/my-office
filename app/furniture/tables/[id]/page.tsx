@@ -39,7 +39,7 @@ export default function TableDetailPage() {
     const fetchItem = async () => {
       try {
         // First try to get all tables data from the new Redis-based API
-        const response = await fetch('/api/tables');
+        const response = await fetch('/api/tables2');
         if (!response.ok) {
           throw new Error('Failed to fetch tables data');
         }
