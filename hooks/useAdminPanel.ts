@@ -470,6 +470,38 @@ export const useAdminPanel = (apiEndpoint: string) => {
         return;
       }
 
+      // Special handling for tables endpoint
+      if (apiEndpoint.includes('tables')) {
+        const response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ typeName: newType.trim() })
+        });
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to add type:', errorData);
+          throw new Error(`Failed to add type: ${errorData}`);
+        }
+        const data = await response.json();
+        if (data.success) {
+          // Refetch data to get the updated types list
+          try {
+            const refetchResponse = await fetch(apiEndpoint);
+            if (refetchResponse.ok) {
+              const refetchData = await refetchResponse.json();
+              setItems(refetchData.items || []);
+              setTypes(refetchData.types || []);
+            }
+          } catch (refetchError) {
+            console.error('Error refetching data after adding type:', refetchError);
+            // Fallback: manually add the type to the state
+            setTypes([...types, newType.trim()]);
+          }
+        }
+        setNewType('');
+        return;
+      }
+
       // Default handling for other endpoints
       const updatedTypes = [...types, newType.trim()];
       const response = await fetch(apiEndpoint, {
@@ -641,6 +673,34 @@ export const useAdminPanel = (apiEndpoint: string) => {
 
       // Special handling for shelving endpoint
       if (apiEndpoint.includes('shelving')) {
+        const response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'deleteType',
+            typeName: typeToDelete
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
+        }
+
+        // Update local state
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
+
+        setTypes(updatedTypes);
+        setItems(updatedItems);
+        return;
+      }
+
+      // Special handling for tables endpoint
+      if (apiEndpoint.includes('tables')) {
         const response = await fetch(apiEndpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

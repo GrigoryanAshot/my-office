@@ -38,13 +38,22 @@ export default function TableDetailPage() {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await fetch(`/api/furniture/tables/${id}`);
+        // First try to get all tables data from the new Redis-based API
+        const response = await fetch('/api/tables');
         if (!response.ok) {
-          throw new Error('Failed to fetch item');
+          throw new Error('Failed to fetch tables data');
         }
         const data = await response.json();
-        setItem(data);
-        setImages([data.imageUrl, ...(data.images || [])]);
+        
+        // Find the specific item by ID
+        const item = data.items.find((item: any) => String(item.id) === id);
+        
+        if (!item) {
+          throw new Error('Item not found');
+        }
+        
+        setItem(item);
+        setImages([item.imageUrl, ...(item.images || [])]);
       } catch (error) {
         console.error('Error fetching item:', error);
       } finally {
