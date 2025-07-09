@@ -60,70 +60,94 @@ export async function POST(request: Request) {
   try {
     // Test Redis connection first
     const redisConnected = await testRedisConnection();
-    console.log('Redis connection test result:', redisConnected);
-    
     const data = await request.json();
-    console.log('POST request data:', data);
 
     // Always get the current data first
     let currentDataStr = await redis.get(DATA_KEY);
-    console.log('Current data from Redis:', currentDataStr);
-    
     let currentData: { items: any[]; types: any[] } = { items: [], types: [] };
+    let parseError = null;
     if (typeof currentDataStr === 'string') {
       try {
         currentData = JSON.parse(currentDataStr);
         if (!currentData || typeof currentData !== 'object' || !Array.isArray(currentData.items) || !Array.isArray(currentData.types)) {
           currentData = { items: [], types: [] };
         }
-      } catch (parseError) {
-        console.error('Error parsing current data:', parseError);
+      } catch (err) {
+        parseError = err instanceof Error ? err.message : String(err);
         currentData = { items: [], types: [] };
       }
     }
-    console.log('Parsed current data:', currentData);
 
     // Handle type deletion
     if (data.action === 'deleteType' && data.typeName) {
       const updatedTypes = currentData.types.filter((type: string) => type !== data.typeName);
       const updatedItems = currentData.items.map((item: any) => item.type === data.typeName ? { ...item, type: '' } : item);
       const updatedData = { items: updatedItems, types: updatedTypes };
-      console.log('Saving updated data after deletion:', updatedData);
       await redis.set(DATA_KEY, JSON.stringify(updatedData));
-      return NextResponse.json({ success: true });
+      const afterSet = await redis.get(DATA_KEY);
+      return NextResponse.json({
+        debug: {
+          action: 'deleteType',
+          dataReceived: data,
+          currentData,
+          updatedData,
+          afterSet,
+          redisConnected,
+          parseError
+        },
+        success: true
+      });
     }
 
     // Handle adding new type
     if (data.typeName && !data.name) {
+      let typeAdded = false;
       if (!currentData.types.includes(data.typeName)) {
         currentData.types.push(data.typeName);
-        console.log('Saving data with new type:', currentData);
         await redis.set(DATA_KEY, JSON.stringify(currentData));
-        console.log('Data saved successfully');
-        return NextResponse.json({ success: true, type: { name: data.typeName } });
-      } else {
-        return NextResponse.json({ error: 'Type already exists' }, { status: 400 });
+        typeAdded = true;
       }
+      const afterSet = await redis.get(DATA_KEY);
+      return NextResponse.json({
+        debug: {
+          action: 'addType',
+          dataReceived: data,
+          currentData,
+          afterSet,
+          typeAdded,
+          redisConnected,
+          parseError
+        },
+        success: typeAdded,
+        type: { name: data.typeName }
+      });
     }
 
     // Handle adding/updating items or types
     let updatedItems = currentData.items;
     let updatedTypes = currentData.types;
-
     if (Array.isArray(data.items)) {
       updatedItems = data.items;
     }
     if (Array.isArray(data.types)) {
       updatedTypes = data.types;
     }
-
     const finalData = { items: updatedItems, types: updatedTypes };
-    console.log('Saving final data:', finalData);
     await redis.set(DATA_KEY, JSON.stringify(finalData));
-    console.log('Data saved successfully');
-    return NextResponse.json({ success: true });
+    const afterSet = await redis.get(DATA_KEY);
+    return NextResponse.json({
+      debug: {
+        action: 'updateItemsOrTypes',
+        dataReceived: data,
+        currentData,
+        finalData,
+        afterSet,
+        redisConnected,
+        parseError
+      },
+      success: true
+    });
   } catch (error) {
-    console.error('Error in POST handler:', error);
     return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
