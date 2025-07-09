@@ -68,13 +68,20 @@ export async function POST(request: Request) {
       }
     }
 
-    // Handle regular item operations (merge, don't overwrite)
-    const newItems = Array.isArray(data.items) ? data.items : currentData.items;
-    const newTypes = Array.isArray(data.types) ? data.types : currentData.types;
+    // Handle adding/updating items or types
+    let updatedItems = currentData.items;
+    let updatedTypes = currentData.types;
 
-    await redis.set(DATA_KEY, JSON.stringify({ items: newItems, types: newTypes }));
+    if (Array.isArray(data.items)) {
+      updatedItems = data.items;
+    }
+    if (Array.isArray(data.types)) {
+      updatedTypes = data.types;
+    }
+
+    await redis.set(DATA_KEY, JSON.stringify({ items: updatedItems, types: updatedTypes }));
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
-} 
+}
