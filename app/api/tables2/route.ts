@@ -33,24 +33,23 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    
-    // Handle type deletion
-    if (data.action === 'deleteType' && data.typeName) {
-      let currentDataStr = await redis.get(DATA_KEY);
-      let currentData: { items: any[]; types: any[] };
-      if (typeof currentDataStr === 'string') {
-        try {
-          currentData = JSON.parse(currentDataStr);
-          if (!currentData || typeof currentData !== 'object' || !Array.isArray(currentData.items) || !Array.isArray(currentData.types)) {
-            currentData = { items: [], types: [] };
-          }
-        } catch {
+
+    // Always get the current data first
+    let currentDataStr = await redis.get(DATA_KEY);
+    let currentData: { items: any[]; types: any[] } = { items: [], types: [] };
+    if (typeof currentDataStr === 'string') {
+      try {
+        currentData = JSON.parse(currentDataStr);
+        if (!currentData || typeof currentData !== 'object' || !Array.isArray(currentData.items) || !Array.isArray(currentData.types)) {
           currentData = { items: [], types: [] };
         }
-      } else {
+      } catch {
         currentData = { items: [], types: [] };
       }
+    }
 
+    // Handle type deletion
+    if (data.action === 'deleteType' && data.typeName) {
       const updatedTypes = currentData.types.filter((type: string) => type !== data.typeName);
       const updatedItems = currentData.items.map((item: any) => item.type === data.typeName ? { ...item, type: '' } : item);
       const updatedData = { items: updatedItems, types: updatedTypes };
@@ -60,21 +59,6 @@ export async function POST(request: Request) {
 
     // Handle adding new type
     if (data.typeName && !data.name) {
-      let currentDataStr = await redis.get(DATA_KEY);
-      let currentData: { items: any[]; types: any[] };
-      if (typeof currentDataStr === 'string') {
-        try {
-          currentData = JSON.parse(currentDataStr);
-          if (!currentData || typeof currentData !== 'object' || !Array.isArray(currentData.items) || !Array.isArray(currentData.types)) {
-            currentData = { items: [], types: [] };
-          }
-        } catch {
-          currentData = { items: [], types: [] };
-        }
-      } else {
-        currentData = { items: [], types: [] };
-      }
-
       if (!currentData.types.includes(data.typeName)) {
         currentData.types.push(data.typeName);
         await redis.set(DATA_KEY, JSON.stringify(currentData));
@@ -84,11 +68,11 @@ export async function POST(request: Request) {
       }
     }
 
-    // Handle regular item operations
-    if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
-      return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
-    }
-    await redis.set(DATA_KEY, JSON.stringify(data));
+    // Handle regular item operations (merge, don't overwrite)
+    const newItems = Array.isArray(data.items) ? data.items : currentData.items;
+    const newTypes = Array.isArray(data.types) ? data.types : currentData.types;
+
+    await redis.set(DATA_KEY, JSON.stringify({ items: newItems, types: newTypes }));
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to save data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
