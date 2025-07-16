@@ -39,6 +39,30 @@ interface FurnitureItem extends Item {
   isAvailable: boolean;
 }
 
+// Utility function to delete a type from a given API route
+async function deleteType(apiRoute: string, typeName: string) {
+  const response = await fetch(apiRoute, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ typeName }),
+  });
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to delete type');
+  }
+  return result;
+}
+
+// Utility function to fetch items and types from a given API route
+async function fetchItemsAndTypes(apiRoute: string) {
+  const response = await fetch(apiRoute);
+  const data = await response.json();
+  return {
+    items: data.items || [],
+    types: data.types || [],
+  };
+}
+
 export default function AdminPanelClient() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('furniture');
@@ -105,47 +129,59 @@ export default function AdminPanelClient() {
     fetchData();
   }, []);
 
+  // Map subcategory keys to their API routes
+  const apiRouteMap: Record<string, string> = {
+    'sofas': '/api/sofas',
+    'chests': '/api/chests',
+    'armchairs': '/api/armchairs',
+    'tables': '/api/tables2',
+    'poufs': '/api/poufs',
+    'rugs': '/api/rugs',
+    'beds': '/api/beds',
+    'blankets': '/api/blankets',
+    'carpets': '/api/carpets',
+    'curtains': '/api/curtains',
+    'cushions': '/api/cushions',
+    'doors': '/api/doors',
+    'flooring': '/api/flooring',
+    'hangers': '/api/hangers',
+    'lamps': '/api/lamps',
+    'mattresses': '/api/mattresses',
+    'mirrors': '/api/mirrors',
+    'paintings': '/api/paintings',
+    'pillows': '/api/pillows',
+    'plants': '/api/plants',
+    'podium': '/api/podium',
+    'sale': '/api/sale-slider',
+    'shelving': '/api/shelving',
+    'stands': '/api/stands',
+    'takht': '/api/takht',
+    'throws': '/api/throws',
+    'tiles': '/api/tiles',
+    'vases': '/api/vases',
+    'walldecor': '/api/wall-decor',
+    'wallpapers': '/api/wallpapers',
+    'wardrobes': '/api/wardrobes',
+    'whiteboard': '/api/whiteboard',
+    'windows': '/api/windows',
+    // Add more as needed
+  };
+
+  // Replace useEffect for subcategory data loading
   useEffect(() => {
-    if (selectedCategory === 'furniture_tables') {
-      fetch('/api/items')
-        .then(res => res.json())
-        .then(data => {
-          const items = Array.isArray(data) ? data : (data.items || []);
-          setItems(items);
-          setFurnitureData(items);
-        })
-        .catch(error => {
-          console.error('Error loading items:', error);
-          setItems([]);
-          setFurnitureData([]);
-        });
-    }
+    if (!selectedCategory) return;
+    // Extract subcategory key (e.g., 'sofas' from 'doors_sofas')
+    let subKey = selectedCategory.split('_').pop();
+    if (!subKey) return;
+    const apiRoute = apiRouteMap[subKey];
+    if (!apiRoute) return;
+    fetchItemsAndTypes(apiRoute).then(({ items, types }) => {
+      setItems(items);
+      setTypes(types);
+    });
   }, [selectedCategory]);
 
-  // Handler functions
-  const handleLogout = () => {
-    router.push('/');
-  };
-
-  const handleCategorySelect = (category: string) => {
-    setSelectedCategory(category);
-    if (activeTab === 'furniture' && category === 'furniture_tables') {
-      fetch('/api/items')
-        .then(res => res.json())
-        .then(data => {
-          const items = Array.isArray(data) ? data : (data.items || []);
-          setItems(items);
-        })
-        .catch(error => {
-          console.error('Error loading items:', error);
-          setItems([]);
-        });
-    } else {
-      setItems([]);
-    }
-  };
-
-  // Update handleSaveItem to persist to API
+  // Update handleDeleteItem to persist to API
   const handleSaveItem = async () => {
     if (!selectedCategory) return;
     const itemToSave = selectedItem
@@ -1313,6 +1349,16 @@ export default function AdminPanelClient() {
       return renderEditForm();
     }
     return renderAdminGrid();
+  };
+
+  // Handler functions
+  const handleLogout = () => {
+    router.push('/');
+  };
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    setItems([]);
   };
 
   return (

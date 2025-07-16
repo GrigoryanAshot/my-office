@@ -27,37 +27,13 @@ async function testRedisConnection() {
 
 export async function GET() {
   try {
-    console.log('GET request - fetching data from Redis with key:', DATA_KEY);
     const dataStr = await redis.get(DATA_KEY);
-    console.log('Raw data from Redis:', dataStr);
-    
-    let data: { items: any[]; types: any[] };
+    let data = { items: [], types: [] };
     if (typeof dataStr === 'string') {
-      try {
-        data = JSON.parse(dataStr);
-      } catch (parseError) {
-        data = { items: [], types: [] };
-      }
-    } else if (typeof dataStr === 'object' && dataStr !== null && 'items' in dataStr && 'types' in dataStr) {
-      data = dataStr as { items: any[]; types: any[] };
-    } else {
-      data = { items: [], types: [] };
+      try { data = JSON.parse(dataStr); } catch { }
     }
-    if (!data || typeof data !== 'object' || !Array.isArray(data.items) || !Array.isArray(data.types)) {
-      data = { items: [], types: [] };
-    }
-    
-    console.log('Returning data:', data);
-    return NextResponse.json({
-      ...data,
-      debug: {
-        redisUrl: process.env.UPSTASH_REDIS_REST_URL || 'not set',
-        redisToken: process.env.UPSTASH_REDIS_REST_TOKEN ? process.env.UPSTASH_REDIS_REST_TOKEN.slice(0, 8) + '...' : 'not set',
-        redisKey: DATA_KEY
-      }
-    });
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Error in GET handler:', error);
     return NextResponse.json({ error: 'Failed to read data', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }
@@ -143,66 +119,17 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const redisConnected = await testRedisConnection();
-    const { typeName, typeIndex, itemId } = await request.json();
-
-    // Get current data
-    let currentDataStr = await redis.get(DATA_KEY);
-    let currentData: { items: any[]; types: any[] } = { items: [], types: [] };
-    if (typeof currentDataStr === 'string') {
-      try {
-        currentData = JSON.parse(currentDataStr);
-      } catch {
-        currentData = { items: [], types: [] };
-      }
-    } else if (typeof currentDataStr === 'object' && currentDataStr !== null && 'items' in currentDataStr && 'types' in currentDataStr) {
-      currentData = currentDataStr as { items: any[]; types: any[] };
+    const { typeName } = await request.json();
+    let dataStr = await redis.get(DATA_KEY);
+    let data: any = { items: [], types: [] };
+    if (typeof dataStr === 'string') {
+      try { data = JSON.parse(dataStr); } catch { }
     }
-
-    let updatedTypes = [...(currentData.types || [])];
-    let updatedItems = [...(currentData.items || [])];
-
-    // Delete by typeName
-    if (typeName) {
-      updatedTypes = updatedTypes.filter(type => type !== typeName);
-    }
-    // Delete by type index
-    else if (typeof typeIndex === 'number' && typeIndex >= 0 && typeIndex < updatedTypes.length) {
-      updatedTypes.splice(typeIndex, 1);
-    }
-    // Delete by item ID
-    else if (itemId) {
-      updatedItems = updatedItems.filter(item => item.id !== itemId);
-    }
-    // Delete all if no specific deletion criteria
-    else if (!typeName && typeIndex === undefined && !itemId) {
-      updatedTypes = [];
-      updatedItems = [];
-    }
-
-    const finalData = { items: updatedItems, types: updatedTypes };
-    await redis.set(DATA_KEY, JSON.stringify(finalData));
-
-    return NextResponse.json({
-      success: true,
-      deletedType: typeName || (typeof typeIndex === 'number' ? currentData.types[typeIndex] : null),
-      deletedItemId: itemId,
-      remainingTypes: updatedTypes,
-      remainingItems: updatedItems,
-      debug: {
-        action: 'delete',
-        typeName,
-        typeIndex,
-        itemId,
-        currentData,
-        finalData,
-        redisConnected
-      }
-    });
+    data.types = (data.types || []).filter((type: string) => type !== typeName);
+    data.items = (data.items || []).map((item: any) => item.type === typeName ? { ...item, type: '' } : item);
+    await redis.set(DATA_KEY, JSON.stringify(data));
+    return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ 
-      error: 'Failed to delete data', 
-      details: error instanceof Error ? error.message : String(error) 
-    }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete type', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 } 

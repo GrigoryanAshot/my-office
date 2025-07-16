@@ -86,3 +86,47 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create item', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 } 
+
+export async function DELETE(request: Request) {
+  try {
+    const data = await request.json();
+    // Handle type deletion
+    if (data.action === 'deleteType' && data.typeName) {
+      try {
+        // Find the type by name
+        const typeToDelete = await prisma.wardrobeType.findFirst({
+          where: { name: data.typeName }
+        });
+        if (!typeToDelete) {
+          return NextResponse.json({ error: 'Type not found' }, { status: 404 });
+        }
+        // Delete the type (this will fail if there are wardrobes using it)
+        await prisma.wardrobeType.delete({
+          where: { id: typeToDelete.id }
+        });
+        return NextResponse.json({ success: true });
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('Foreign key constraint')) {
+          return NextResponse.json({ 
+            error: 'Cannot delete type because it is being used by one or more wardrobes. Please remove the type from all wardrobes first.' 
+          }, { status: 400 });
+        }
+        return NextResponse.json({ error: 'Failed to delete type', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+      }
+    }
+    // Handle item deletion
+    if (data.action === 'deleteItem' && data.itemId) {
+      try {
+        await prisma.wardrobe.delete({
+          where: { id: data.itemId }
+        });
+        return NextResponse.json({ success: true });
+      } catch (error) {
+        return NextResponse.json({ error: 'Failed to delete item', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+      }
+    }
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to process delete', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+  }
+} 

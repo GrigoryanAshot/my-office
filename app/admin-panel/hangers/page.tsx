@@ -62,12 +62,18 @@ export default function AdminHangersPage() {
   };
 
   const handleDeleteType = async (typeToDelete: string) => {
-    const updatedTypes = types.filter(type => type !== typeToDelete);
-    // Remove type from items as well
-    const updatedItems = items.map(item => item.type === typeToDelete ? { ...item, type: '' } : item);
-    await saveItemsAndTypes(updatedItems, updatedTypes);
-    setTypes(updatedTypes);
-    setItems(updatedItems);
+    if (!window.confirm('Վստա՞հ եք, որ ցանկանում եք ջնջել այս տեսակը')) return;
+    try {
+      await fetch('/api/metal_metal_hangers', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ typeName: typeToDelete }),
+      });
+      // Re-fetch types and items after deletion
+      await fetchData();
+    } catch (error) {
+      setError('Չհաջողվեց ջնջել տեսակը');
+    }
   };
 
   const handleAddItem = () => {

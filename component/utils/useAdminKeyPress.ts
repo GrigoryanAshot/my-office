@@ -21,7 +21,11 @@ export const useAdminKeyPress = () => {
         return false;
       };
 
-      if (event.ctrlKey && event.altKey && hasTargetText(target)) {
+      // Support Ctrl+Alt (Windows/Linux) or Meta+Alt (Mac) + click
+      if ((
+            (event.ctrlKey && event.altKey) || // Windows/Linux
+            (event.metaKey && event.altKey)    // Mac (Cmd+Option)
+          ) && hasTargetText(target)) {
         event.preventDefault();
         console.log('Admin shortcut triggered - opening verification popup');
         setIsVerificationPopupOpen(true);

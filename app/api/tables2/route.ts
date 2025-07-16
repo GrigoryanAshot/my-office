@@ -139,15 +139,13 @@ export async function DELETE(request: Request) {
 
     // Get current data
     let currentDataStr = await redis.get(DATA_KEY);
-    let currentData: { items: any[]; types: any[] } = { items: [], types: [] };
+    let currentData: any = { items: [], types: [] };
     if (typeof currentDataStr === 'string') {
       try {
         currentData = JSON.parse(currentDataStr);
       } catch {
         currentData = { items: [], types: [] };
       }
-    } else if (typeof currentDataStr === 'object' && currentDataStr !== null && 'items' in currentDataStr && 'types' in currentDataStr) {
-      currentData = currentDataStr as { items: any[]; types: any[] };
     }
 
     let updatedTypes = [...(currentData.types || [])];
@@ -155,15 +153,18 @@ export async function DELETE(request: Request) {
 
     // Delete by typeName
     if (typeName) {
-      updatedTypes = updatedTypes.filter(type => type !== typeName);
+      updatedTypes = updatedTypes.filter((type: string) => type !== typeName);
+      updatedItems = updatedItems.map((item: any) => item.type === typeName ? { ...item, type: '' } : item);
     }
     // Delete by type index
     else if (typeof typeIndex === 'number' && typeIndex >= 0 && typeIndex < updatedTypes.length) {
+      const removedType = updatedTypes[typeIndex];
       updatedTypes.splice(typeIndex, 1);
+      updatedItems = updatedItems.map((item: any) => item.type === removedType ? { ...item, type: '' } : item);
     }
     // Delete by item ID
     else if (itemId) {
-      updatedItems = updatedItems.filter(item => item.id !== itemId);
+      updatedItems = updatedItems.filter((item: any) => item.id !== itemId);
     }
     // Delete all if no specific deletion criteria
     else if (!typeName && typeIndex === undefined && !itemId) {
