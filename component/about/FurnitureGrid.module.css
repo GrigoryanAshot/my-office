@@ -54,7 +54,7 @@
 
 /* Card content styles */
 .cardContent {
-  padding: 1.5rem;
+  padding: 0.5rem !important;
 }
 
 .cardTitle {
@@ -623,4 +623,38 @@
   gap: 2rem;
   flex-wrap: nowrap;         /* Prevent wrapping */
   overflow-x: auto;          /* Allow horizontal scroll if needed */
+}
+
+/* Mobile responsive styles for main categories grid */
+@media (max-width: 768px) {
+  .mainCategoriesGrid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    flex-wrap: wrap !important;
+    overflow-x: visible !important;
+    padding: 15px !important;
+  }
+  
+  .mainCategoriesGrid .card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .mainCategoriesGrid .image {
+    height: 250px !important;
+  }
+  
+  .mainCategoriesGrid .price {
+    font-size: 20px !important;
+    margin: 15px !important;
+  }
+  
+  .fewItems {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    flex-wrap: wrap !important;
+    overflow-x: visible !important;
+  }
 }

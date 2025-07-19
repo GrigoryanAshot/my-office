@@ -42,11 +42,13 @@ const NavigationSection = ({ position, btnPosition, navRef }: Props) => {
   useEffect(() => {
     const loadCategories = async () => {
       try {
+        console.log('NavigationSection: Loading categories...');
         const response = await fetch('/api/categories');
         if (!response.ok) {
-          throw new Error('Failed to load categories');
+          throw new Error(`Failed to load categories: ${response.status} ${response.statusText}`);
         }
         const data = await response.json() as Record<string, Category>;
+        console.log('NavigationSection: Categories loaded successfully:', Object.keys(data));
         
         // Group categories by type
         const groupedCategories: CategoriesState = {
@@ -64,9 +66,23 @@ const NavigationSection = ({ position, btnPosition, navRef }: Props) => {
           ) as Record<string, Category>
         };
         
+        console.log('NavigationSection: Grouped categories:', {
+          furniture: Object.keys(groupedCategories.furniture),
+          doors: Object.keys(groupedCategories.doors),
+          windows: Object.keys(groupedCategories.windows),
+          metal: Object.keys(groupedCategories.metal)
+        });
+        
         setCategories(groupedCategories);
       } catch (error) {
         console.error('Error loading categories:', error);
+        // Set default categories to prevent UI errors
+        setCategories({
+          furniture: {},
+          doors: {},
+          windows: {},
+          metal: {}
+        });
       }
     };
 
@@ -148,7 +164,7 @@ const NavigationSection = ({ position, btnPosition, navRef }: Props) => {
 
         {/* Պահարաններ և ավելին */}
         <li className="nav-item">
-          <Link className="nav-link" href="/windows">
+          <Link className="nav-link" href="/wardrobesandmore">
             {categories.windows.windows?.name || 'Պահարաններ և ավելին'} <i className="fa fa-angle-down"></i>
           </Link>
           <ul className="tf__droap_menu">

@@ -67,6 +67,7 @@ export async function POST(request: Request) {
     // Test Redis connection first
     const redisConnected = await testRedisConnection();
     const data = await request.json();
+    console.log('POST request body:', data);
 
     // Always get the current data first
     let currentDataStr = await redis.get(DATA_KEY);
@@ -81,36 +82,20 @@ export async function POST(request: Request) {
       currentData = currentDataStr as { items: any[]; types: any[] };
     }
 
-    // If typeName is present, always merge with existing types
-    if (data.typeName && !data.name) {
-      data.types = Array.from(new Set([...(currentData.types || []), data.typeName]));
-    }
+    // Remove special typeName handling since we're using replace logic
 
-    // Merge logic for types
+    // Replace logic for types (not merge)
     let updatedTypes = currentData.types;
-    if (Array.isArray(data.types) && data.types.length > 0) {
-      updatedTypes = Array.from(new Set([...(currentData.types || []), ...data.types]));
+    if (Array.isArray(data.types)) {
+      // Replace all types with the new data
+      updatedTypes = data.types;
     }
 
-    // Merge logic for items
+    // Replace logic for items (not merge)
     let updatedItems = currentData.items;
-    if (Array.isArray(data.items) && data.items.length > 0) {
-      // Merge unique items by id (or by value if no id)
-      const existingItems = currentData.items || [];
-      const newItems = data.items;
-      const mergedItems = [...existingItems];
-      newItems.forEach((item: any) => {
-        if (item && item.id !== undefined) {
-          if (!mergedItems.some((i: any) => i.id === item.id)) {
-            mergedItems.push(item);
-          }
-        } else {
-          if (!mergedItems.some((i: any) => JSON.stringify(i) === JSON.stringify(item))) {
-            mergedItems.push(item);
-          }
-        }
-      });
-      updatedItems = mergedItems;
+    if (Array.isArray(data.items)) {
+      // Replace all items with the new data
+      updatedItems = data.items;
     }
 
     const finalData = { items: updatedItems, types: updatedTypes };
@@ -136,6 +121,7 @@ export async function DELETE(request: Request) {
   try {
     const redisConnected = await testRedisConnection();
     const { typeName, typeIndex, itemId } = await request.json();
+    console.log('DELETE request body:', { typeName, typeIndex, itemId });
 
     // Get current data
     let currentDataStr = await redis.get(DATA_KEY);
@@ -147,6 +133,7 @@ export async function DELETE(request: Request) {
         currentData = { items: [], types: [] };
       }
     }
+    console.log('Before deletion:', JSON.stringify(currentData));
 
     let updatedTypes = [...(currentData.types || [])];
     let updatedItems = [...(currentData.items || [])];
@@ -166,13 +153,9 @@ export async function DELETE(request: Request) {
     else if (itemId) {
       updatedItems = updatedItems.filter((item: any) => item.id !== itemId);
     }
-    // Delete all if no specific deletion criteria
-    else if (!typeName && typeIndex === undefined && !itemId) {
-      updatedTypes = [];
-      updatedItems = [];
-    }
 
     const finalData = { items: updatedItems, types: updatedTypes };
+    console.log('After deletion:', JSON.stringify(finalData));
     await redis.set(DATA_KEY, JSON.stringify(finalData));
 
     return NextResponse.json({

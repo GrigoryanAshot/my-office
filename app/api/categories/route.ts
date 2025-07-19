@@ -6,9 +6,13 @@ const CATEGORIES_FILE = path.join(process.cwd(), 'data', 'categories.json');
 
 export async function GET() {
   try {
+    console.log('Categories API: Reading from file:', CATEGORIES_FILE);
     const data = await fs.readFile(CATEGORIES_FILE, 'utf-8');
-    return NextResponse.json(JSON.parse(data));
+    const parsedData = JSON.parse(data);
+    console.log('Categories API: Successfully loaded categories');
+    return NextResponse.json(parsedData);
   } catch (error) {
+    console.error('Categories API: Error reading categories file:', error);
     return NextResponse.json({ error: 'Failed to read categories' }, { status: 500 });
   }
 }

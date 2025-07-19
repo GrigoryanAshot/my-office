@@ -85,7 +85,56 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create item', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
-} 
+}
+
+// PUT: update an existing wardrobe
+export async function PUT(request: Request) {
+  try {
+    const data = await request.json();
+    
+    if (!data.id) {
+      return NextResponse.json({ error: 'Item ID is required for updates' }, { status: 400 });
+    }
+
+    // Find the type ID if we have a type name
+    let typeId = null;
+    if (data.type) {
+      const type = await prisma.wardrobeType.findFirst({
+        where: { name: data.type }
+      });
+      if (type) {
+        typeId = type.id;
+      }
+    }
+
+    // Update the existing wardrobe
+    const updatedWardrobe = await prisma.wardrobe.update({
+      where: { id: data.id },
+      data: {
+        name: data.name,
+        description: data.description || '',
+        image: data.image || '',
+        price: data.price || null,
+        images: data.images || [],
+        isAvailable: data.isAvailable !== undefined ? data.isAvailable : true,
+        url: data.url || null,
+        typeId: typeId,
+      },
+      include: { type: true }
+    });
+
+    // Transform the response to match frontend expectations
+    const transformedWardrobe = {
+      ...updatedWardrobe,
+      imageUrl: updatedWardrobe.image,
+      type: updatedWardrobe.type?.name || ''
+    };
+
+    return NextResponse.json({ success: true, wardrobe: transformedWardrobe });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to update item', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
+  }
+}
 
 export async function DELETE(request: Request) {
   try {

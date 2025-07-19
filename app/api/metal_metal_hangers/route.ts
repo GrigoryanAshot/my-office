@@ -90,6 +90,9 @@ export async function POST(request: Request) {
     let updatedTypes = currentData.types;
     if (Array.isArray(data.types) && data.types.length > 0) {
       updatedTypes = Array.from(new Set([...(currentData.types || []), ...data.types]));
+    } else if (Array.isArray(data.types) && data.types.length === 0) {
+      // Do NOT overwrite types with an empty array!
+      updatedTypes = currentData.types;
     }
 
     // Merge logic for items
@@ -166,11 +169,11 @@ export async function DELETE(request: Request) {
     else if (itemId) {
       updatedItems = updatedItems.filter(item => item.id !== itemId);
     }
-    // Delete all if no specific deletion criteria
-    else if (!typeName && typeIndex === undefined && !itemId) {
-      updatedTypes = [];
-      updatedItems = [];
-    }
+    // Remove the delete all branch
+    // else if (!typeName && typeIndex === undefined && !itemId) {
+    //   updatedTypes = [];
+    //   updatedItems = [];
+    // }
 
     const finalData = { items: updatedItems, types: updatedTypes };
     await redis.set(DATA_KEY, JSON.stringify(finalData));

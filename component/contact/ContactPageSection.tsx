@@ -5,6 +5,23 @@ import Image from "next/image";
 const ContactPageSection = () => {
   return (
     <section className="tf__contact_page mt_190 xs_mt_95">
+      {/* Main title for the contact page */}
+      <div style={{
+        backgroundColor: '#ffffff',
+        padding: '0px',
+        borderRadius: '0px',
+      
+        margin: '-30px auto 50px',
+        maxWidth: '800px',
+        textAlign: 'center',
+        fontSize: '24px',
+        fontWeight: 'bold',
+        color: '#1a1a1a',
+        position: 'relative',
+        zIndex: 1000
+      }}>
+        Լավագույն լուծումները Ձեր գրասենյակի համար
+      </div>
       <div className="container">
         <div className="row">
           <div className="col-xxl-8 col-xl-7 col-lg-6 wow fadeInLeft" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>

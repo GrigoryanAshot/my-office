@@ -69,7 +69,7 @@ const FooterSection = () => {
                 <h3>Կապ մեզ հետ</h3>
                 <p>ք․ Աբովյան, Սևանի փ․ 11</p>
                 <p>
-                  <span> Phone: <Link href='tel: 055 160 161'>055 160 161</Link></span>
+                  <span> Phone: <Link href='tel: 060 810 810'>060 810 810</Link></span>
                 </p>
                 <p>
                   <span>Email: <Link href='mailTo: myofficearmenia@gmail.com'>myofficearmenia@gmail.com</Link> </span>

@@ -1,16 +1,24 @@
 import { NextResponse } from 'next/server';
 import { Redis } from '@upstash/redis';
 
-const redis = new Redis({
+// Check if Redis environment variables are set
+const hasRedisConfig = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN;
+
+const redis = hasRedisConfig ? new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+}) : null;
 
 const DATA_KEY = 'sale-slider:data';
 
 // Add a simple test function to verify Redis connection
 async function testRedisConnection() {
   try {
+    if (!redis) {
+      console.log('Redis not configured');
+      return false;
+    }
+    
     console.log('Testing Redis connection...');
     console.log('Redis URL:', process.env.UPSTASH_REDIS_REST_URL ? 'Set' : 'Not set');
     console.log('Redis Token:', process.env.UPSTASH_REDIS_REST_TOKEN ? 'Set' : 'Not set');
@@ -27,6 +35,21 @@ async function testRedisConnection() {
 
 export async function GET() {
   try {
+    console.log('Sale slider API: GET request received');
+    if (!redis) {
+      console.log('Sale slider API: Redis not configured');
+      return NextResponse.json({ 
+        items: [], 
+        types: [],
+        error: 'Redis not configured',
+        debug: {
+          redisUrl: process.env.UPSTASH_REDIS_REST_URL || 'not set',
+          redisToken: process.env.UPSTASH_REDIS_REST_TOKEN ? process.env.UPSTASH_REDIS_REST_TOKEN.slice(0, 8) + '...' : 'not set',
+          redisKey: DATA_KEY
+        }
+      });
+    }
+
     console.log('GET request - fetching data from Redis with key:', DATA_KEY);
     const dataStr = await redis.get(DATA_KEY);
     console.log('Raw data from Redis:', dataStr);
@@ -64,9 +87,20 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    if (!redis) {
+      return NextResponse.json({ 
+        error: 'Redis not configured',
+        debug: {
+          redisUrl: process.env.UPSTASH_REDIS_REST_URL || 'not set',
+          redisToken: process.env.UPSTASH_REDIS_REST_TOKEN ? process.env.UPSTASH_REDIS_REST_TOKEN.slice(0, 8) + '...' : 'not set'
+        }
+      }, { status: 500 });
+    }
+
     // Test Redis connection first
     const redisConnected = await testRedisConnection();
     const data = await request.json();
+    console.log('POST request body:', data);
 
     // Always get the current data first
     let currentDataStr = await redis.get(DATA_KEY);
@@ -81,42 +115,19 @@ export async function POST(request: Request) {
       currentData = currentDataStr as { items: any[]; types: any[] };
     }
 
-    // If typeName is present, always merge with existing types
-    if (data.typeName && !data.name) {
-      data.types = Array.from(new Set([...(currentData.types || []), data.typeName]));
-    }
-
-    // Merge logic for types
+    // REPLACE logic for types and items (not merge)
     let updatedTypes = currentData.types;
-    if (Array.isArray(data.types) && data.types.length > 0) {
-      updatedTypes = Array.from(new Set([...(currentData.types || []), ...data.types]));
+    if (Array.isArray(data.types)) {
+      updatedTypes = data.types;
     }
-
-    // Merge logic for items
     let updatedItems = currentData.items;
-    if (Array.isArray(data.items) && data.items.length > 0) {
-      // Merge unique items by id (or by value if no id)
-      const existingItems = currentData.items || [];
-      const newItems = data.items;
-      const mergedItems = [...existingItems];
-      newItems.forEach((item: any) => {
-        if (item && item.id !== undefined) {
-          if (!mergedItems.some((i: any) => i.id === item.id)) {
-            mergedItems.push(item);
-          }
-        } else {
-          if (!mergedItems.some((i: any) => JSON.stringify(i) === JSON.stringify(item))) {
-            mergedItems.push(item);
-          }
-        }
-      });
-      updatedItems = mergedItems;
+    if (Array.isArray(data.items)) {
+      updatedItems = data.items;
     }
 
     const finalData = { items: updatedItems, types: updatedTypes };
     await redis.set(DATA_KEY, JSON.stringify(finalData));
     const afterSet = await redis.get(DATA_KEY);
-    
     return NextResponse.json({
       debug: {
         action: 'updateItemsOrTypes',
@@ -135,6 +146,16 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    if (!redis) {
+      return NextResponse.json({ 
+        error: 'Redis not configured',
+        debug: {
+          redisUrl: process.env.UPSTASH_REDIS_REST_URL || 'not set',
+          redisToken: process.env.UPSTASH_REDIS_REST_TOKEN ? process.env.UPSTASH_REDIS_REST_TOKEN.slice(0, 8) + '...' : 'not set'
+        }
+      }, { status: 500 });
+    }
+
     const redisConnected = await testRedisConnection();
     const { typeName, typeIndex, itemId } = await request.json();
 
@@ -166,11 +187,11 @@ export async function DELETE(request: Request) {
     else if (itemId) {
       updatedItems = updatedItems.filter(item => item.id !== itemId);
     }
-    // Delete all if no specific deletion criteria
-    else if (!typeName && typeIndex === undefined && !itemId) {
-      updatedTypes = [];
-      updatedItems = [];
-    }
+    // Remove the delete all branch
+    // else if (!typeName && typeIndex === undefined && !itemId) {
+    //   updatedTypes = [];
+    //   updatedItems = [];
+    // }
 
     const finalData = { items: updatedItems, types: updatedTypes };
     await redis.set(DATA_KEY, JSON.stringify(finalData));

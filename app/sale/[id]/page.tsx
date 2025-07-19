@@ -43,14 +43,87 @@ export default function SaleDetailPage() {
   return (
     <div>
       <NavbarSection style="" logo="/images/logo.png" />
-      <div style={{ maxWidth: 600, margin: '120px auto 40px auto', padding: 24, background: '#fff', borderRadius: 12, boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
-        <img src={item.imageUrl} alt={item.title} style={{ width: '100%', borderRadius: 8, marginBottom: 24 }} />
-        <h1 style={{ marginBottom: 16 }}>{item.title}</h1>
-        <div style={{ color: '#666', marginBottom: 16 }}>{item.description}</div>
-        <div style={{ color: '#2196F3', fontWeight: 'bold', fontSize: 20, marginBottom: 16 }}>{item.price}</div>
-        {item.link && (
-          <a href={item.link} target="_blank" rel="noopener noreferrer" style={{ color: '#ff914d', textDecoration: 'underline', fontWeight: 'bold' }}>Ավելին</a>
-        )}
+      <div style={{ 
+        maxWidth: 1200, 
+        margin: '120px auto 40px auto', 
+        padding: '20px',
+        background: '#fff', 
+        borderRadius: 12, 
+        boxShadow: '0 2px 16px rgba(0,0,0,0.07)' 
+      }}>
+        <div className="sale-detail-container" style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: '40px',
+          alignItems: 'flex-start'
+        }}>
+          {/* Left: Image */}
+          <div className="sale-detail-image" style={{ 
+            flex: '1',
+            maxWidth: '600px'
+          }}>
+            <img 
+              src={item.imageUrl} 
+              alt={item.title} 
+              style={{ 
+                width: '100%', 
+                height: 'auto',
+                maxHeight: '400px',
+                objectFit: 'cover',
+                borderRadius: 8, 
+                marginBottom: 24 
+              }} 
+            />
+          </div>
+          
+          {/* Right: Details */}
+          <div className="sale-detail-info" style={{ 
+            flex: '1',
+            maxWidth: '500px',
+            background: '#f9f9f9',
+            borderRadius: 12,
+            padding: 24,
+            boxShadow: '0 1px 8px rgba(0,0,0,0.04)'
+          }}>
+            <h1 className="sale-detail-title" style={{ 
+              fontSize: '32px',
+              fontWeight: '600',
+              margin: '0 0 20px',
+              color: '#333'
+            }}>{item.title}</h1>
+            
+            <div style={{ 
+              fontSize: '16px',
+              lineHeight: '1.6',
+              color: '#666',
+              marginBottom: '20px',
+              whiteSpace: 'pre-line'
+            }}>{item.description}</div>
+            
+            <div className="sale-detail-price" style={{ 
+              fontSize: '24px',
+              color: '#2196F3',
+              fontWeight: '500',
+              marginBottom: '20px'
+            }}>{item.price} դրամ</div>
+            
+            {item.link && (
+              <a 
+                href={item.link} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ 
+                  color: '#ff914d', 
+                  textDecoration: 'underline', 
+                  fontWeight: 'bold',
+                  fontSize: '16px'
+                }}
+              >
+                Ավելին
+              </a>
+            )}
+          </div>
+        </div>
       </div>
       <FooterSection />
       <ScrollToTopButton style="" />

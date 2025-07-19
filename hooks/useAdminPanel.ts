@@ -54,7 +54,7 @@ export const useAdminPanel = (apiEndpoint: string) => {
           throw new Error('Failed to fetch data');
         }
         const data: AdminPanelData = await response.json();
-        console.log('Initial data loaded:', data);
+        console.log('Fetched data in useEffect:', data); // <-- Added log
         setItems(data.items || []);
         setTypes(data.types || []);
       } catch (error) {
@@ -115,76 +115,93 @@ export const useAdminPanel = (apiEndpoint: string) => {
     }
   };
 
+  // Utility function to safely POST items/types
+  async function safePost(apiEndpoint: string, items: any[], types: any[]) {
+    // Allow sending empty arrays when explicitly deleting types
+    // This prevents the issue where the last type cannot be deleted
+    await fetch(apiEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items, types })
+    });
+  }
+
   const handleSaveItem = async () => {
-    if (!(selectedItem?.imageUrl || newItem.imageUrl)) {
+    // Check if we have an image URL from either the selected item or new item
+    const hasImageUrl = selectedItem?.imageUrl || newItem.imageUrl;
+    
+    // If we're editing an existing item and it already has an image, allow saving
+    if (selectedItem && selectedItem.imageUrl) {
+      // Allow saving existing item with existing image
+    } else if (!hasImageUrl) {
+      // Only require image for new items or when editing without existing image
       alert('Please upload a photo before saving.');
       return;
     }
 
     try {
-      const response = await fetch(apiEndpoint);
-      if (!response.ok) {
-        throw new Error('Failed to fetch current data');
-      }
-      const currentData = await response.json();
-      const currentItems = currentData.items || [];
-      const currentTypes = currentData.types || [];
-
-      // --- Wardrobes special handling ---
+      // Special handling for wardrobes endpoint (Prisma-based)
       if (apiEndpoint.includes('wardrobes')) {
-        // Find the type object by name
+        const itemToSave = selectedItem || newItem;
+        
+        // Find the type ID if we have a type name
         let typeId = null;
-        const typeName = selectedItem?.type || newItem.type;
-        if (Array.isArray(currentTypes)) {
-          const foundType = currentTypes.find((t: any) => {
-            if (typeof t === 'string') return t === typeName;
-            if (t && typeof t === 'object' && 'name' in t) return t.name === typeName;
-            return false;
-          });
-          if (foundType && typeof foundType === 'object' && 'id' in foundType) {
-            typeId = foundType.id;
+        if (itemToSave.type) {
+          const typeObj = types.find(t => 
+            (typeof t === 'string' && t === itemToSave.type) ||
+            (typeof t === 'object' && t && 'name' in t && t.name === itemToSave.type)
+          );
+          if (typeObj && typeof typeObj === 'object' && 'id' in typeObj) {
+            typeId = typeObj.id;
           }
         }
-        if (!typeId) {
-          alert('Please select a valid type.');
-          return;
-        }
-        const itemToSave = selectedItem || {
-          ...newItem,
-          url: `/windows/wardrobes/new`
-        };
-        const itemWithImage = {
+
+        const requestBody = {
+          id: itemToSave.id, // Include ID for updates
           name: itemToSave.name,
           description: itemToSave.description,
-          image: selectedItem?.imageUrl || newItem.imageUrl,
-          typeId: typeId,
+          image: itemToSave.imageUrl, // Map imageUrl to image for Prisma
           price: itemToSave.price,
           images: itemToSave.images,
           isAvailable: itemToSave.isAvailable,
-          url: itemToSave.url
+          url: itemToSave.url,
+          type: itemToSave.type, // Send type name for API to resolve
+          typeId: typeId
         };
-        const saveResponse = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(itemWithImage)
+        
+        console.log('Sending wardrobe data to API:', {
+          endpoint: apiEndpoint,
+          method: selectedItem ? 'PUT' : 'POST',
+          requestBody
         });
+        
+        // Use PUT for editing existing items, POST for creating new items
+        const method = selectedItem ? 'PUT' : 'POST';
+        const saveResponse = await fetch(apiEndpoint, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody)
+        });
+        
         if (!saveResponse.ok) {
           const errorText = await saveResponse.text();
           console.error('Admin Panel: Save response error:', errorText);
           throw new Error(`Failed to save item: ${errorText}`);
         }
-        // Refetch items and types after saving
+        
+        // Refetch data after saving
         try {
           const refetch = await fetch(apiEndpoint);
           if (refetch.ok) {
             const data = await refetch.json();
-            console.log('Refetched data after saving:', data);
+            console.log('Refetched wardrobe data after saving:', data);
             setItems(data.items || []);
             setTypes(data.types || []);
           }
         } catch (e) { 
-          console.error('Error refetching data:', e);
+          console.error('Error refetching wardrobe data:', e);
         }
+        
         setSelectedItem(null);
         setNewItem({
           id: '',
@@ -200,25 +217,25 @@ export const useAdminPanel = (apiEndpoint: string) => {
         setActiveAction(null);
         return;
       }
-      // --- End wardrobes special handling ---
 
+      // Default handling for Redis-based endpoints
       const itemToSave = selectedItem || {
         ...newItem,
         id: (() => {
-          const numericIds = currentItems
+          const numericIds = items
             .map((item: FurnitureItem) => typeof item.id === 'number' ? item.id : parseInt(String(item.id)) || 0)
             .filter((id: number) => !isNaN(id));
           return Math.max(0, ...numericIds) + 1;
         })(),
         url: apiEndpoint.includes('chairs')
           ? `/furniture/chairs/${(() => {
-              const numericIds = currentItems
+              const numericIds = items
                 .map((item: FurnitureItem) => typeof item.id === 'number' ? item.id : parseInt(String(item.id)) || 0)
                 .filter((id: number) => !isNaN(id));
               return Math.max(0, ...numericIds) + 1;
             })()}`
           : `${apiEndpoint.split('/').pop()}/${(() => {
-              const numericIds = currentItems
+              const numericIds = items
                 .map((item: FurnitureItem) => typeof item.id === 'number' ? item.id : parseInt(String(item.id)) || 0)
                 .filter((id: number) => !isNaN(id));
               return Math.max(0, ...numericIds) + 1;
@@ -230,16 +247,16 @@ export const useAdminPanel = (apiEndpoint: string) => {
         imageUrl: selectedItem?.imageUrl || newItem.imageUrl
       };
 
-      const updatedTypes = [...currentTypes];
+      const updatedTypes = [...types];
       if (itemWithImage.type && !updatedTypes.includes(itemWithImage.type)) {
         updatedTypes.push(itemWithImage.type);
       }
 
       const updatedItems = selectedItem
-        ? currentItems.map((item: FurnitureItem) => 
+        ? items.map((item: FurnitureItem) => 
             item.id === selectedItem.id ? itemWithImage : item
           )
-        : [...currentItems, itemWithImage];
+        : [...items, itemWithImage];
 
       const requestBody = {
         items: updatedItems,
@@ -263,6 +280,9 @@ export const useAdminPanel = (apiEndpoint: string) => {
         console.error('Admin Panel: Save response error:', errorText);
         throw new Error(`Failed to save item: ${errorText}`);
       }
+      // Update local state immediately
+      setItems(updatedItems);
+      setTypes(updatedTypes);
       // Refetch items and types after saving
       try {
         const refetch = await fetch(apiEndpoint);
@@ -300,7 +320,38 @@ export const useAdminPanel = (apiEndpoint: string) => {
     }
 
     try {
-      // Use DELETE method for all endpoints
+      // Special handling for wardrobes endpoint (Prisma-based)
+      if (apiEndpoint.includes('wardrobes')) {
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'deleteItem', itemId: id })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete wardrobe item:', errorData);
+          throw new Error(`Failed to delete item: ${errorData}`);
+        }
+        
+        // Refetch data after deleting item
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+            console.log('Refetched wardrobe data after delete:', refetchData);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching wardrobe data after delete:', refetchError);
+        }
+        
+        console.log('Wardrobe item deleted successfully:', id);
+        return;
+      }
+
+      // Default handling for Redis-based endpoints
       const response = await fetch(apiEndpoint, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -314,8 +365,27 @@ export const useAdminPanel = (apiEndpoint: string) => {
       }
       
       // Remove the item from local state
-      setItems(prevItems => prevItems.filter(item => item.id !== id));
-      
+      const updatedItems = items.filter(item => item.id !== id);
+      setItems(updatedItems);
+      // LOGGING: Show items before POST
+      console.log('Items before POST after delete:', updatedItems);
+      // Immediately POST updated items/types (awaited)
+      await safePost(apiEndpoint, updatedItems, types);
+      // LOGGING: Confirm POST was sent
+      console.log('POSTed to backend:', { items: updatedItems, types });
+      // Re-fetch data after deleting item (awaited)
+      try {
+        const refetchResponse = await fetch(apiEndpoint);
+        if (refetchResponse.ok) {
+          const refetchData = await refetchResponse.json();
+          setItems(refetchData.items || []);
+          setTypes(refetchData.types || []);
+          // LOGGING: Show data after re-fetch
+          console.log('Re-fetched data after POST:', refetchData);
+        }
+      } catch (refetchError) {
+        console.error('Error refetching data after deleting item:', refetchError);
+      }
       console.log('Item deleted successfully:', id);
     } catch (error) {
       console.error('Error deleting item:', error);
@@ -359,67 +429,44 @@ export const useAdminPanel = (apiEndpoint: string) => {
         return;
       }
 
-      // Special handling for podium endpoint
+      // Special handling for podium endpoint (add type)
       if (apiEndpoint.includes('podium')) {
-        const response = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ typeName: newType.trim() })
-        });
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error('Failed to add type:', errorData);
-          throw new Error(`Failed to add type: ${errorData}`);
-        }
-        const data = await response.json();
-        if (data.success) {
-          // Refetch data to get the updated types list
-          try {
-            const refetchResponse = await fetch(apiEndpoint);
-            if (refetchResponse.ok) {
-              const refetchData = await refetchResponse.json();
-              setItems(refetchData.items || []);
-              setTypes(refetchData.types || []);
-            }
-          } catch (refetchError) {
-            console.error('Error refetching data after adding type:', refetchError);
-            // Fallback: manually add the type to the state
-            setTypes([...types, newType.trim()]);
-          }
-        }
+        // Use the same logic as tables/sofas: POST full updated items/types, then re-fetch
+        const updatedTypes = [...types, newType.trim()];
+        await safePost(apiEndpoint, items, updatedTypes);
+        setTypes(updatedTypes);
         setNewType('');
+        // Re-fetch data after adding type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after adding type:', refetchError);
+        }
         return;
       }
 
-      // Special handling for chests endpoint
+      // Special handling for chests endpoint (add type)
       if (apiEndpoint.includes('chests')) {
-        const response = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ typeName: newType.trim() })
-        });
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error('Failed to add type:', errorData);
-          throw new Error(`Failed to add type: ${errorData}`);
-        }
-        const data = await response.json();
-        if (data.success) {
-          // Refetch data to get the updated types list
-          try {
-            const refetchResponse = await fetch(apiEndpoint);
-            if (refetchResponse.ok) {
-              const refetchData = await refetchResponse.json();
-              setItems(refetchData.items || []);
-              setTypes(refetchData.types || []);
-            }
-          } catch (refetchError) {
-            console.error('Error refetching data after adding type:', refetchError);
-            // Fallback: manually add the type to the state
-            setTypes([...types, newType.trim()]);
-          }
-        }
+        const updatedTypes = [...types, newType.trim()];
+        await safePost(apiEndpoint, items, updatedTypes);
+        setTypes(updatedTypes);
         setNewType('');
+        // Re-fetch data after adding type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after adding type:', refetchError);
+        }
         return;
       }
 
@@ -455,50 +502,65 @@ export const useAdminPanel = (apiEndpoint: string) => {
         return;
       }
 
-      // Special handling for tables endpoint
-      if (apiEndpoint.includes('tables2')) {
-        const response = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ typeName: newType.trim() })
-        });
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error('Failed to add type:', errorData);
-          throw new Error(`Failed to add type: ${errorData}`);
-        }
-        const data = await response.json();
-        if (data.success) {
-          setNewType('');
-          // Refetch data after adding type
-          try {
-            const refetchResponse = await fetch(apiEndpoint);
-            if (refetchResponse.ok) {
-              const refetchData = await refetchResponse.json();
-              setItems(refetchData.items || []);
-              setTypes(refetchData.types || []);
-            }
-          } catch (refetchError) {
-            console.error('Error refetching data after adding type:', refetchError);
+      // Special handling for sofas endpoint (add type)
+      if (apiEndpoint.includes('sofas')) {
+        // Use the same logic as tables2: POST full updated items/types, then re-fetch
+        const updatedTypes = [...types, newType.trim()];
+        await safePost(apiEndpoint, items, updatedTypes);
+        setTypes(updatedTypes);
+        setNewType('');
+        // Re-fetch data after adding type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
           }
+        } catch (refetchError) {
+          console.error('Error refetching data after adding type:', refetchError);
         }
         return;
       }
 
-      // Default handling for other endpoints
-      const updatedTypes = [...types, newType.trim()];
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: items, types: updatedTypes })
-      });
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('Failed to add type:', errorData);
-        throw new Error(`Failed to add type: ${errorData}`);
+      // Special handling for hangers endpoint (add type)
+      if (apiEndpoint.includes('hangers')) {
+        // Use the same logic as tables2/sofas: POST full updated items/types, then re-fetch
+        const updatedTypes = [...types, newType.trim()];
+        await safePost(apiEndpoint, items, updatedTypes);
+        setTypes(updatedTypes);
+        setNewType('');
+        // Re-fetch data after adding type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after adding type:', refetchError);
+        }
+        return;
       }
+
+      // Default handling for other endpoints (including tables2, chairs, etc.)
+      const updatedTypes = [...types, newType.trim()];
+      await safePost(apiEndpoint, items, updatedTypes);
       setTypes(updatedTypes);
       setNewType('');
+      // Refetch data after adding type
+      try {
+        const refetchResponse = await fetch(apiEndpoint);
+        if (refetchResponse.ok) {
+          const refetchData = await refetchResponse.json();
+          setItems(refetchData.items || []);
+          setTypes(refetchData.types || []);
+        }
+      } catch (refetchError) {
+        console.error('Error refetching data after adding type:', refetchError);
+      }
+      return;
     } catch (err) {
       console.error('Error adding type:', err);
       alert(err instanceof Error ? err.message : 'Failed to add type');
@@ -509,227 +571,449 @@ export const useAdminPanel = (apiEndpoint: string) => {
     try {
       // Special handling for wardrobes endpoint
       if (apiEndpoint.includes('wardrobes')) {
-        // Find the type object by name
-        const typeObject = types.find(t => {
-          if (typeof t === 'string') return t === typeToDelete;
-          if (t && typeof t === 'object' && 'name' in t) return t.name === typeToDelete;
-          return false;
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'deleteType', typeName: typeToDelete })
         });
 
-        if (!typeObject) {
-          throw new Error('Type not found');
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete wardrobe type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
         }
 
-        // Get the type ID, handling both string and object types
-        const typeId = typeof typeObject === 'string' ? typeObject : typeObject.id;
-
-        // Remove the type from the types array
-        const updatedTypes = types.filter(t => {
-          if (typeof t === 'string') return t !== typeToDelete;
-          if (t && typeof t === 'object' && 'name' in t) return t.name !== typeToDelete;
-          return true;
-        });
-
-        // Update items that had this type
-        const updatedItems = items.map(item => {
-          if (item.type === typeToDelete) {
-            return {
-              id: item.id,
-              name: item.name,
-              description: item.description,
-              price: item.price,
-              imageUrl: item.imageUrl,
-              images: item.images,
-              type: '',
-              typeId: null,
-              url: item.url,
-              isAvailable: item.isAvailable
-            };
+        // Refetch data after deleting type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+            console.log('Refetched wardrobe data after delete type:', refetchData);
           }
-          return {
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            price: item.price,
-            imageUrl: item.imageUrl,
-            images: item.images,
-            type: item.type,
-            typeId: item.typeId,
-            url: item.url,
-            isAvailable: item.isAvailable
-          };
-        });
-
-        // Prepare API request data
-        const apiItems = updatedItems.map(item => ({
-          name: item.name,
-          description: item.description,
-          image: item.imageUrl,
-          typeId: item.typeId,
-          price: item.price,
-          images: item.images,
-          isAvailable: item.isAvailable,
-          url: item.url
-        }));
-
-        const response = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            items: apiItems,
-            types: updatedTypes.map(t => {
-              if (typeof t === 'string') return t;
-              if (t && typeof t === 'object' && 'name' in t) return t.name;
-              return '';
-            }),
-            action: 'deleteType',
-            typeName: typeToDelete
-          })
-        });
-
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error('Failed to delete type:', errorData);
-          throw new Error(`Failed to delete type: ${errorData}`);
+        } catch (refetchError) {
+          console.error('Error refetching wardrobe data after delete type:', refetchError);
         }
 
-        setTypes(updatedTypes);
-        setItems(updatedItems);
+        console.log('Wardrobe type deleted successfully:', typeToDelete);
         return;
       }
 
-      // Special handling for podium endpoint
+      // Special handling for podium endpoint (delete type)
       if (apiEndpoint.includes('podium')) {
+        // Use the same logic as tables/sofas: DELETE, then POST full updated items/types, then re-fetch
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
         const response = await fetch(apiEndpoint, {
-          method: 'POST',
+          method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'deleteType',
-            typeName: typeToDelete
-          })
+          body: JSON.stringify({ typeName: typeToDelete })
         });
-
         if (!response.ok) {
           const errorData = await response.text();
           console.error('Failed to delete type:', errorData);
           throw new Error(`Failed to delete type: ${errorData}`);
         }
-
-        // Update local state
-        const updatedTypes = types.filter(t => t !== typeToDelete);
-        const updatedItems = items.map(item =>
-          item.type === typeToDelete ? { ...item, type: '' } : item
-        );
-
-        setTypes(updatedTypes);
-        setItems(updatedItems);
+        // Immediately POST updated items/types (awaited)
+        console.log('POSTing updated items/types after DELETE:', { items: updatedItems, types: updatedTypes });
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type (awaited)
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+            console.log('Re-fetched data after POST:', refetchData);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
         return;
       }
 
-      // Special handling for chests endpoint
+      // Special handling for chests endpoint (delete type)
       if (apiEndpoint.includes('chests')) {
+        // Delete type: send DELETE, then POST updated items/types, then re-fetch
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
         const response = await fetch(apiEndpoint, {
-          method: 'POST',
+          method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'deleteType',
-            typeName: typeToDelete
-          })
+          body: JSON.stringify({ typeName: typeToDelete })
         });
-
         if (!response.ok) {
           const errorData = await response.text();
           console.error('Failed to delete type:', errorData);
           throw new Error(`Failed to delete type: ${errorData}`);
         }
-
-        // Update local state
-        const updatedTypes = types.filter(t => t !== typeToDelete);
-        const updatedItems = items.map(item =>
-          item.type === typeToDelete ? { ...item, type: '' } : item
-        );
-
-        setTypes(updatedTypes);
-        setItems(updatedItems);
+        // Immediately POST updated items/types
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
         return;
       }
 
-      // Special handling for shelving endpoint
+      // Special handling for shelving endpoint (delete type)
       if (apiEndpoint.includes('shelving')) {
+        // Delete type: send DELETE, then POST updated items/types, then re-fetch
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
         const response = await fetch(apiEndpoint, {
-          method: 'POST',
+          method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'deleteType',
-            typeName: typeToDelete
-          })
+          body: JSON.stringify({ typeName: typeToDelete })
         });
-
         if (!response.ok) {
           const errorData = await response.text();
           console.error('Failed to delete type:', errorData);
           throw new Error(`Failed to delete type: ${errorData}`);
         }
+        // Immediately POST updated items/types
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
+        return;
+      }
 
-        // Update local state
+      // Special handling for sofas endpoint (delete type)
+      if (apiEndpoint.includes('sofas')) {
+        // Use the same logic as tables2: DELETE, then POST full updated items/types, then re-fetch
         const updatedTypes = types.filter(t => t !== typeToDelete);
         const updatedItems = items.map(item =>
           item.type === typeToDelete ? { ...item, type: '' } : item
         );
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ typeName: typeToDelete })
+        });
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
+        }
+        // Immediately POST updated items/types (awaited)
+        console.log('POSTing updated items/types after DELETE:', { items: updatedItems, types: updatedTypes });
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type (awaited)
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+            console.log('Re-fetched data after POST:', refetchData);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
+        return;
+      }
 
-        setTypes(updatedTypes);
-        setItems(updatedItems);
+      // Special handling for hangers endpoint (delete type)
+      if (apiEndpoint.includes('hangers')) {
+        // Use the same logic as tables2/sofas: DELETE, then POST full updated items/types, then re-fetch
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ typeName: typeToDelete })
+        });
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
+        }
+        // Immediately POST updated items/types (awaited)
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type (awaited)
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
+        return;
+      }
+
+      // Special handling for takht endpoint (delete type)
+      if (apiEndpoint.includes('takht')) {
+        // Delete type: send DELETE, then POST updated items/types, then re-fetch
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ typeName: typeToDelete })
+        });
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
+        }
+        // Immediately POST updated items/types
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
+        return;
+      }
+
+      // Special handling for walldecor endpoint (delete type)
+      if (apiEndpoint.includes('walldecor')) {
+        // Delete type: send DELETE, then POST updated items/types, then re-fetch
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ typeName: typeToDelete })
+        });
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
+        }
+        // Immediately POST updated items/types
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
         return;
       }
 
       // Special handling for tables endpoint
       if (apiEndpoint.includes('tables')) {
+        // Delete type: send DELETE, then POST updated items/types
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
         const response = await fetch(apiEndpoint, {
-          method: 'POST',
+          method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'deleteType',
-            typeName: typeToDelete
-          })
+          body: JSON.stringify({ typeName: typeToDelete })
         });
-
         if (!response.ok) {
           const errorData = await response.text();
           console.error('Failed to delete type:', errorData);
           throw new Error(`Failed to delete type: ${errorData}`);
         }
+        // Immediately POST updated items/types
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch from backend to get the correct state
+        const refetch = await fetch(apiEndpoint);
+        if (refetch.ok) {
+          const data = await refetch.json();
+          setTypes(data.types || []);
+          setItems(data.items || []);
+        }
+        return;
+      }
 
-        // Update local state
+      // Special handling for chairs endpoint
+      if (apiEndpoint.includes('chairs')) {
+        // Delete type: send DELETE, then POST updated items/types
         const updatedTypes = types.filter(t => t !== typeToDelete);
         const updatedItems = items.map(item =>
           item.type === typeToDelete ? { ...item, type: '' } : item
         );
-
-        setTypes(updatedTypes);
-        setItems(updatedItems);
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ typeName: typeToDelete })
+        });
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
+        }
+        // Immediately POST updated items/types
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch from backend to get the correct state
+        const refetch = await fetch(apiEndpoint);
+        if (refetch.ok) {
+          const data = await refetch.json();
+          setTypes(data.types || []);
+          setItems(data.items || []);
+        }
         return;
       }
 
-      // Default handling for other endpoints
+      // Special handling for poufs endpoint (delete type)
+      if (apiEndpoint.includes('poufs')) {
+        // Delete type: send DELETE, then POST updated items/types, then re-fetch
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ typeName: typeToDelete })
+        });
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
+        }
+        // Immediately POST updated items/types
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
+        return;
+      }
+
+      // Special handling for stands endpoint (delete type)
+      if (apiEndpoint.includes('stands')) {
+        // Delete type: send DELETE, then POST updated items/types, then re-fetch
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ typeName: typeToDelete })
+        });
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
+        }
+        // Immediately POST updated items/types
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
+        return;
+      }
+
+      // Special handling for whiteboard endpoint (delete type)
+      if (apiEndpoint.includes('whiteboard')) {
+        // Use the same logic as tables/sofas: DELETE, then POST full updated items/types, then re-fetch
+        const updatedTypes = types.filter(t => t !== typeToDelete);
+        const updatedItems = items.map(item =>
+          item.type === typeToDelete ? { ...item, type: '' } : item
+        );
+        const response = await fetch(apiEndpoint, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ typeName: typeToDelete })
+        });
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Failed to delete type:', errorData);
+          throw new Error(`Failed to delete type: ${errorData}`);
+        }
+        // Immediately POST updated items/types (awaited)
+        console.log('POSTing updated items/types after DELETE:', { items: updatedItems, types: updatedTypes });
+        await safePost(apiEndpoint, updatedItems, updatedTypes);
+        // Re-fetch data after deleting type (awaited)
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+            console.log('Re-fetched data after POST:', refetchData);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after deleting type:', refetchError);
+        }
+        return;
+      }
+
+      // Default handling for other endpoints (including tables2, chairs, etc.)
       const updatedTypes = types.filter(t => t !== typeToDelete);
       const updatedItems = items.map(item =>
         item.type === typeToDelete ? { ...item, type: '' } : item
       );
-
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: updatedItems, types: updatedTypes })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('Failed to delete type:', errorData);
-        throw new Error(`Failed to delete type: ${errorData}`);
-      }
-
+      await safePost(apiEndpoint, updatedItems, updatedTypes);
       setTypes(updatedTypes);
       setItems(updatedItems);
+      // Refetch data after deleting type
+      try {
+        const refetchResponse = await fetch(apiEndpoint);
+        if (refetchResponse.ok) {
+          const refetchData = await refetchResponse.json();
+          setItems(refetchData.items || []);
+          setTypes(refetchData.types || []);
+        }
+      } catch (refetchError) {
+        console.error('Error refetching data after deleting type:', refetchError);
+      }
+      return;
     } catch (err) {
       console.error('Error deleting type:', err);
       alert(err instanceof Error ? err.message : 'Failed to delete type');

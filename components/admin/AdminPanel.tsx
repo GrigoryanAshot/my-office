@@ -28,6 +28,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
     handleDeleteType
   } = useAdminPanel(apiEndpoint);
 
+  // Debug: log types before rendering
+  console.log('Types in UI:', types);
+
   return (
     <div>
       <NavbarSection style="" logo="/images/logo.png" />
@@ -49,6 +52,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
             />
             <button onClick={handleAddType} style={{ padding: '8px 16px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4 }}>Ավելացնել տեսակ</button>
           </div>
+          {(!types || types.length === 0) && (
+            <div style={{ color: 'red', marginBottom: 8 }}>Տեսակներ չկան (No types found)</div>
+          )}
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {types.map(type => {
               if (typeof type === 'string') {

@@ -726,10 +726,7 @@ button {
   z-index: 1;
 }
 
-.tf__banner_2 div,
-.tf__banner div {
-  height: 100%;
-}
+
 
 .tf__banner_text {
   display: flex;
@@ -3889,10 +3886,7 @@ button {
   background-image: url(../images/banner_bg.jpg);
 }
 
-.tf__banner_2 div,
-.tf__banner div {
-  height: 100%;
-}
+
 
 .tf__banner_text {
   display: flex;
@@ -8647,10 +8641,7 @@ button {
   z-index: 1;
 }
 
-.tf__banner_2 div,
-.tf__banner div {
-  height: 100%;
-}
+
 
 .tf__banner_text {
   display: flex;
@@ -11810,10 +11801,7 @@ button {
   background-image: url(../images/banner_bg.jpg);
 }
 
-.tf__banner_2 div,
-.tf__banner div {
-  height: 100%;
-}
+
 
 .tf__banner_text {
   display: flex;

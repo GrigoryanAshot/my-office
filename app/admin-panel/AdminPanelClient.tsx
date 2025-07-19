@@ -118,10 +118,9 @@ export default function AdminPanelClient() {
           throw new Error('Failed to fetch items');
         }
         const data = await response.json();
-        const items = Array.isArray(data) ? data : [];
-        setFurnitureData(items);
-        const uniqueTypes = Array.from(new Set(items.map(item => item.type)));
-        setTypes(uniqueTypes);
+        // Always set types from backend, not derived from items
+        setFurnitureData(data.items || []);
+        setTypes(data.types || []);
       } catch (error) {
         console.error('Error loading data:', error);
       }
@@ -177,7 +176,7 @@ export default function AdminPanelClient() {
     if (!apiRoute) return;
     fetchItemsAndTypes(apiRoute).then(({ items, types }) => {
       setItems(items);
-      setTypes(types);
+      setTypes(types); // Always use backend types
     });
   }, [selectedCategory]);
 

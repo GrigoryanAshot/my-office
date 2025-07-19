@@ -130,35 +130,104 @@ const BannerSection = () => {
       <div className="container tf__banner-container">
         <div className="row">
           <div className="col-xl-7 col-lg-8">
-            <div className="tf__banner_text wow fadeInUp">
-              <h1>
-                անվճար <span>չափագրում</span>
-              </h1>
-              <h1>
-                անվճար <span>3D մոդելավորում</span>
-              </h1>
-              <h1>
-                անվճար <span>տեղափոխում</span>
-              </h1>
-              <h1>
-                անվճար <span>տեղադրում</span>
-              </h1>
-              <p>
+            <div className="tf__banner_text wow fadeInUp banner-text-mobile" style={{
+              padding: '20px 0',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              height: '100%'
+            }}>
+              <div className="banner-headings-mobile" style={{ marginBottom: '20px' }}>
+                <h1 className="banner-heading-mobile" style={{
+                  fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+                  fontWeight: '700',
+                  margin: '0 0 8px 0',
+                  lineHeight: '1.1',
+                  color: '#333'
+                }}>
+                  անվճար <span style={{ color: '#ff6b35' }}>չափագրում</span>
+                </h1>
+                <h1 className="banner-heading-mobile" style={{
+                  fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+                  fontWeight: '700',
+                  margin: '0 0 8px 0',
+                  lineHeight: '1.1',
+                  color: '#333'
+                }}>
+                  անվճար <span style={{ color: '#ff6b35' }}>3D մոդելավորում</span>
+                </h1>
+                <h1 className="banner-heading-mobile" style={{
+                  fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+                  fontWeight: '700',
+                  margin: '0 0 8px 0',
+                  lineHeight: '1.1',
+                  color: '#333'
+                }}>
+                  անվճար <span style={{ color: '#ff6b35' }}>տեղափոխում</span>
+                </h1>
+                <h1 className="banner-heading-mobile" style={{
+                  fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+                  fontWeight: '700',
+                  margin: '0 0 15px 0',
+                  lineHeight: '1.1',
+                  color: '#333'
+                }}>
+                  անվճար <span style={{ color: '#ff6b35' }}>տեղադրում</span>
+                </h1>
+              </div>
+              
+              <p className="banner-description-mobile" style={{
+                fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                color: '#666',
+                marginBottom: '25px',
+                lineHeight: '1.5',
+                fontWeight: '400'
+              }}>
                 Պատվերներն իրականացվում են հաշված օրերի ընթացքում
               </p>
-              <ul className="d-flex flex-wrap align-items-center">
-                <li>
-                  <button 
-                    className="common_btn" 
-                    onClick={handleCallOrderClick}
-                  >
-                    պատվիրել զանգ
-                  </button>
-                </li>
-              </ul>
+              
+              <div className="banner-button-container-mobile">
+                <button 
+                  className="common_btn banner-button-mobile" 
+                  onClick={handleCallOrderClick}
+                  style={{
+                    fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                    padding: '12px 25px',
+                    borderRadius: '8px',
+                    fontWeight: '600',
+                    boxShadow: '0 4px 15px rgba(255, 107, 53, 0.3)',
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  պատվիրել զանգ
+                </button>
+              </div>
             </div>
           </div>
-          <div className="col-xl-5 col-lg-4">
+          <div className="col-xl-5 col-lg-4" style={{ position: 'relative' }}>
+            {/* Sale sticker overlay - parent level */}
+            <div className="sale-sticker-mobile" style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              zIndex: 20,
+              pointerEvents: 'none'
+            }}>
+              <Image
+                src="/images/sale.png"
+                alt="Sale"
+                width={0}
+                height={0}
+                sizes="100%"
+                style={{
+                  width: 'auto',
+                  height: 'auto',
+                  minWidth: '40px',
+                  maxWidth: '150px',
+                  filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))'
+                }}
+              />
+            </div>
             <div className="banner_slider" style={{
               position: 'relative',
               width: '100%',
@@ -261,21 +330,8 @@ const BannerSection = () => {
                     zIndex: 1,
                     pointerEvents: 'none'
                   }} />
-                  {/* Title at top left, black with white shadow */}
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    padding: '20px',
-                    color: 'black',
-                    fontWeight: 'bold',
-                    fontSize: '1.5rem',
-                    textShadow: '0 2px 8px #fff',
-                    zIndex: 2,
-                    pointerEvents: 'none'
-                  }}>
-                    {slide.title}
-                  </div>
+
+                  {/* Title hidden on main page - only show price */}
                   {/* Price at bottom right with unique class */}
                   <div className={styles['banner-price-bottom-right']}>
                     {slide.price} դրամ

@@ -4,6 +4,7 @@ import React, { useEffect, useState, ChangeEvent } from 'react';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
+import './page.css';
 
 interface SaleSliderItem {
   id: number;
@@ -27,28 +28,35 @@ export default function SaleSliderAdminPage() {
   const [items, setItems] = useState<SaleSliderItem[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editItem, setEditItem] = useState<SaleSliderItem>(defaultItem);
+  const [newItem, setNewItem] = useState<SaleSliderItem>({ ...defaultItem, id: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
+
+  const fetchItems = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/sale-slider');
+      if (!response.ok) throw new Error('Failed to fetch sale slider items');
+      const data = await response.json();
+      // This now replaces all items with the new data
+      if (Array.isArray(data.items)) {
+        setItems(data.items); // Complete replacement
+      }
+    } catch (err) {
+      setError('Չհաջողվեց բեռնել տվյալները');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchItems = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch('/api/sale-slider');
-        if (!response.ok) throw new Error('Failed to fetch sale slider items');
-        const data = await response.json();
-        setItems(data.items || []);
-      } catch (err) {
-        setError('Չհաջողվեց բեռնել տվյալները');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchItems();
   }, []);
 
-  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>, isNew: boolean = false) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const formData = new FormData();
@@ -61,7 +69,11 @@ export default function SaleSliderAdminPage() {
       });
       if (!res.ok) throw new Error('Upload failed');
       const data = await res.json();
-      setEditItem(prev => ({ ...prev, imageUrl: data.secure_url }));
+      if (isNew) {
+        setNewItem(prev => ({ ...prev, imageUrl: data.secure_url }));
+      } else {
+        setEditItem(prev => ({ ...prev, imageUrl: data.secure_url }));
+      }
     } catch (err) {
       alert('Image upload failed');
     }
@@ -74,9 +86,9 @@ export default function SaleSliderAdminPage() {
 
   const handleSave = async () => {
     if (editingIndex === null) return;
+    setSaving(true);
     const updatedItems = [...items];
     updatedItems[editingIndex] = editItem;
-    setItems(updatedItems);
     setEditingIndex(null);
     setEditItem(defaultItem);
     // Save to API
@@ -85,127 +97,243 @@ export default function SaleSliderAdminPage() {
         items: updatedItems,
         types: [] // Add empty types array to match API expectations
       };
-      
-      console.log('Sending data to sale-slider API:', requestBody);
-      
+      console.log('Saving items:', requestBody);
       const response = await fetch('/api/sale-slider', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
       });
       
-      console.log('Response status:', response.status);
-      
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('API Error:', errorText);
-        throw new Error(`Failed to save: ${response.status} ${errorText}`);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
       
       const responseData = await response.json();
-      console.log('API Response:', responseData);
-      
+      console.log('Save response:', responseData);
+      console.log('Sale slider items saved successfully');
+      // Refetch data to ensure consistency
+      await fetchItems();
     } catch (err) {
-      console.error('Save error:', err);
+      console.error('Error saving sale slider items:', err);
       alert(`Չհաջողվեց պահպանել փոփոխությունները: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleAdd = () => {
-    const newItem = { ...defaultItem, id: Date.now() };
-    setItems([...items, newItem]);
-    setEditingIndex(items.length);
-    setEditItem(newItem);
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Allow adding items with either title or image (or both)
+    if (!newItem.title.trim() && !newItem.imageUrl) {
+      alert('Խնդրում ենք լրացնել վերնագիր կամ վերբեռնել նկար');
+      return;
+    }
+    
+    setSaving(true);
+    const itemToAdd = { ...newItem, id: Date.now() };
+    const updatedItems = [...items, itemToAdd];
+    setNewItem({ ...defaultItem, id: 0 });
+    // Save to API
+    try {
+      const requestBody = { items: updatedItems, types: [] };
+      console.log('Adding items:', requestBody);
+      const response = await fetch('/api/sale-slider', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
+      const responseData = await response.json();
+      console.log('Add response:', responseData);
+      console.log('Sale slider item added successfully');
+      // Refetch data to ensure consistency
+      await fetchItems();
+    } catch (err) {
+      console.error('Error adding sale slider item:', err);
+      alert(`Չհաջողվեց ավելացնել ապրանքը: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleDelete = (index: number) => {
+  const handleDelete = async (index: number) => {
     if (!window.confirm('Վստա՞հ եք, որ ցանկանում եք ջնջել այս նկարը')) return;
+    setDeleting(index);
     const updatedItems = items.filter((_, i) => i !== index);
-    setItems(updatedItems);
     setEditingIndex(null);
     setEditItem(defaultItem);
+    // LOGGING: Show items before POST
+    console.log('Items before POST after delete:', updatedItems);
     // Save to API
-    fetch('/api/sale-slider', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        items: updatedItems,
-        types: [] // Add empty types array to match API expectations
-      }),
-    });
+    try {
+      const requestBody = { items: updatedItems, types: [] };
+      console.log('Deleting items:', requestBody);
+      const response = await fetch('/api/sale-slider', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
+      const responseData = await response.json();
+      console.log('Delete response:', responseData);
+      console.log('Sale slider item deleted successfully');
+      // Refetch data to ensure consistency
+      await fetchItems();
+    } catch (err) {
+      console.error('Error deleting sale slider item:', err);
+      alert(`Չհաջողվեց ջնջել ապրանքը: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (
     <div>
       <NavbarSection style="" logo="/images/logo.png" />
-      <div style={{ maxWidth: 1200, margin: '120px auto 40px auto', padding: 24 }}>
-        <h1 style={{ marginBottom: 32 }}>Ակցիայի ապրանքների սլայդեր</h1>
+      <div className="sale-admin-container">
+        <h1 className="sale-admin-title">Ակցիայի ապրանքների սլայդեր</h1>
         {loading ? (
-          <div>Բեռնվում է...</div>
+          <div className="sale-admin-loading">Բեռնվում է...</div>
         ) : error ? (
-          <div style={{ color: 'red' }}>{error}</div>
+          <div className="sale-admin-error">{error}</div>
         ) : (
           <>
-            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', marginBottom: 32 }}>
-              {items.map((item, idx) => (
-                <div key={item.id} style={{ border: '1px solid #eee', borderRadius: 8, padding: 16, width: 270, background: '#fafafa', position: 'relative' }}>
-                  {editingIndex === idx ? (
-                    <form onSubmit={e => { e.preventDefault(); handleSave(); }}>
-                      <div style={{ marginBottom: 8 }}>
-                        <input type="file" accept="image/*" onChange={handleImageUpload} />
-                        {editItem.imageUrl && <img src={editItem.imageUrl} alt="preview" style={{ width: '100%', borderRadius: 6, marginTop: 8 }} />}
-                      </div>
-                      <input
-                        type="text"
-                        value={editItem.title}
-                        onChange={e => setEditItem(prev => ({ ...prev, title: e.target.value }))}
-                        placeholder="Վերնագիր"
-                        style={{ width: '100%', marginBottom: 8, padding: 6 }}
-                      />
-                      <textarea
-                        value={editItem.description}
-                        onChange={e => setEditItem(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder="Նկարագրություն"
-                        style={{ width: '100%', marginBottom: 8, padding: 6 }}
-                      />
-                      <input
-                        type="text"
-                        value={editItem.price}
-                        onChange={e => setEditItem(prev => ({ ...prev, price: e.target.value }))}
-                        placeholder="Գին"
-                        style={{ width: '100%', marginBottom: 8, padding: 6 }}
-                      />
-                      <input
-                        type="text"
-                        value={editItem.link}
-                        onChange={e => setEditItem(prev => ({ ...prev, link: e.target.value }))}
-                        placeholder="Հղում (optional)"
-                        style={{ width: '100%', marginBottom: 8, padding: 6 }}
-                      />
-                      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                        <button type="button" onClick={() => setEditingIndex(null)} style={{ background: '#aaa', color: 'white', border: 'none', borderRadius: 4, padding: '6px 16px' }}>Չեղարկել</button>
-                        <button type="submit" style={{ background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, padding: '6px 16px' }}>Պահպանել</button>
-                      </div>
-                    </form>
-                  ) : (
-                    <>
-                      <img src={item.imageUrl} alt={item.title} style={{ width: '100%', borderRadius: 6, marginBottom: 8 }} />
-                      <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{item.title}</div>
-                      <div style={{ color: '#666', marginBottom: 4 }}>{item.description}</div>
-                      <div style={{ color: '#2196F3', marginBottom: 4 }}>{item.price}</div>
-                      <div style={{ color: '#888', fontSize: 12, marginBottom: 8 }}>{item.link}</div>
-                      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                        <button onClick={() => handleEdit(idx)} style={{ background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, padding: '6px 16px' }}>Խմբագրել</button>
-                        <button onClick={() => handleDelete(idx)} style={{ background: '#f44336', color: 'white', border: 'none', borderRadius: 4, padding: '6px 16px' }}>Ջնջել</button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))}
-              <button onClick={handleAdd} style={{ width: 270, height: 320, border: '2px dashed #bbb', borderRadius: 8, background: '#f5f5f5', color: '#888', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                + Ավելացնել
-              </button>
-            </div>
+            <table className="sale-admin-table">
+              <thead>
+                <tr>
+                  <th>Նկար</th>
+                  <th>Վերնագիր</th>
+                  <th>Նկարագրություն</th>
+                  <th>Գին</th>
+                  <th>Հղում</th>
+                  <th>Գործողություններ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item, idx) => (
+                  <tr key={item.id}>
+                    <td>
+                      <img src={item.imageUrl} alt={item.title} className="sale-admin-image" />
+                    </td>
+                    {editingIndex === idx ? (
+                      <>
+                        <td colSpan={4}>
+                          <form onSubmit={e => { e.preventDefault(); handleSave(); }} className="sale-admin-edit-form">
+                            <input type="file" accept="image/*" onChange={e => handleImageUpload(e, false)} className="sale-admin-input" />
+                            <input
+                              type="text"
+                              value={editItem.title}
+                              onChange={e => setEditItem(prev => ({ ...prev, title: e.target.value }))}
+                              placeholder="Վերնագիր"
+                              className="sale-admin-input"
+                            />
+                            <input
+                              type="text"
+                              value={editItem.description}
+                              onChange={e => setEditItem(prev => ({ ...prev, description: e.target.value }))}
+                              placeholder="Նկարագրություն"
+                              className="sale-admin-input"
+                            />
+                            <input
+                              type="text"
+                              value={editItem.price}
+                              onChange={e => setEditItem(prev => ({ ...prev, price: e.target.value }))}
+                              placeholder="Գին"
+                              className="sale-admin-input"
+                            />
+                            <input
+                              type="text"
+                              value={editItem.link}
+                              onChange={e => setEditItem(prev => ({ ...prev, link: e.target.value }))}
+                              placeholder="Հղում (optional)"
+                              className="sale-admin-input"
+                            />
+                            <button type="button" onClick={() => setEditingIndex(null)} className="sale-admin-button cancel" disabled={saving}>Չեղարկել</button>
+                            <button type="submit" className="sale-admin-button save" disabled={saving}>
+                              {saving ? 'Պահպանվում է...' : 'Պահպանել'}
+                            </button>
+                          </form>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="sale-admin-item-title">{item.title}</td>
+                        <td className="sale-admin-item-description">{item.description}</td>
+                        <td className="sale-admin-item-price">{item.price}</td>
+                        <td className="sale-admin-item-link">{item.link}</td>
+                        <td>
+                          <div className="sale-admin-actions">
+                            <button onClick={() => handleEdit(idx)} className="sale-admin-button edit" disabled={saving || deleting !== null}>Խմբագրել</button>
+                            <button onClick={() => handleDelete(idx)} className="sale-admin-button delete" disabled={saving || deleting !== null}>
+                              {deleting === idx ? 'Ջնջվում է...' : 'Ջնջել'}
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+                {/* Add new item form as a table row */}
+                <tr className="sale-admin-add-row">
+                  <td>
+                    {newItem.imageUrl && <img src={newItem.imageUrl} alt="preview" className="sale-admin-image" />}
+                    <input type="file" accept="image/*" onChange={e => handleImageUpload(e, true)} className="sale-admin-input" />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={newItem.title}
+                      onChange={e => setNewItem(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Վերնագիր"
+                      className="sale-admin-input"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={newItem.description}
+                      onChange={e => setNewItem(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Նկարագրություն"
+                      className="sale-admin-input"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={newItem.price}
+                      onChange={e => setNewItem(prev => ({ ...prev, price: e.target.value }))}
+                      placeholder="Գին"
+                      className="sale-admin-input"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={newItem.link}
+                      onChange={e => setNewItem(prev => ({ ...prev, link: e.target.value }))}
+                      placeholder="Հղում (optional)"
+                      className="sale-admin-input"
+                    />
+                  </td>
+                  <td>
+                    <button onClick={handleAdd} className="sale-admin-button add" disabled={saving || deleting !== null}>
+                      {saving ? 'Ավելացվում է...' : '+ Ավելացնել'}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </>
         )}
       </div>
