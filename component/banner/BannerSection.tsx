@@ -214,7 +214,7 @@ const BannerSection = () => {
               pointerEvents: 'none'
             }}>
               <Image
-                src="/images/sale.png"
+                src="/images/Sale.png"
                 alt="Sale"
                 width={0}
                 height={0}
