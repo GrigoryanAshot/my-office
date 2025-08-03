@@ -189,6 +189,7 @@ export const useAdminPanel = (apiEndpoint: string) => {
           description: itemToSave.description,
           image: itemToSave.imageUrl, // Map imageUrl to image for Prisma
           price: itemToSave.price,
+          oldPrice: itemToSave.oldPrice, // Add oldPrice field
           images: itemToSave.images,
           isAvailable: itemToSave.isAvailable,
           url: itemToSave.url,
@@ -235,6 +236,7 @@ export const useAdminPanel = (apiEndpoint: string) => {
           name: '',
           description: '',
           price: '',
+          oldPrice: '',
           imageUrl: '',
           images: [],
           type: '',

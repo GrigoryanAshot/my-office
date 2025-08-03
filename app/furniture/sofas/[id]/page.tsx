@@ -122,11 +122,20 @@ export default function SofaDetailPage() {
           <div className={styles.detailsSection}>
             <h1 className={styles.title}>{item.name}</h1>
             {item.isAvailable && (
-              <div className={styles.priceContainer}>
-                {item.oldPrice && (
-                  <div className={styles.oldPrice}>{item.oldPrice} դրամ</div>
+              <div className={styles.price}>
+                {item.oldPrice && item.oldPrice.trim() && (
+                  <div style={{ 
+                    textDecoration: 'line-through', 
+                    color: '#dc3545', 
+                    fontSize: '0.9em',
+                    marginBottom: '4px'
+                  }}>
+                    {item.oldPrice} դրամ
+                  </div>
                 )}
-                <div className={styles.price}>{item.price} դրամ</div>
+                <div style={{ fontWeight: 'bold' }}>
+                  {item.price} դրամ
+                </div>
               </div>
             )}
             <div className={styles.description}>{item.description}</div>
