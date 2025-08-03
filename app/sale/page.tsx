@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
@@ -8,45 +8,72 @@ import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
 
-interface FurnitureItem {
+interface SaleItem {
   id: number;
-  name: string;
-  url: string;
   imageUrl: string;
-  price: string;
-  oldPrice?: string;
+  title: string;
   description: string;
-  type: string;
-  isAvailable: boolean;
-  images?: string[];
+  price: string;
+  link: string;
+  source?: string;
+  originalItem?: any;
 }
 
-export default function ChairsPage() {
-  const [items, setItems] = useState<FurnitureItem[]>([]);
+export default function SalePage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedType, setSelectedType] = useState<string>('all');
+  const [selectedType, setSelectedType] = useState<string>('Բոլորը');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
-  const [showSaleOnly, setShowSaleOnly] = useState(false);
+  const [items, setItems] = useState<SaleItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 8;
 
   useEffect(() => {
     const fetchItems = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const response = await fetch('/api/chairs');
+        console.log('Fetching sale items data...');
+        const response = await fetch('/api/sale-slider', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          cache: 'no-store'
+        });
+        
+        console.log('Response status:', response.status);
         if (!response.ok) {
-          throw new Error('Failed to fetch chairs');
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`Failed to fetch sale items: ${response.status} ${errorText}`);
         }
+        
         const data = await response.json();
+        console.log('Sale items data received:', data);
+        
+        if (!data || !Array.isArray(data.items)) {
+          console.error('Invalid data format:', data);
+          throw new Error('Invalid data format received from server');
+        }
+        
         const items = data.items || [];
+        console.log('Setting items:', items);
         setItems(items);
         
         // Calculate max price from data
-        const maxPrice = Math.max(...items.map((item: FurnitureItem) => parseInt(item.price.replace(/[^0-9]/g, ''))));
-        setPriceRange(prev => ({ ...prev, max: maxPrice }));
-        setTempPriceRange(prev => ({ ...prev, max: maxPrice }));
+        if (items.length > 0) {
+          const maxPrice = Math.max(...items.map((item: SaleItem) => parseInt(item.price.replace(/[^0-9]/g, ''))));
+          console.log('Setting max price:', maxPrice);
+          setPriceRange(prev => ({ ...prev, max: maxPrice }));
+          setTempPriceRange(prev => ({ ...prev, max: maxPrice }));
+        }
       } catch (error) {
-        console.error('Error loading chairs:', error);
+        console.error('Error loading sale items:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load sale items');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -55,20 +82,20 @@ export default function ChairsPage() {
 
   // Get unique types from the data
   const types = useMemo(() => {
-    const uniqueTypes = new Set(items.map(item => item.type));
-    return ['all', ...Array.from(uniqueTypes)];
+    const uniqueTypes = new Set(items.map(item => item.originalItem?.type || item.source).filter(Boolean));
+    return ['Բոլորը', ...Array.from(uniqueTypes)];
   }, [items]);
 
-  // Filter items based on selected type, price range, and sale filter
+  // Filter items based on selected type and price range
   const filteredItems = useMemo(() => {
     return items.filter(item => {
+      const itemType = item.originalItem?.type || item.source;
+      const typeMatch = selectedType === 'Բոլորը' || itemType === selectedType;
       const price = parseInt(item.price.replace(/[^0-9]/g, ''));
-      const typeMatch = selectedType === 'all' || item.type === selectedType;
       const priceMatch = price >= priceRange.min && price <= priceRange.max;
-      const saleMatch = !showSaleOnly || (item.oldPrice && item.oldPrice.trim());
-      return typeMatch && priceMatch && saleMatch;
+      return typeMatch && priceMatch;
     });
-  }, [items, selectedType, priceRange, showSaleOnly]);
+  }, [items, selectedType, priceRange]);
 
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -78,17 +105,25 @@ export default function ChairsPage() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedType, priceRange, showSaleOnly]);
+  }, [selectedType, priceRange]);
 
   const handleApplyFilters = () => {
     setPriceRange(tempPriceRange);
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <>
       <NavbarSection style="" logo="/images/logo.png" />
       <div className={styles.mainContainer} style={{ marginTop: '100px' }}>
-        <h1 className={styles.description1}>Աթոռներ</h1>
+        <h1 className={styles.description1}>Ակցիա</h1>
         
         {/* Filters */}
         <div className={styles.filters} style={{ 
@@ -98,23 +133,6 @@ export default function ChairsPage() {
           alignItems: 'center',
           marginTop: '15px'
         }}>
-          <button 
-            onClick={() => setShowSaleOnly(!showSaleOnly)}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: showSaleOnly ? '#dc3545' : '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: showSaleOnly ? 'bold' : 'normal',
-              height: '36px',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            Ակցիա
-          </button>
           <div className={styles.filterGroup} style={{ display: 'flex', alignItems: 'center', marginBottom: '0' }}>
             <label style={{ marginRight: '10px', marginBottom: '0' }}>Տեսակ:</label>
             <select 
@@ -124,7 +142,7 @@ export default function ChairsPage() {
             >
               {types.map(type => (
                 <option key={type} value={type}>
-                  {type === 'all' ? 'Բոլորը' : type}
+                  {type === 'Բոլորը' ? 'Բոլորը' : type}
                 </option>
               ))}
             </select>
@@ -156,47 +174,44 @@ export default function ChairsPage() {
         </div>
 
         <div className={styles.grid}>
-          {currentItems.map((item: FurnitureItem) => (
-            <Link key={item.id} href={`/furniture/chairs/${item.id}`} className={styles.card} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div className={styles.imageContainer}>
-                <Image
-                  src={item.imageUrl}
-                  alt={item.name}
-                  width={400}
-                  height={300}
-                  className={styles.image}
-                />
-              </div>
-              <div className={styles.cardContent} style={{ textAlign: 'center' }}>
-                <h2 className={styles.cardTitle}>{item.name}</h2>
-                <div className={styles.cardDetails}>
-                  <div className={styles.detailRow}>
-                    <span className={styles.detailLabel}>Տեսակ:</span>
-                    <span className={styles.detailValue}>{item.type}</span>
-                  </div>
-                  <div className={styles.detailRow}>
-                    <span className={styles.detailValue} style={{ color: item.isAvailable ? '#22c55e' : '#ef4444' }}>
-                      {item.isAvailable ? 'Առկա է' : 'Պատվիրել'}
-                    </span>
-                  </div>
+          {currentItems.map((item: SaleItem) => (
+            <Link key={item.id} href={`/sale/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className={styles.card} style={{ cursor: 'pointer' }}>
+                <div className={styles.imageContainer}>
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.title}
+                    width={400}
+                    height={300}
+                    className={styles.image}
+                  />
                 </div>
-                {item.isAvailable && (
+                <div className={styles.cardContent} style={{ textAlign: 'center' }}>
+                  <h2 className={styles.cardTitle}>{item.title}</h2>
+                  <div className={styles.cardDetails}>
+                    {(item.originalItem?.type || item.source) && (
+                      <div className={styles.detailRow}>
+                        <span className={styles.detailLabel}>Տեսակ:</span>
+                        <span className={styles.detailValue}>{item.originalItem?.type || item.source}</span>
+                      </div>
+                    )}
+                  </div>
                   <div className={styles.itemPrice} style={{ color: '#000000' }}>
-                    {item.oldPrice && item.oldPrice.trim() && (
+                    {item.originalItem?.oldPrice && item.originalItem.oldPrice.trim() && (
                       <div style={{ 
                         textDecoration: 'line-through', 
                         color: '#dc3545', 
                         fontSize: '0.9em',
                         marginBottom: '2px'
                       }}>
-                        {item.oldPrice}
+                        Հին գին: {item.originalItem.oldPrice}
                       </div>
                     )}
-                    <div style={{ fontWeight: 'bold' }}>
-                      {item.price}
+                    <div style={{ fontWeight: 'bold', color: '#22c55e' }}>
+                      Նոր գին: {item.price}
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </Link>
           ))}
@@ -204,24 +219,27 @@ export default function ChairsPage() {
 
         {filteredItems.length === 0 && (
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            Ապրանքներ չկան ընտրված ֆիլտրերով
+            Ակցիայի ապրանքներ չկան ընտրված ֆիլտրերով
           </div>
         )}
 
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className={styles.pagination}>
-            <button
-              className={styles.paginationButton}
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            <button 
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
+              className={styles.paginationButton}
             >
               Նախորդ
             </button>
-            <span>Էջ {currentPage} / {totalPages}-ից</span>
-            <button
-              className={styles.paginationButton}
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            <span>
+              Էջ {currentPage} / {totalPages}
+            </span>
+            <button 
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
+              className={styles.paginationButton}
             >
               Հաջորդ
             </button>

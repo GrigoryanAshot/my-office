@@ -35,7 +35,7 @@ const ContactPageSection = () => {
                 </div>
                 <div className="text">
                   <h3>Զանգահարել</h3>
-                  <a href="callto:+37455160161">055 160 161 </a>
+                  <a href="callto:+37460810810">060 810 810 </a>
                 </div>
               </div>
               <div className="tf__contact_single">

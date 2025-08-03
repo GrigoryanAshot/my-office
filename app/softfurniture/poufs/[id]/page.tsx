@@ -6,12 +6,14 @@ import styles from './TableDetail.module.css';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
+import DataLoading from '@/component/loading/DataLoading';
 
 interface PoufItem {
   id: number;
   name: string;
   description: string;
   price: string;
+  oldPrice?: string;
   imageUrl: string;
   images?: string[];
   type: string;
@@ -62,18 +64,7 @@ export default function PoufDetailPage() {
   };
 
   if (loading) {
-    return (
-      <>
-        <NavbarSection style="" logo="/images/logo.png" />
-        <div className={styles.wrapper}>
-          <div style={{ marginTop: '100px', textAlign: 'center' }}>
-            <h1>Բեռնվում է...</h1>
-          </div>
-        </div>
-        <FooterSection />
-        <ScrollToTopButton style="" />
-      </>
-    );
+    return <DataLoading />;
   }
 
   if (error || !item) {
@@ -117,7 +108,21 @@ export default function PoufDetailPage() {
           </div>
           <div className={styles.detailsSection}>
             <h1 className={styles.title}>{item.name}</h1>
-            <div className={styles.price}>{item.price} դրամ</div>
+            <div className={styles.price}>
+              {item.oldPrice && item.oldPrice.trim() && (
+                <div style={{ 
+                  textDecoration: 'line-through', 
+                  color: '#dc3545', 
+                  fontSize: '0.9em',
+                  marginBottom: '4px'
+                }}>
+                  {item.oldPrice} դրամ
+                </div>
+              )}
+              <div style={{ fontWeight: 'bold' }}>
+                {item.price} դրամ
+              </div>
+            </div>
             <div className={styles.description}>{item.description}</div>
             <div className={styles.type}>Տեսակ: {item.type}</div>
             <div className={styles.availability}>{item.isAvailable ? 'Առկա է' : 'Վաճառված է'}</div>

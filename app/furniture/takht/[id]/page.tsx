@@ -13,6 +13,7 @@ interface TakhtItem {
   name: string;
   description: string;
   price: string;
+  oldPrice?: string;
   imageUrl: string;
   images: string[];
   type: string;
@@ -131,7 +132,21 @@ export default function TakhtDetailPage() {
           <div className={styles.detailsSection}>
             <h1 className={styles.title}>{item.name}</h1>
             {item.isAvailable && (
-              <div className={styles.price}>{item.price} դրամ</div>
+              <div className={styles.price}>
+                {item.oldPrice && item.oldPrice.trim() && (
+                  <div style={{ 
+                    textDecoration: 'line-through', 
+                    color: '#dc3545', 
+                    fontSize: '0.9em',
+                    marginBottom: '4px'
+                  }}>
+                    {item.oldPrice} դրամ
+                  </div>
+                )}
+                <div style={{ fontWeight: 'bold' }}>
+                  {item.price} դրամ
+                </div>
+              </div>
             )}
             <div className={styles.description}>{item.description}</div>
             <div className={styles.type}>Տեսակ: {item.type}</div>

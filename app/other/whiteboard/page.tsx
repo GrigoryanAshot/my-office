@@ -14,6 +14,7 @@ interface FurnitureItem {
   url: string;
   imageUrl: string;
   price: string | number;
+  oldPrice?: string;
   description: string;
   type: string;
   isAvailable: boolean;
@@ -26,6 +27,7 @@ export default function WhiteboardPage() {
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [items, setItems] = useState<FurnitureItem[]>([]);
   const [types, setTypes] = useState<string[]>(['all']);
+  const [showSaleOnly, setShowSaleOnly] = useState(false);
   const itemsPerPage = 8;
 
   // Fetch data from API
@@ -56,15 +58,16 @@ export default function WhiteboardPage() {
     return typeof price === 'number' ? price : 0;
   };
 
-  // Filter items based on selected type and price range
+  // Filter items based on selected type, price range, and sale filter
   const filteredItems = useMemo(() => {
     return items.filter(item => {
       const price = getNumericPrice(item.price);
       const typeMatch = selectedType === 'all' || item.type === selectedType;
       const priceMatch = price >= priceRange.min && price <= priceRange.max;
-      return typeMatch && priceMatch;
+      const saleMatch = !showSaleOnly || (item.oldPrice && item.oldPrice.trim());
+      return typeMatch && priceMatch && saleMatch;
     });
-  }, [items, selectedType, priceRange]);
+  }, [items, selectedType, priceRange, showSaleOnly]);
 
   // Calculate max price from data
   const maxPrice = useMemo(() => {
@@ -86,7 +89,7 @@ export default function WhiteboardPage() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedType, priceRange]);
+  }, [selectedType, priceRange, showSaleOnly]);
 
   const handleApplyFilters = () => {
     setPriceRange(tempPriceRange);
@@ -98,13 +101,31 @@ export default function WhiteboardPage() {
       <div className={styles.mainContainer} style={{ marginTop: '100px' }}>
         <h1 className={styles.description1}>Գրատախտակներ</h1>
         {/* Filters */}
-        <div className={styles.filters} style={{ marginBottom: '20px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
-          <div className={styles.filterGroup}>
-            <label style={{ marginRight: '10px' }}>Տեսակ:</label>
+        <div className={styles.filters} style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'center', marginTop: '15px' }}>
+          <button
+            onClick={() => setShowSaleOnly(!showSaleOnly)}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '4px',
+              border: '1px solid #ddd',
+              backgroundColor: showSaleOnly ? '#dc3545' : '#fff',
+              color: showSaleOnly ? '#fff' : '#000',
+              cursor: 'pointer',
+              fontSize: '14px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            Ակցիա
+          </button>
+          
+          <div className={styles.filterGroup} style={{ display: 'flex', alignItems: 'center' }}>
+            <label style={{ marginRight: '10px', marginBottom: '0' }}>Տեսակ:</label>
             <select 
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              style={{ padding: '8px', borderRadius: '4px' }}
+              style={{ padding: '8px', borderRadius: '4px', height: '36px' }}
             >
               {types.map(type => (
                 <option key={type} value={type}>
@@ -113,26 +134,27 @@ export default function WhiteboardPage() {
               ))}
             </select>
           </div>
-          <div className={styles.filterGroup}>
-            <label style={{ marginRight: '10px' }}>Գին:</label>
+          <div className={styles.filterGroup} style={{ display: 'flex', alignItems: 'center' }}>
+            <label style={{ marginRight: '10px', marginBottom: '0' }}>Գին:</label>
             <input
               type="number"
               placeholder="Նվազագույն"
               value={tempPriceRange.min}
               onChange={(e) => setTempPriceRange(prev => ({ ...prev, min: Number(e.target.value) }))}
-              style={{ padding: '8px', borderRadius: '4px', width: '100px', marginRight: '10px' }}
+              style={{ padding: '8px', borderRadius: '4px', width: '100px', marginRight: '10px', height: '36px', boxSizing: 'border-box' }}
             />
             <input
               type="number"
               placeholder="Առավելագույն"
               value={tempPriceRange.max}
               onChange={(e) => setTempPriceRange(prev => ({ ...prev, max: Number(e.target.value) }))}
-              style={{ padding: '8px', borderRadius: '4px', width: '100px' }}
+              style={{ padding: '8px', borderRadius: '4px', width: '100px', height: '36px', boxSizing: 'border-box' }}
             />
           </div>
           <button 
             onClick={handleApplyFilters}
             className={styles.applyFilterBtn}
+            style={{ height: '36px' }}
           >
             Կիրառել
           </button>
@@ -163,7 +185,21 @@ export default function WhiteboardPage() {
                   </div>
                 </div>
                 {item.isAvailable && (
-                  <div className={styles.itemPrice} style={{ color: '#000000' }}>{item.price}</div>
+                  <div className={styles.itemPrice} style={{ color: '#000000' }}>
+                    {item.oldPrice && item.oldPrice.trim() && (
+                      <div style={{ 
+                        textDecoration: 'line-through', 
+                        color: '#dc3545', 
+                        fontSize: '0.9em',
+                        marginBottom: '4px'
+                      }}>
+                        {item.oldPrice}
+                      </div>
+                    )}
+                    <div style={{ fontWeight: 'bold' }}>
+                      {item.price}
+                    </div>
+                  </div>
                 )}
               </div>
             </Link>

@@ -1,23 +1,45 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { Redis } from '@upstash/redis';
 
-const poufsDataPath = path.join(process.cwd(), 'data', 'poufs_database.json');
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+const DATA_KEY = 'poufs:data';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    if (!fs.existsSync(poufsDataPath)) {
-      return NextResponse.json({ error: 'Poufs data not found' }, { status: 404 });
+    
+    // Fetch data from Redis
+    const dataStr = await redis.get(DATA_KEY);
+    let data: { items: any[]; types: any[] } = { items: [], types: [] };
+    
+    if (typeof dataStr === 'string') {
+      try {
+        data = JSON.parse(dataStr);
+      } catch (parseError) {
+        return NextResponse.json({ error: "Failed to parse data" }, { status: 500 });
+      }
+    } else if (typeof dataStr === 'object' && dataStr !== null && 'items' in dataStr && 'types' in dataStr) {
+      data = dataStr as { items: any[]; types: any[] };
     }
-    const data = fs.readFileSync(poufsDataPath, 'utf8');
-    const parsed = JSON.parse(data);
-    const item = (parsed.items || []).find((item: any) => String(item.id) === String(id));
-    if (!item) {
-      return NextResponse.json({ error: 'Pouf not found' }, { status: 404 });
+    
+    if (!data || !Array.isArray(data.items)) {
+      return NextResponse.json({ error: "No data found" }, { status: 404 });
     }
-    return NextResponse.json(item);
+    
+    // Find the item by ID
+    const pouf = data.items.find(item => String(item.id) === String(id));
+    
+    if (!pouf) {
+      return NextResponse.json({ error: "Pouf not found" }, { status: 404 });
+    }
+    
+    return NextResponse.json(pouf);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch pouf' }, { status: 500 });
+    console.error('Error fetching pouf item:', error);
+    return NextResponse.json({ error: "Failed to fetch pouf" }, { status: 500 });
   }
 } 

@@ -814,22 +814,8 @@ button {
   }
 }
 
-.tf__banner_3 .tf__banner_text::before,
-.tf__banner::before {
-  position: absolute;
-  content: "";
-  background: url(../images/arrow_shapes.png);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  top: 120px;
-  right: 8%;
-  z-index: 1;
-  width: 117px;
-  height: 160px;
-  animation: banner_animi_2 linear 2s infinite alternate;
-  -webkit-animation: banner_animi_2 linear 2s infinite alternate;
-}
+/* .tf__banner_3 .tf__banner_text::before,
+.tf__banner::before - Removed arrow_shapes image */
 
 @keyframes banner_animi_2 {
   from {
@@ -1575,7 +1561,7 @@ button {
   content: "";
   width: 170px;
   height: 230px;
-  background: url(../images/arrow_shapes.png);
+  /* background: url(../images/arrow_shapes.png); - Removed */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -3975,21 +3961,7 @@ button {
 }
 
 .tf__banner_3 .tf__banner_text::before,
-.tf__banner::before {
-  position: absolute;
-  content: "";
-  background: url(../images/arrow_shapes.png);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  top: 120px;
-  right: 8%;
-  z-index: 1;
-  width: 117px;
-  height: 160px;
-  animation: banner_animi_2 linear 2s infinite alternate;
-  -webkit-animation: banner_animi_2 linear 2s infinite alternate;
-}
+
 
 @keyframes banner_animi_2 {
   from {
@@ -8730,21 +8702,7 @@ button {
 }
 
 .tf__banner_3 .tf__banner_text::before,
-.tf__banner::before {
-  position: absolute;
-  content: "";
-  background: url(../images/arrow_shapes.png);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  top: 120px;
-  right: 8%;
-  z-index: 1;
-  width: 117px;
-  height: 160px;
-  animation: banner_animi_2 linear 2s infinite alternate;
-  -webkit-animation: banner_animi_2 linear 2s infinite alternate;
-}
+
 
 @keyframes banner_animi_2 {
   from {
@@ -11890,21 +11848,7 @@ button {
 }
 
 .tf__banner_3 .tf__banner_text::before,
-.tf__banner::before {
-  position: absolute;
-  content: "";
-  background: url(../images/arrow_shapes.png);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  top: 120px;
-  right: 8%;
-  z-index: 1;
-  width: 117px;
-  height: 160px;
-  animation: banner_animi_2 linear 2s infinite alternate;
-  -webkit-animation: banner_animi_2 linear 2s infinite alternate;
-}
+
 
 @keyframes banner_animi_2 {
   from {

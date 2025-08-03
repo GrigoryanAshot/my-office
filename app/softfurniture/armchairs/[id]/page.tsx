@@ -7,12 +7,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
 import CallOrderPopup from '@/component/banner/CallOrderPopup';
+import DataLoading from '@/component/loading/DataLoading';
 
 interface ArmchairItem {
   id: number;
   name: string;
   description: string;
   price: string;
+  oldPrice?: string;
   imageUrl: string;
   images: string[];
   type: string;
@@ -70,18 +72,7 @@ export default function ArmchairDetailPage() {
   };
 
   if (loading) {
-    return (
-      <>
-        <NavbarSection style="" logo="/images/logo.png" />
-        <div className={styles.wrapper}>
-          <div className={styles.errorContainer}>
-            <h2 className={styles.errorTitle}>Բեռնվում է...</h2>
-          </div>
-        </div>
-        <FooterSection />
-        <ScrollToTopButton style="" />
-      </>
-    );
+    return <DataLoading />;
   }
 
   if (!item) {
@@ -131,7 +122,21 @@ export default function ArmchairDetailPage() {
           <div className={styles.detailsSection}>
             <h1 className={styles.title}>{item.name}</h1>
             {item.isAvailable && (
-              <div className={styles.price}>{item.price} դրամ</div>
+              <div className={styles.price}>
+                {item.oldPrice && item.oldPrice.trim() && (
+                  <div style={{ 
+                    textDecoration: 'line-through', 
+                    color: '#dc3545', 
+                    fontSize: '0.9em',
+                    marginBottom: '4px'
+                  }}>
+                    {item.oldPrice} դրամ
+                  </div>
+                )}
+                <div style={{ fontWeight: 'bold' }}>
+                  {item.price} դրամ
+                </div>
+              </div>
             )}
             <div className={styles.description}>{item.description}</div>
             <div className={styles.type}>Տեսակ: {item.type}</div>

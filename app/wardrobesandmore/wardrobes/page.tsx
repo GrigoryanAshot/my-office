@@ -14,6 +14,7 @@ interface FurnitureItem {
   url: string;
   imageUrl: string;
   price: string;
+  oldPrice?: string;
   description: string;
   type: string;
   isAvailable: boolean;
@@ -25,6 +26,7 @@ export default function WardrobesPage() {
   const [selectedType, setSelectedType] = useState<string>('Բոլորը');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
+  const [showSaleOnly, setShowSaleOnly] = useState(false);
   const [items, setItems] = useState<FurnitureItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,15 +89,21 @@ export default function WardrobesPage() {
     return ['Բոլորը', ...Array.from(uniqueTypes)];
   }, [items]);
 
-  // Filter items based on selected type and price range
+  // Filter items based on selected type, price range, and sale filter
   const filteredItems = useMemo(() => {
     return items.filter(item => {
       const typeMatch = selectedType === 'Բոլորը' || item.type === selectedType;
       const price = parseInt(item.price.replace(/[^0-9]/g, ''));
       const priceMatch = !isNaN(price) && price >= priceRange.min && price <= priceRange.max;
-      return typeMatch && priceMatch;
+      const saleMatch = !showSaleOnly || (item.oldPrice && item.oldPrice.trim());
+      return typeMatch && priceMatch && saleMatch;
     });
-  }, [items, selectedType, priceRange]);
+  }, [items, selectedType, priceRange, showSaleOnly]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedType, priceRange, showSaleOnly]);
 
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -121,13 +129,31 @@ export default function WardrobesPage() {
         <h1 className={styles.description1}>Պահարաններ</h1>
         
         {/* Filters */}
-        <div className={styles.filters} style={{ marginBottom: '20px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
-          <div className={styles.filterGroup}>
-            <label style={{ marginRight: '10px' }}>Տեսակ:</label>
+        <div className={styles.filters} style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'center', marginTop: '15px' }}>
+          <button
+            onClick={() => setShowSaleOnly(!showSaleOnly)}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '4px',
+              border: '1px solid #ddd',
+              backgroundColor: showSaleOnly ? '#dc3545' : '#fff',
+              color: showSaleOnly ? '#fff' : '#000',
+              cursor: 'pointer',
+              fontSize: '14px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            Ակցիա
+          </button>
+          
+          <div className={styles.filterGroup} style={{ display: 'flex', alignItems: 'center' }}>
+            <label style={{ marginRight: '10px', marginBottom: '0' }}>Տեսակ:</label>
             <select 
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              style={{ padding: '8px', borderRadius: '4px' }}
+              style={{ padding: '8px', borderRadius: '4px', height: '36px' }}
             >
               {types.map(type => (
                 <option key={type} value={type}>
@@ -137,26 +163,27 @@ export default function WardrobesPage() {
             </select>
           </div>
           
-          <div className={styles.filterGroup}>
-            <label style={{ marginRight: '10px' }}>Գին:</label>
+          <div className={styles.filterGroup} style={{ display: 'flex', alignItems: 'center' }}>
+            <label style={{ marginRight: '10px', marginBottom: '0' }}>Գին:</label>
             <input
               type="number"
               placeholder="Նվազագույն"
               value={tempPriceRange.min}
               onChange={(e) => setTempPriceRange(prev => ({ ...prev, min: Number(e.target.value) }))}
-              style={{ padding: '8px', borderRadius: '4px', width: '100px', marginRight: '10px' }}
+              style={{ padding: '8px', borderRadius: '4px', width: '100px', marginRight: '10px', height: '36px', boxSizing: 'border-box' }}
             />
             <input
               type="number"
               placeholder="Առավելագույն"
               value={tempPriceRange.max}
               onChange={(e) => setTempPriceRange(prev => ({ ...prev, max: Number(e.target.value) }))}
-              style={{ padding: '8px', borderRadius: '4px', width: '100px' }}
+              style={{ padding: '8px', borderRadius: '4px', width: '100px', height: '36px', boxSizing: 'border-box' }}
             />
           </div>
           <button 
             onClick={handleApplyFilters}
             className={styles.applyFilterBtn}
+            style={{ height: '36px' }}
           >
             Կիրառել
           </button>
@@ -189,7 +216,21 @@ export default function WardrobesPage() {
                     </div>
                   </div>
                   {item.isAvailable && (
-                    <div className={styles.itemPrice} style={{ color: '#000000' }}>{item.price}</div>
+                    <div className={styles.itemPrice} style={{ color: '#000000' }}>
+                      {item.oldPrice && item.oldPrice.trim() && (
+                        <div style={{ 
+                          textDecoration: 'line-through', 
+                          color: '#dc3545', 
+                          fontSize: '0.9em',
+                          marginBottom: '4px'
+                        }}>
+                          {item.oldPrice}
+                        </div>
+                      )}
+                      <div style={{ fontWeight: 'bold' }}>
+                        {item.price}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>

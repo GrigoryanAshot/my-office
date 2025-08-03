@@ -21,15 +21,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
     newType,
     setNewType,
     uploading,
+    validationErrors,
+    clearValidationError,
     handleImageUpload,
     handleSaveItem,
     handleDeleteItem,
     handleAddType,
     handleDeleteType
   } = useAdminPanel(apiEndpoint);
-
-  // Debug: log types before rendering
-  console.log('Types in UI:', types);
 
   return (
     <div>
@@ -103,10 +102,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
                   <input
                     type="text"
                     value={selectedItem?.name || newItem.name}
-                    onChange={(e) => selectedItem 
-                      ? setSelectedItem({ ...selectedItem, name: e.target.value })
-                      : setNewItem({ ...newItem, name: e.target.value })}
-                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    onChange={(e) => {
+                      selectedItem 
+                        ? setSelectedItem({ ...selectedItem, name: e.target.value })
+                        : setNewItem({ ...newItem, name: e.target.value });
+                      clearValidationError('name');
+                    }}
+                    style={{ 
+                      width: '100%', 
+                      padding: '8px', 
+                      borderRadius: '4px', 
+                      border: validationErrors.name ? '1px solid #dc3545' : '1px solid #ddd' 
+                    }}
                   />
                 </div>
                 <div>
@@ -120,14 +127,34 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
                   />
                 </div>
                 <div>
+                  <label style={{ display: 'block', marginBottom: '5px' }}>Հին գին:</label>
+                  <input
+                    type="text"
+                    value={selectedItem?.oldPrice || newItem.oldPrice || ''}
+                    onChange={(e) => selectedItem 
+                      ? setSelectedItem({ ...selectedItem, oldPrice: e.target.value })
+                      : setNewItem({ ...newItem, oldPrice: e.target.value })}
+                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    placeholder="Լրացրեք հին գինը (ըստ ցանկության)"
+                  />
+                </div>
+                <div>
                   <label style={{ display: 'block', marginBottom: '5px' }}>Գին:</label>
                   <input
                     type="text"
                     value={selectedItem?.price || newItem.price}
-                    onChange={(e) => selectedItem 
-                      ? setSelectedItem({ ...selectedItem, price: e.target.value })
-                      : setNewItem({ ...newItem, price: e.target.value })}
-                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    onChange={(e) => {
+                      selectedItem 
+                        ? setSelectedItem({ ...selectedItem, price: e.target.value })
+                        : setNewItem({ ...newItem, price: e.target.value });
+                      clearValidationError('price');
+                    }}
+                    style={{ 
+                      width: '100%', 
+                      padding: '8px', 
+                      borderRadius: '4px', 
+                      border: validationErrors.price ? '1px solid #dc3545' : '1px solid #ddd' 
+                    }}
                   />
                 </div>
                 <div>
@@ -321,11 +348,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
                       )}
                     </td>
                     <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>{item.name}</td>
-                    <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>{
-                      (typeof item.type === 'object' && item.type !== null && 'name' in item.type)
-                        ? (item.type as { name: string }).name
-                        : (typeof item.type === 'string' ? item.type : '')
-                    }</td>
+                    <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>
+                      Տեսակ: {typeof item.type === 'object' && item.type !== null && 'name' in item.type ? (item.type as { name: string }).name : item.type}
+                    </td>
                     <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>{item.price}</td>
                     <td style={{ padding: '12px', borderBottom: '1px solid #dee2e6' }}>
                       {item.isAvailable ? 'Առկա է' : 'Պատվիրել'}

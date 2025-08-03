@@ -5,6 +5,7 @@ interface FurnitureItem {
   name: string;
   description: string;
   price: string;
+  oldPrice?: string;
   imageUrl: string;
   images: string[];
   type: string;
@@ -37,6 +38,7 @@ export const useAdminPanel = (apiEndpoint: string) => {
     name: '',
     description: '',
     price: '',
+    oldPrice: '',
     imageUrl: '',
     images: [],
     type: '',
@@ -45,6 +47,7 @@ export const useAdminPanel = (apiEndpoint: string) => {
   });
   const [newType, setNewType] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{name?: boolean; price?: boolean}>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,7 +57,6 @@ export const useAdminPanel = (apiEndpoint: string) => {
           throw new Error('Failed to fetch data');
         }
         const data: AdminPanelData = await response.json();
-        console.log('Fetched data in useEffect:', data); // <-- Added log
         setItems(data.items || []);
         setTypes(data.types || []);
       } catch (error) {
@@ -127,6 +129,31 @@ export const useAdminPanel = (apiEndpoint: string) => {
   }
 
   const handleSaveItem = async () => {
+    // Validate required fields
+    const itemToValidate = selectedItem || newItem;
+    
+    const errors: {name?: boolean; price?: boolean} = {};
+    
+    if (!itemToValidate.name.trim()) {
+      errors.name = true;
+    }
+    
+    if (!itemToValidate.price.trim()) {
+      errors.price = true;
+    }
+    
+    setValidationErrors(errors);
+    
+    if (errors.name || errors.price) {
+      if (errors.name) {
+        alert('Խնդրում ենք մուտքագրել ապրանքի անվանումը');
+      }
+      if (errors.price) {
+        alert('Խնդրում ենք մուտքագրել ապրանքի գինը');
+      }
+      return;
+    }
+    
     // Check if we have an image URL from either the selected item or new item
     const hasImageUrl = selectedItem?.imageUrl || newItem.imageUrl;
     
@@ -283,6 +310,11 @@ export const useAdminPanel = (apiEndpoint: string) => {
       // Update local state immediately
       setItems(updatedItems);
       setTypes(updatedTypes);
+      
+      // Sync to sale slider (will add if has oldPrice, remove if doesn't)
+      const savedItem = selectedItem || itemWithImage;
+      await syncToSaleSlider(savedItem);
+      
       // Refetch items and types after saving
       try {
         const refetch = await fetch(apiEndpoint);
@@ -472,33 +504,21 @@ export const useAdminPanel = (apiEndpoint: string) => {
 
       // Special handling for shelving endpoint
       if (apiEndpoint.includes('shelving')) {
-        const response = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ typeName: newType.trim() })
-        });
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error('Failed to add type:', errorData);
-          throw new Error(`Failed to add type: ${errorData}`);
-        }
-        const data = await response.json();
-        if (data.success) {
-          // Refetch data to get the updated types list
-          try {
-            const refetchResponse = await fetch(apiEndpoint);
-            if (refetchResponse.ok) {
-              const refetchData = await refetchResponse.json();
-              setItems(refetchData.items || []);
-              setTypes(refetchData.types || []);
-            }
-          } catch (refetchError) {
-            console.error('Error refetching data after adding type:', refetchError);
-            // Fallback: manually add the type to the state
-            setTypes([...types, newType.trim()]);
-          }
-        }
+        const updatedTypes = [...types, newType.trim()];
+        await safePost(apiEndpoint, items, updatedTypes);
+        setTypes(updatedTypes);
         setNewType('');
+        // Re-fetch data after adding type
+        try {
+          const refetchResponse = await fetch(apiEndpoint);
+          if (refetchResponse.ok) {
+            const refetchData = await refetchResponse.json();
+            setItems(refetchData.items || []);
+            setTypes(refetchData.types || []);
+          }
+        } catch (refetchError) {
+          console.error('Error refetching data after adding type:', refetchError);
+        }
         return;
       }
 
@@ -564,6 +584,100 @@ export const useAdminPanel = (apiEndpoint: string) => {
     } catch (err) {
       console.error('Error adding type:', err);
       alert(err instanceof Error ? err.message : 'Failed to add type');
+    }
+  };
+
+  const clearValidationError = (field: 'name' | 'price') => {
+    setValidationErrors(prev => ({ ...prev, [field]: false }));
+  };
+
+  // Function to sync sale items to sale slider
+  const syncToSaleSlider = async (item: FurnitureItem) => {
+    try {
+      // Get current sale slider items
+      const saleResponse = await fetch('/api/sale-slider');
+      if (!saleResponse.ok) {
+        console.error('Failed to fetch sale slider items');
+        return;
+      }
+      const saleData = await saleResponse.json();
+      const currentSaleItems = saleData.items || [];
+
+      // Determine source and link based on API endpoint
+      const source = apiEndpoint.includes('tables') ? 'tables' : 
+                    apiEndpoint.includes('chairs') ? 'chairs' :
+                    apiEndpoint.includes('sofas') ? 'sofas' :
+                    apiEndpoint.includes('armchairs') ? 'armchairs' :
+                    apiEndpoint.includes('poufs') ? 'poufs' :
+                    apiEndpoint.includes('takht') ? 'takht' : 'unknown';
+      const link = apiEndpoint.includes('tables') ? `/furniture/tables/${item.id}` :
+                  apiEndpoint.includes('chairs') ? `/furniture/chairs/${item.id}` :
+                  apiEndpoint.includes('sofas') ? `/softfurniture/sofas/${item.id}` :
+                  apiEndpoint.includes('armchairs') ? `/softfurniture/armchairs/${item.id}` :
+                  apiEndpoint.includes('poufs') ? `/softfurniture/poufs/${item.id}` :
+                  apiEndpoint.includes('takht') ? `/furniture/takht/${item.id}` : '';
+
+      // Check if item already exists in sale slider
+      const existingIndex = currentSaleItems.findIndex((saleItem: any) => 
+        saleItem.id === item.id && saleItem.source === source
+      );
+
+      // If item has oldPrice, add/update it in sale slider
+      if (item.oldPrice && item.oldPrice.trim()) {
+        // Create sale slider item
+        const saleItem = {
+          id: item.id,
+          imageUrl: item.imageUrl,
+          title: item.name,
+          description: item.description,
+          price: item.price,
+          link: link,
+          source: source, // Track where this item came from
+          originalItem: item // Keep reference to original item
+        };
+
+        let updatedSaleItems;
+        if (existingIndex >= 0) {
+          // Update existing item
+          updatedSaleItems = [...currentSaleItems];
+          updatedSaleItems[existingIndex] = saleItem;
+        } else {
+          // Add new item
+          updatedSaleItems = [...currentSaleItems, saleItem];
+        }
+
+        // Save to sale slider
+        const saveResponse = await fetch('/api/sale-slider', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: updatedSaleItems, types: [] })
+        });
+
+        if (saveResponse.ok) {
+          console.log('Successfully synced item to sale slider:', item.name);
+        } else {
+          console.error('Failed to sync item to sale slider');
+        }
+      } else {
+        // If item doesn't have oldPrice, remove it from sale slider
+        if (existingIndex >= 0) {
+          const updatedSaleItems = currentSaleItems.filter((_: any, index: number) => index !== existingIndex);
+          
+          const saveResponse = await fetch('/api/sale-slider', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: updatedSaleItems, types: [] })
+          });
+
+          if (saveResponse.ok) {
+            console.log('Successfully removed item from sale slider:', item.name);
+          } else {
+            console.error('Failed to remove item from sale slider');
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error syncing to sale slider:', error);
     }
   };
 
@@ -1032,6 +1146,8 @@ export const useAdminPanel = (apiEndpoint: string) => {
     newType,
     setNewType,
     uploading,
+    validationErrors,
+    clearValidationError,
     handleImageUpload,
     handleSaveItem,
     handleDeleteItem,

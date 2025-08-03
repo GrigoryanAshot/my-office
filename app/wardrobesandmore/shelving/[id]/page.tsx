@@ -6,12 +6,14 @@ import NavbarSection from "@/component/navbar/NavbarSection";
 import FooterSection from "@/component/footer/FooterSection";
 import ScrollToTopButton from "@/component/utils/ScrollToTopButton";
 import styles from "./TableDetail.module.css";
+import DataLoading from "@/component/loading/DataLoading";
 
 interface FurnitureItem {
   id: number;
   name: string;
   description: string;
   price: string;
+  oldPrice?: string;
   imageUrl: string;
   images: string[];
   type: string;
@@ -39,7 +41,7 @@ export default function ShelvingDetailPage() {
         setLoading(true);
         const response = await fetch(`/api/shelving/${params.id}`);
         if (!response.ok) {
-          throw new Error("Failed to fetch shelving item");
+          throw new Error("");
         }
         const data = await response.json();
         setItem(data);
@@ -65,18 +67,7 @@ export default function ShelvingDetailPage() {
   };
 
   if (loading) {
-    return (
-      <>
-        <NavbarSection style="" logo="/images/logo.png" />
-        <div className={styles.wrapper}>
-          <div className={styles.errorContainer}>
-            <h2 className={styles.errorTitle}>Բեռնվում է...</h2>
-          </div>
-        </div>
-        <FooterSection />
-        <ScrollToTopButton style="" />
-      </>
-    );
+    return <DataLoading />;
   }
   if (error || !item) {
     return (
@@ -120,7 +111,21 @@ export default function ShelvingDetailPage() {
           <div className={styles.detailsSection}>
             <h1 className={styles.title}>{item.name}</h1>
             {item.isAvailable && (
-              <div className={styles.price}>{item.price} դրամ</div>
+              <div className={styles.price}>
+                {item.oldPrice && item.oldPrice.trim() && (
+                  <div style={{ 
+                    textDecoration: 'line-through', 
+                    color: '#dc3545', 
+                    fontSize: '0.9em',
+                    marginBottom: '4px'
+                  }}>
+                    {item.oldPrice} դրամ
+                  </div>
+                )}
+                <div style={{ fontWeight: 'bold' }}>
+                  {item.price} դրամ
+                </div>
+              </div>
             )}
             <div className={styles.description}>{item.description}</div>
             <div className={styles.type}>Տեսակ: {item.type}</div>

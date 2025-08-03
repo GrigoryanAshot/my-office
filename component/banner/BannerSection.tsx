@@ -68,7 +68,7 @@ const BannerSection = () => {
   };
 
   const handleSlideClick = (slideId: number) => {
-    router.push(`/banner/${slideId}`);
+    router.push(`/sale`);
   };
 
   if (loading) {
@@ -137,6 +137,7 @@ const BannerSection = () => {
               justifyContent: 'center',
               height: '100%'
             }}>
+
               <div className="banner-headings-mobile" style={{ marginBottom: '20px' }}>
                 <h1 className="banner-heading-mobile" style={{
                   fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
@@ -205,29 +206,25 @@ const BannerSection = () => {
             </div>
           </div>
           <div className="col-xl-5 col-lg-4" style={{ position: 'relative' }}>
-            {/* Sale sticker overlay - parent level */}
-            <div className="sale-sticker-mobile" style={{
-              position: 'absolute',
-              top: '10px',
-              right: '10px',
-              zIndex: 20,
-              pointerEvents: 'none'
+            {/* Sale sticker overlay - Removed */}
+            {/* Special Offer Text - Above Slider */}
+            <div style={{
+              color: 'black',
+              fontSize: 'clamp(1.3rem, 4vw, 2rem)',
+              fontWeight: '800',
+              textAlign: 'center',
+              marginBottom: '20px',
+              width: '100%',
+              padding: '8px 12px',
+              backgroundColor: 'rgba(255, 107, 53, 0.1)',
+              borderRadius: '8px',
+              border: '2px solid rgba(255, 107, 53, 0.3)',
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+              letterSpacing: '1px'
             }}>
-              <Image
-                src="/images/Sale.png"
-                alt="Sale"
-                width={0}
-                height={0}
-                sizes="100%"
-                style={{
-                  width: 'auto',
-                  height: 'auto',
-                  minWidth: '40px',
-                  maxWidth: '150px',
-                  filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))'
-                }}
-              />
+              ՀԱՏՈՒԿ ԱՌԱՋԱՐԿ
             </div>
+
             <div className="banner_slider" style={{
               position: 'relative',
               width: '100%',
@@ -237,53 +234,7 @@ const BannerSection = () => {
               boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)',
               marginTop: '0'
             }}>
-              {/* Navigation Arrows */}
-              <button
-                onClick={handlePrevSlide}
-                className="banner_nav_btn prev"
-                style={{
-                  position: 'absolute',
-                  left: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  zIndex: 10,
-                  background: 'rgba(255, 255, 255, 0.7)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '40px',
-                  height: '40px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s'
-                }}
-              >
-                <i className="fas fa-chevron-left"></i>
-              </button>
-              <button
-                onClick={handleNextSlide}
-                className="banner_nav_btn next"
-                style={{
-                  position: 'absolute',
-                  right: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  zIndex: 10,
-                  background: 'rgba(255, 255, 255, 0.7)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '40px',
-                  height: '40px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s'
-                }}
-              >
-                <i className="fas fa-chevron-right"></i>
-              </button>
+              {/* Navigation Arrows - Removed */}
 
               {/* Slides */}
               {slides.map((slide, index) => (

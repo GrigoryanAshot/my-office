@@ -9,19 +9,23 @@ import './page.css';
 interface SaleSliderItem {
   id: number;
   imageUrl: string;
+  images: string[];
   title: string;
   description: string;
   price: string;
   link: string;
+  oldPrice?: string;
 }
 
 const defaultItem: SaleSliderItem = {
   id: 0,
   imageUrl: '',
+  images: [],
   title: '',
   description: '',
   price: '',
   link: '',
+  oldPrice: '',
 };
 
 export default function SaleSliderAdminPage() {
@@ -56,7 +60,7 @@ export default function SaleSliderAdminPage() {
     fetchItems();
   }, []);
 
-  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>, isNew: boolean = false) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>, isNew: boolean = false, isMainImage: boolean = true) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const formData = new FormData();
@@ -70,9 +74,17 @@ export default function SaleSliderAdminPage() {
       if (!res.ok) throw new Error('Upload failed');
       const data = await res.json();
       if (isNew) {
-        setNewItem(prev => ({ ...prev, imageUrl: data.secure_url }));
+        if (isMainImage) {
+          setNewItem(prev => ({ ...prev, imageUrl: data.secure_url }));
+        } else {
+          setNewItem(prev => ({ ...prev, images: [...prev.images, data.secure_url] }));
+        }
       } else {
-        setEditItem(prev => ({ ...prev, imageUrl: data.secure_url }));
+        if (isMainImage) {
+          setEditItem(prev => ({ ...prev, imageUrl: data.secure_url }));
+        } else {
+          setEditItem(prev => ({ ...prev, images: [...prev.images, data.secure_url] }));
+        }
       }
     } catch (err) {
       alert('Image upload failed');
@@ -216,6 +228,7 @@ export default function SaleSliderAdminPage() {
                   <th>Վերնագիր</th>
                   <th>Նկարագրություն</th>
                   <th>Գին</th>
+                  <th>Հին գին</th>
                   <th>Հղում</th>
                   <th>Գործողություններ</th>
                 </tr>
@@ -230,7 +243,45 @@ export default function SaleSliderAdminPage() {
                       <>
                         <td colSpan={4}>
                           <form onSubmit={e => { e.preventDefault(); handleSave(); }} className="sale-admin-edit-form">
-                            <input type="file" accept="image/*" onChange={e => handleImageUpload(e, false)} className="sale-admin-input" />
+                            <div style={{ marginBottom: '10px' }}>
+                              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Հիմնական նկար:</label>
+                              <input type="file" accept="image/*" onChange={e => handleImageUpload(e, false, true)} className="sale-admin-input" />
+                            </div>
+                            <div style={{ marginBottom: '10px' }}>
+                              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Լրացուցիչ նկարներ:</label>
+                              <input type="file" accept="image/*" onChange={e => handleImageUpload(e, false, false)} className="sale-admin-input" />
+                              {editItem.images && editItem.images.length > 0 && (
+                                <div style={{ marginTop: '5px' }}>
+                                  <label style={{ fontSize: '12px', color: '#666' }}>Ներկա լրացուցիչ նկարներ:</label>
+                                  <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '5px' }}>
+                                    {editItem.images.map((img, index) => (
+                                      <div key={index} style={{ position: 'relative' }}>
+                                        <img src={img} alt={`Additional ${index + 1}`} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+                                        <button
+                                          type="button"
+                                          onClick={() => setEditItem(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }))}
+                                          style={{
+                                            position: 'absolute',
+                                            top: '-5px',
+                                            right: '-5px',
+                                            background: '#dc3545',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '50%',
+                                            width: '20px',
+                                            height: '20px',
+                                            fontSize: '12px',
+                                            cursor: 'pointer'
+                                          }}
+                                        >
+                                          ×
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                             <input
                               type="text"
                               value={editItem.title}
@@ -254,6 +305,13 @@ export default function SaleSliderAdminPage() {
                             />
                             <input
                               type="text"
+                              value={editItem.oldPrice || ''}
+                              onChange={e => setEditItem(prev => ({ ...prev, oldPrice: e.target.value }))}
+                              placeholder="Հին գին (optional)"
+                              className="sale-admin-input"
+                            />
+                            <input
+                              type="text"
                               value={editItem.link}
                               onChange={e => setEditItem(prev => ({ ...prev, link: e.target.value }))}
                               placeholder="Հղում (optional)"
@@ -271,6 +329,7 @@ export default function SaleSliderAdminPage() {
                         <td className="sale-admin-item-title">{item.title}</td>
                         <td className="sale-admin-item-description">{item.description}</td>
                         <td className="sale-admin-item-price">{item.price}</td>
+                        <td className="sale-admin-item-old-price">{item.oldPrice || '-'}</td>
                         <td className="sale-admin-item-link">{item.link}</td>
                         <td>
                           <div className="sale-admin-actions">
@@ -288,7 +347,45 @@ export default function SaleSliderAdminPage() {
                 <tr className="sale-admin-add-row">
                   <td>
                     {newItem.imageUrl && <img src={newItem.imageUrl} alt="preview" className="sale-admin-image" />}
-                    <input type="file" accept="image/*" onChange={e => handleImageUpload(e, true)} className="sale-admin-input" />
+                    <div style={{ marginBottom: '10px' }}>
+                      <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Հիմնական նկար:</label>
+                      <input type="file" accept="image/*" onChange={e => handleImageUpload(e, true, true)} className="sale-admin-input" />
+                    </div>
+                    <div style={{ marginBottom: '10px' }}>
+                      <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Լրացուցիչ նկարներ:</label>
+                      <input type="file" accept="image/*" onChange={e => handleImageUpload(e, true, false)} className="sale-admin-input" />
+                      {newItem.images && newItem.images.length > 0 && (
+                        <div style={{ marginTop: '5px' }}>
+                          <label style={{ fontSize: '12px', color: '#666' }}>Ներկա լրացուցիչ նկարներ:</label>
+                          <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '5px' }}>
+                            {newItem.images.map((img, index) => (
+                              <div key={index} style={{ position: 'relative' }}>
+                                <img src={img} alt={`Additional ${index + 1}`} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+                                <button
+                                  type="button"
+                                  onClick={() => setNewItem(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }))}
+                                  style={{
+                                    position: 'absolute',
+                                    top: '-5px',
+                                    right: '-5px',
+                                    background: '#dc3545',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '20px',
+                                    height: '20px',
+                                    fontSize: '12px',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td>
                     <input
@@ -314,6 +411,15 @@ export default function SaleSliderAdminPage() {
                       value={newItem.price}
                       onChange={e => setNewItem(prev => ({ ...prev, price: e.target.value }))}
                       placeholder="Գին"
+                      className="sale-admin-input"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={newItem.oldPrice || ''}
+                      onChange={e => setNewItem(prev => ({ ...prev, oldPrice: e.target.value }))}
+                      placeholder="Հին գին (optional)"
                       className="sale-admin-input"
                     />
                   </td>
