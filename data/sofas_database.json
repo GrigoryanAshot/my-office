@@ -1,6 +1,21 @@
 {
   "items": [
     {
+      "id": 1,
+      "name": "Բազկաթոռ Սոֆա",
+      "description": "Հարմարավետ բազկաթոռ սոֆա բարձր որակի նյութերից պատրաստված",
+      "price": "120000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748363271/tvgjtnqrm64w8s61lpky.webp",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703689/gqzlaox2edik3ke64ewz.png",
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703693/gvln3v1guujogdwmafmp.jpg",
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703696/z8rbvmxzh8ffknolaexp.webp"
+      ],
+      "type": "Բազկաթոռ Սոֆա",
+      "url": "/furniture/sofas/1",
+      "isAvailable": true
+    },
+    {
       "id": 2,
       "name": "afaddf",
       "description": "afsaz x",
