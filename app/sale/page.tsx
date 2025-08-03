@@ -59,8 +59,13 @@ export default function SalePage() {
         }
         
         const items = data.items || [];
-        console.log('Setting items:', items);
-        setItems(items);
+        // Ensure sequential IDs starting from 1
+        const itemsWithSequentialIds = items.map((item: SaleItem, index: number) => ({
+          ...item,
+          id: index + 1
+        }));
+        console.log('Setting items with sequential IDs:', itemsWithSequentialIds);
+        setItems(itemsWithSequentialIds);
         
         // Calculate max price from data
         if (items.length > 0) {

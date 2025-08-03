@@ -143,7 +143,9 @@ export default function SaleSliderAdminPage() {
     }
     
     setSaving(true);
-    const itemToAdd = { ...newItem, id: Date.now() };
+    // Generate sequential ID starting from 1
+    const maxId = items.length > 0 ? Math.max(...items.map(item => item.id)) : 0;
+    const itemToAdd = { ...newItem, id: maxId + 1 };
     const updatedItems = [...items, itemToAdd];
     setNewItem({ ...defaultItem, id: 0 });
     // Save to API

@@ -40,8 +40,14 @@ export default function SaleDetailPage() {
         const data = await response.json();
         const items = data.items || [];
         
-        // Find the specific sale item by ID
-        const saleItem = items.find((saleItem: SaleItem) => String(saleItem.id) === String(params?.id));
+        // Convert items to sequential IDs and find the specific sale item
+        const itemsWithSequentialIds = items.map((item: SaleItem, index: number) => ({
+          ...item,
+          id: index + 1
+        }));
+        
+        // Find the specific sale item by sequential ID
+        const saleItem = itemsWithSequentialIds.find((saleItem: SaleItem) => String(saleItem.id) === String(params?.id));
         
         if (!saleItem) {
           throw new Error('Sale item not found');
