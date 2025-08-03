@@ -6,9 +6,12 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-const DATA_KEY = 'whiteboard:data:test';
+const DATA_KEY = 'whiteboard:data';
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params;
     console.log('Whiteboard detail API: Looking for item with ID:', id);

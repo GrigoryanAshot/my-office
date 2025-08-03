@@ -6,7 +6,7 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-const DATA_KEY = 'chests:data:test';
+const DATA_KEY = 'chests:data';
 
 export async function GET(
   request: Request,

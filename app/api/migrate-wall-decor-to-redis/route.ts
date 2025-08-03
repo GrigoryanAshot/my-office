@@ -8,7 +8,7 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-const DATA_KEY = 'wall-decor:data:test';
+const DATA_KEY = 'wall-decor:data';
 
 export async function POST() {
   try {
