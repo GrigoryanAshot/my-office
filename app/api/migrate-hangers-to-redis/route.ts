@@ -8,12 +8,12 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-const DATA_KEY = 'hangers:data:test';
+const DATA_KEY = 'metal-metal-hangers:data';
 
 export async function POST() {
   try {
-    // Read data from file
-    const filePath = path.join(process.cwd(), "data", "hangers_database.json");
+    // Read data from file - using the correct file name
+    const filePath = path.join(process.cwd(), "data", "metal_metal_hangers_database.json");
     const fileContents = fs.readFileSync(filePath, "utf8");
     const data = JSON.parse(fileContents);
     
@@ -43,8 +43,8 @@ export async function GET() {
     // Check if data exists in Redis
     const redisData = await redis.get(DATA_KEY);
     
-    // Read data from file for comparison
-    const filePath = path.join(process.cwd(), "data", "hangers_database.json");
+    // Read data from file for comparison - using the correct file name
+    const filePath = path.join(process.cwd(), "data", "metal_metal_hangers_database.json");
     const fileContents = fs.readFileSync(filePath, "utf8");
     const fileData = JSON.parse(fileContents);
     
