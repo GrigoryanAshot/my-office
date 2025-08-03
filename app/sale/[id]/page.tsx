@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import styles from '@/component/about/FurnitureGrid.module.css';
+import styles from './SaleDetail.module.css';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
@@ -82,44 +82,33 @@ export default function SaleDetailPage() {
   return (
     <>
       <NavbarSection style="" logo="/images/logo.png" />
-      <div className={styles.mainContainer} style={{ marginTop: '100px', maxWidth: '1200px', margin: '100px auto 0', padding: '20px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'start' }}>
+      <div className={styles.mainContainer}>
+        <div className={styles.gridContainer}>
           {/* Image Section */}
-          <div>
-            <div className={styles.imageContainer} style={{ height: '400px', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px' }}>
+          <div className={styles.imageSection}>
+            <div className={styles.mainImage}>
               <Image
                 src={item.imageUrl}
                 alt={item.title}
                 width={600}
                 height={400}
                 className={styles.image}
-                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
             </div>
             
             {/* Additional Images */}
             {item.images && item.images.length > 0 && (
-              <div style={{ marginTop: '20px' }}>
-                <h3 style={{ marginBottom: '15px', color: '#1a1a1a' }}>Լրացուցիչ նկարներ</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px' }}>
+              <div className={styles.additionalImages}>
+                <h3 className={styles.additionalImagesTitle}>Լրացուցիչ նկարներ</h3>
+                <div className={styles.additionalImagesGrid}>
                   {item.images.map((imageUrl, index) => (
-                    <div key={index} style={{ 
-                      height: '150px', 
-                      borderRadius: '8px', 
-                      overflow: 'hidden',
-                      border: '2px solid #e5e7eb',
-                      cursor: 'pointer',
-                      transition: 'border-color 0.3s ease'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.borderColor = '#22c55e'}
-                    onMouseOut={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
-                    >
+                    <div key={index} className={styles.additionalImageItem}>
                       <Image
                         src={imageUrl}
                         alt={`${item.title} - Additional ${index + 1}`}
                         width={150}
                         height={150}
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                        className={styles.additionalImage}
                       />
                     </div>
                   ))}
@@ -129,81 +118,61 @@ export default function SaleDetailPage() {
           </div>
 
           {/* Details Section */}
-          <div style={{ padding: '20px' }}>
-            <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '20px', color: '#1a1a1a' }}>
+          <div className={styles.detailsSection}>
+            <h1 className={styles.title}>
               {item.title}
             </h1>
 
             {/* Type Information */}
             {(item.originalItem?.type || item.source) && (
-              <div style={{ marginBottom: '20px' }}>
-                <span style={{ fontWeight: 'bold', color: '#6b7280' }}>Տեսակ: </span>
-                <span style={{ color: '#1a1a1a' }}>{item.originalItem?.type || item.source}</span>
+              <div className={styles.typeInfo}>
+                <span className={styles.typeLabel}>Տեսակ: </span>
+                <span className={styles.typeValue}>{item.originalItem?.type || item.source}</span>
               </div>
             )}
 
             {/* Sale Badge */}
-            <div style={{ 
-              display: 'inline-block', 
-              backgroundColor: '#22c55e', 
-              color: 'white', 
-              padding: '8px 16px', 
-              borderRadius: '4px', 
-              fontWeight: 'bold',
-              marginBottom: '20px'
-            }}>
+            <div className={styles.saleBadge}>
               Ակցիա
             </div>
 
-                         {/* Price Information */}
-             <div style={{ marginBottom: '30px' }}>
-               {/* Check if this item has oldPrice in originalItem or directly */}
-               {(item.originalItem?.oldPrice || item.oldPrice) && (item.originalItem?.oldPrice || item.oldPrice).trim() && (
-                 <div style={{ 
-                   textDecoration: 'line-through', 
-                   color: '#dc3545', 
-                   fontSize: '1.5rem',
-                   marginBottom: '10px'
-                 }}>
-                   Հին գին: {item.originalItem?.oldPrice || item.oldPrice} դրամ
-                 </div>
-               )}
-               <div style={{ 
-                 fontWeight: 'bold', 
-                 color: '#22c55e', 
-                 fontSize: '2rem'
-               }}>
-                 Նոր գին: {item.price} դրամ
-               </div>
-             </div>
+            {/* Price Information */}
+            <div className={styles.priceSection}>
+              {(item.originalItem?.oldPrice || item.oldPrice) && (item.originalItem?.oldPrice || item.oldPrice).trim() && (
+                <div className={styles.oldPrice}>
+                  Հին գին: {item.originalItem?.oldPrice || item.oldPrice} դրամ
+                </div>
+              )}
+              <div className={styles.newPrice}>
+                Նոր գին: {item.price} դրամ
+              </div>
+            </div>
 
             {/* Description */}
             {item.description && (
-              <div style={{ marginBottom: '30px' }}>
-                <h3 style={{ fontWeight: 'bold', marginBottom: '10px', color: '#1a1a1a' }}>Նկարագրություն:</h3>
-                <p style={{ color: '#6b7280', lineHeight: '1.6' }}>{item.description}</p>
+              <div className={styles.descriptionSection}>
+                <h3 className={styles.descriptionTitle}>Նկարագրություն:</h3>
+                <p className={styles.descriptionText}>{item.description}</p>
               </div>
             )}
 
             {/* Original Item Details */}
             {item.originalItem && (
-              <div style={{ marginBottom: '30px' }}>
-                <h3 style={{ fontWeight: 'bold', marginBottom: '10px', color: '#1a1a1a' }}>Լրացուցիչ տեղեկություններ:</h3>
-                <div style={{ color: '#6b7280', lineHeight: '1.6' }}>
+              <div className={styles.originalItemSection}>
+                <h3 className={styles.originalItemTitle}>Լրացուցիչ տեղեկություններ:</h3>
+                <div className={styles.originalItemContent}>
                   {item.originalItem.description && (
-                    <p style={{ marginBottom: '10px' }}>{item.originalItem.description}</p>
+                    <p className={styles.originalItemDescription}>{item.originalItem.description}</p>
                   )}
-                                     {item.originalItem.isAvailable !== undefined && (
-                     <p style={{ marginBottom: '10px' }}>
-                       <span style={{ fontWeight: 'bold' }}>Առկայություն: </span>
-                       {item.originalItem.isAvailable ? 'Առկա է' : 'Պատվիրել'}
-                     </p>
-                   )}
+                  {item.originalItem.isAvailable !== undefined && (
+                    <p className={styles.availability}>
+                      <span className={styles.availabilityLabel}>Առկայություն: </span>
+                      {item.originalItem.isAvailable ? 'Առկա է' : 'Պատվիրել'}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
-
-                         {/* Contact Button - Removed for testing */}
           </div>
         </div>
       </div>
