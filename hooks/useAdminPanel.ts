@@ -352,6 +352,8 @@ export const useAdminPanel = (apiEndpoint: string) => {
     }
 
     try {
+      console.log('Attempting to delete item with ID:', id, 'Type:', typeof id);
+      
       // Special handling for wardrobes endpoint (Prisma-based)
       if (apiEndpoint.includes('wardrobes')) {
         const response = await fetch(apiEndpoint, {
@@ -383,12 +385,16 @@ export const useAdminPanel = (apiEndpoint: string) => {
         return;
       }
 
-      // Default handling for Redis-based endpoints
+      // Default handling for JSON-based endpoints (like takht)
+      console.log('Using default delete handling for endpoint:', apiEndpoint);
+      
       const response = await fetch(apiEndpoint, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemId: id })
       });
+      
+      console.log('Delete response status:', response.status);
       
       if (!response.ok) {
         const errorData = await response.text();
@@ -396,9 +402,21 @@ export const useAdminPanel = (apiEndpoint: string) => {
         throw new Error(`Failed to delete item: ${errorData}`);
       }
       
+      const deleteResult = await response.json();
+      console.log('Delete result:', deleteResult);
+      
       // Remove the item from local state
-      const updatedItems = items.filter(item => item.id !== id);
+      const updatedItems = items.filter(item => {
+        const itemIdStr = String(item.id);
+        const itemIdNum = Number(item.id);
+        const deleteIdStr = String(id);
+        const deleteIdNum = Number(id);
+        return itemIdStr !== deleteIdStr && itemIdNum !== deleteIdNum;
+      });
+      
+      console.log('Updated items after delete:', updatedItems);
       setItems(updatedItems);
+      
       // LOGGING: Show items before POST
       console.log('Items before POST after delete:', updatedItems);
       // Immediately POST updated items/types (awaited)

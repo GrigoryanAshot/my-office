@@ -74,8 +74,18 @@ export async function DELETE(request: Request) {
       updatedItems = updatedItems.map((item: any) => item.type === removedType ? { ...item, type: '' } : item);
     }
     // Delete by item ID
-    else if (itemId) {
-      updatedItems = updatedItems.filter((item: any) => item.id !== itemId);
+    else if (itemId !== undefined && itemId !== null) {
+      // Handle both string and number IDs
+      const itemIdStr = String(itemId);
+      const itemIdNum = Number(itemId);
+      
+      updatedItems = updatedItems.filter((item: any) => {
+        const itemIdStr2 = String(item.id);
+        const itemIdNum2 = Number(item.id);
+        return itemIdStr !== itemIdStr2 && itemIdNum !== itemIdNum2;
+      });
+      
+      console.log(`Deleted item with ID: ${itemId}, remaining items: ${updatedItems.length}`);
     }
     
     const finalData = { items: updatedItems, types: updatedTypes };
@@ -91,6 +101,7 @@ export async function DELETE(request: Request) {
       remainingItems: updatedItems
     });
   } catch (error) {
+    console.error('Error in DELETE handler:', error);
     return NextResponse.json({ 
       error: 'Failed to delete data', 
       details: error instanceof Error ? error.message : String(error) 
