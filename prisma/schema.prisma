@@ -39,6 +39,7 @@ model Wardrobe {
   description String
   image       String
   price       String?
+  oldPrice    String?
   images      String[]
   isAvailable Boolean  @default(true)
   url         String?
