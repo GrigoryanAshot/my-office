@@ -1,13 +1,45 @@
 import { NextResponse } from 'next/server';
 import fs from "fs";
 import path from "path";
+import { Redis } from '@upstash/redis';
+
+// Initialize Redis for production
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+const TAKHT_KEY = 'takht_database';
+
+// Helper function to get data (file in dev, Redis in prod)
+async function getTakhtData() {
+  if (process.env.NODE_ENV === 'production') {
+    // Use Redis in production
+    const data = await redis.get(TAKHT_KEY);
+    return data || { items: [], types: [] };
+  } else {
+    // Use file system in development
+    const filePath = path.join(process.cwd(), "data", "takht_database.json");
+    const fileContents = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(fileContents);
+  }
+}
+
+// Helper function to save data
+async function saveTakhtData(data: any) {
+  if (process.env.NODE_ENV === 'production') {
+    // Save to Redis in production
+    await redis.set(TAKHT_KEY, data);
+  } else {
+    // Save to file in development
+    const filePath = path.join(process.cwd(), "data", "takht_database.json");
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  }
+}
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), "data", "takht_database.json");
-    const fileContents = fs.readFileSync(filePath, "utf8");
-    const data = JSON.parse(fileContents);
-    
+    const data = await getTakhtData();
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error in GET handler:', error);
@@ -17,28 +49,26 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    console.log('POST request body:', data);
+    const requestData = await request.json();
+    console.log('POST request body:', requestData);
     
-    // Read current data from JSON file
-    const filePath = path.join(process.cwd(), "data", "takht_database.json");
-    const fileContents = fs.readFileSync(filePath, "utf8");
-    const currentData = JSON.parse(fileContents);
+    // Get current data
+    const currentData = await getTakhtData();
     
     // Update data
     let updatedTypes = currentData.types;
-    if (Array.isArray(data.types)) {
-      updatedTypes = data.types;
+    if (Array.isArray(requestData.types)) {
+      updatedTypes = requestData.types;
     }
     let updatedItems = currentData.items;
-    if (Array.isArray(data.items)) {
-      updatedItems = data.items;
+    if (Array.isArray(requestData.items)) {
+      updatedItems = requestData.items;
     }
     
     const finalData = { items: updatedItems, types: updatedTypes };
     
-    // Write back to JSON file
-    fs.writeFileSync(filePath, JSON.stringify(finalData, null, 2));
+    // Save data
+    await saveTakhtData(finalData);
     
     return NextResponse.json({
       success: true,
@@ -54,10 +84,8 @@ export async function DELETE(request: Request) {
     const { typeName, typeIndex, itemId } = await request.json();
     console.log('DELETE request body:', { typeName, typeIndex, itemId });
     
-    // Read current data from JSON file
-    const filePath = path.join(process.cwd(), "data", "takht_database.json");
-    const fileContents = fs.readFileSync(filePath, "utf8");
-    const currentData = JSON.parse(fileContents);
+    // Get current data
+    const currentData = await getTakhtData();
     
     let updatedTypes = [...(currentData.types || [])];
     let updatedItems = [...(currentData.items || [])];
@@ -90,8 +118,8 @@ export async function DELETE(request: Request) {
     
     const finalData = { items: updatedItems, types: updatedTypes };
     
-    // Write back to JSON file
-    fs.writeFileSync(filePath, JSON.stringify(finalData, null, 2));
+    // Save data
+    await saveTakhtData(finalData);
     
     return NextResponse.json({
       success: true,
