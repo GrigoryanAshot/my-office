@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { Redis } from '@upstash/redis';
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+const DATA_KEY = 'stands:data:test';
 
 export async function GET(
   request: Request,
@@ -8,16 +14,27 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const filePath = path.join(process.cwd(), 'data', 'stands_database.json');
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    const data = JSON.parse(fileContents);
+    console.log('Stands detail API: Looking for item with ID:', id);
     
-    const item = data.items.find((item: any) => item.id === parseInt(id));
+    // Get data from Redis
+    const dataStr = await redis.get(DATA_KEY);
     
-    if (!item) {
+    if (!dataStr) {
+      console.log('Stands detail API: No data found in Redis');
       return new NextResponse('Item not found', { status: 404 });
     }
     
+    const data = typeof dataStr === 'string' ? JSON.parse(dataStr) : dataStr;
+    console.log('Stands detail API: Data from Redis:', data ? 'exists' : 'not found');
+    
+    const item = (data.items || []).find((item: any) => String(item.id) === String(id));
+    
+    if (!item) {
+      console.log('Stands detail API: Item not found with ID:', id);
+      return new NextResponse('Item not found', { status: 404 });
+    }
+    
+    console.log('Stands detail API: Found item:', item.name);
     return NextResponse.json(item);
   } catch (error) {
     console.error('Error fetching stand item:', error);

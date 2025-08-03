@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { Redis } from '@upstash/redis';
 
-const wallDecorDataPath = path.join(process.cwd(), 'data', 'wall_decor_database.json');
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+const DATA_KEY = 'wall-decor:data:test';
 
 export async function GET(
   request: Request,
@@ -10,17 +14,30 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    if (!fs.existsSync(wallDecorDataPath)) {
+    console.log('Wall-decor detail API: Looking for item with ID:', id);
+    
+    // Get data from Redis
+    const dataStr = await redis.get(DATA_KEY);
+    
+    if (!dataStr) {
+      console.log('Wall-decor detail API: No data found in Redis');
       return NextResponse.json({ error: 'Wall decor data not found' }, { status: 404 });
     }
-    const data = fs.readFileSync(wallDecorDataPath, 'utf8');
-    const parsed = JSON.parse(data);
-    const item = (parsed.items || []).find((item: any) => String(item.id) === String(id));
+    
+    const data = typeof dataStr === 'string' ? JSON.parse(dataStr) : dataStr;
+    console.log('Wall-decor detail API: Data from Redis:', data ? 'exists' : 'not found');
+    
+    const item = (data.items || []).find((item: any) => String(item.id) === String(id));
+    
     if (!item) {
+      console.log('Wall-decor detail API: Item not found with ID:', id);
       return NextResponse.json({ error: 'Wall decor item not found' }, { status: 404 });
     }
+    
+    console.log('Wall-decor detail API: Found item:', item.name);
     return NextResponse.json(item);
   } catch (error) {
+    console.error('Error fetching wall decor item:', error);
     return NextResponse.json({ error: 'Failed to fetch wall decor item' }, { status: 500 });
   }
 } 
