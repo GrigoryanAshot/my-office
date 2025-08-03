@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
 import CallOrderPopup from '@/component/banner/CallOrderPopup';
+import DataLoading from '@/component/loading/DataLoading';
 
 interface ArmchairItem {
   id: number;
@@ -70,18 +71,7 @@ export default function ArmchairDetailPage() {
   };
 
   if (loading) {
-    return (
-      <>
-        <NavbarSection style="" logo="/images/logo.png" />
-        <div className={styles.wrapper}>
-          <div className={styles.errorContainer}>
-            <h2 className={styles.errorTitle}>Բեռնվում է...</h2>
-          </div>
-        </div>
-        <FooterSection />
-        <ScrollToTopButton style="" />
-      </>
-    );
+    return <DataLoading />;
   }
 
   if (!item) {

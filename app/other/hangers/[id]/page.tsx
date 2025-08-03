@@ -6,6 +6,7 @@ import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
 import CallOrderPopup from '@/component/banner/CallOrderPopup';
 import styles from './HangersDetail.module.css';
+import DataLoading from '@/component/loading/DataLoading';
 
 interface HangerItem {
   id: number;
@@ -70,18 +71,7 @@ export default function HangerDetailPage() {
   };
 
   if (loading) {
-    return (
-      <>
-        <NavbarSection style="" logo="/images/logo.png" />
-        <div className={styles.wrapper}>
-          <div className={styles.errorContainer}>
-            <h2 className={styles.errorTitle}>Բեռնվում է...</h2>
-          </div>
-        </div>
-        <FooterSection />
-        <ScrollToTopButton style="" />
-      </>
-    );
+    return <DataLoading />;
   }
 
   if (!item) {
