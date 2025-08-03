@@ -38,12 +38,14 @@ export async function POST(request: Request) {
         { status: 200 }
       );
 
-      // Force secure: false for localhost
+      // Set secure based on environment
+      const isProduction = process.env.NODE_ENV === 'production';
+      
       response.cookies.set({
         name: 'adminToken',
         value: token,
         httpOnly: true,
-        secure: false, // Force false for localhost
+        secure: isProduction, // Secure in production, not in development
         sameSite: 'lax',
         path: '/',
         maxAge: 60 * 60 * 24 // 24 hours

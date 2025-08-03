@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Test the sale-slider API
-    const response = await fetch('http://localhost:3000/api/sale-slider');
+    // Test the sale-slider API using relative URL
+    const response = await fetch('/api/sale-slider');
     const data = await response.json();
     
     return NextResponse.json({
