@@ -14,6 +14,7 @@ interface SofaItem {
   name: string;
   description: string;
   price: string;
+  oldPrice?: string;
   imageUrl: string;
   images: string[];
   type: string;
@@ -121,7 +122,12 @@ export default function SofaDetailPage() {
           <div className={styles.detailsSection}>
             <h1 className={styles.title}>{item.name}</h1>
             {item.isAvailable && (
-              <div className={styles.price}>{item.price} դրամ</div>
+              <div className={styles.priceContainer}>
+                {item.oldPrice && (
+                  <div className={styles.oldPrice}>{item.oldPrice} դրամ</div>
+                )}
+                <div className={styles.price}>{item.price} դրամ</div>
+              </div>
             )}
             <div className={styles.description}>{item.description}</div>
             <div className={styles.type}>Տեսակ: {item.type}</div>
