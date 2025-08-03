@@ -370,6 +370,20 @@ export const useAdminPanel = (apiEndpoint: string) => {
           throw new Error(`Failed to delete item: ${errorData}`);
         }
         
+        // Find the item being deleted for sale slider sync
+        const deletedItem = items.find(item => {
+          const itemIdStr = String(item.id);
+          const itemIdNum = Number(item.id);
+          const deleteIdStr = String(id);
+          const deleteIdNum = Number(id);
+          return itemIdStr === deleteIdStr || itemIdNum === deleteIdNum;
+        });
+
+        // Remove from sale slider if the deleted item was there
+        if (deletedItem) {
+          await removeFromSaleSlider(deletedItem);
+        }
+
         // Refetch data after deleting item
         try {
           const refetchResponse = await fetch(apiEndpoint);
@@ -407,6 +421,15 @@ export const useAdminPanel = (apiEndpoint: string) => {
       const deleteResult = await response.json();
       console.log('Delete result:', deleteResult);
       
+      // Find the item being deleted for sale slider sync
+      const deletedItem = items.find(item => {
+        const itemIdStr = String(item.id);
+        const itemIdNum = Number(item.id);
+        const deleteIdStr = String(id);
+        const deleteIdNum = Number(id);
+        return itemIdStr === deleteIdStr || itemIdNum === deleteIdNum;
+      });
+
       // Remove the item from local state
       const updatedItems = items.filter(item => {
         const itemIdStr = String(item.id);
@@ -418,6 +441,11 @@ export const useAdminPanel = (apiEndpoint: string) => {
       
       console.log('Updated items after delete:', updatedItems);
       setItems(updatedItems);
+
+      // Remove from sale slider if the deleted item was there
+      if (deletedItem) {
+        await removeFromSaleSlider(deletedItem);
+      }
       
       // LOGGING: Show items before POST
       console.log('Items before POST after delete:', updatedItems);
@@ -698,6 +726,55 @@ export const useAdminPanel = (apiEndpoint: string) => {
       }
     } catch (error) {
       console.error('Error syncing to sale slider:', error);
+    }
+  };
+
+  const removeFromSaleSlider = async (deletedItem: FurnitureItem) => {
+    try {
+      // Get current sale slider items
+      const saleResponse = await fetch('/api/sale-slider');
+      if (!saleResponse.ok) {
+        console.error('Failed to fetch sale slider items');
+        return;
+      }
+      const saleData = await saleResponse.json();
+      const currentSaleItems = saleData.items || [];
+
+      // Determine source based on API endpoint
+      const source = apiEndpoint.includes('tables') ? 'tables' : 
+                    apiEndpoint.includes('chairs') ? 'chairs' :
+                    apiEndpoint.includes('sofas') ? 'sofas' :
+                    apiEndpoint.includes('armchairs') ? 'armchairs' :
+                    apiEndpoint.includes('poufs') ? 'poufs' :
+                    apiEndpoint.includes('takht') ? 'takht' :
+                    apiEndpoint.includes('chests') ? 'chests' :
+                    apiEndpoint.includes('stands') ? 'stands' :
+                    apiEndpoint.includes('wardrobes') ? 'wardrobes' :
+                    apiEndpoint.includes('wall-decor') ? 'wall-decor' :
+                    apiEndpoint.includes('whiteboard') ? 'whiteboard' :
+                    apiEndpoint.includes('hangers') ? 'hangers' : 'unknown';
+
+      // Find and remove the item from sale slider
+      const updatedSaleItems = currentSaleItems.filter((saleItem: any) => 
+        !(saleItem.id === deletedItem.id && saleItem.source === source)
+      );
+
+      // Only update if there was actually an item to remove
+      if (updatedSaleItems.length !== currentSaleItems.length) {
+        const saveResponse = await fetch('/api/sale-slider', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: updatedSaleItems, types: [] })
+        });
+
+        if (saveResponse.ok) {
+          console.log('Successfully removed item from sale slider:', deletedItem.name);
+        } else {
+          console.error('Failed to remove item from sale slider');
+        }
+      }
+    } catch (error) {
+      console.error('Error removing from sale slider:', error);
     }
   };
 
