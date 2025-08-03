@@ -41,7 +41,7 @@ const DataLoading: React.FC<DataLoadingProps> = ({
         height: showNavbar ? 'calc(100vh - 60px)' : '100vh',
         marginTop: showNavbar ? '60px' : '0'
       }}>
-        <div className="eduor-logo">My-Office.am</div>
+
         <div className="loader"></div>
       </div>
       

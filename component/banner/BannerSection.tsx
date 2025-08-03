@@ -216,7 +216,6 @@ const BannerSection = () => {
               marginBottom: '20px',
               width: '100%',
               padding: '8px 12px',
-              backgroundColor: 'rgba(255, 107, 53, 0.1)',
               borderRadius: '8px',
               border: '2px solid rgba(255, 107, 53, 0.3)',
               textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
