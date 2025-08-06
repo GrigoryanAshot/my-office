@@ -180,6 +180,17 @@ const BannerSection = () => {
                 </h1>
               </div>
               
+              <p className="banner-company-info-mobile" style={{
+                fontSize: 'clamp(1rem, 2.8vw, 1.2rem)',
+                color: '#333',
+                marginBottom: '15px',
+                lineHeight: '1.4',
+                fontWeight: '500',
+                fontStyle: 'italic'
+              }}>
+                բարձրորակ և հարմարավետ գրասենյակային կահույք
+              </p>
+              
               <p className="banner-description-mobile" style={{
                 fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
                 color: '#666',
@@ -188,17 +199,6 @@ const BannerSection = () => {
                 fontWeight: '400'
               }}>
                 Պատվերներն իրականացվում են հաշված օրերի ընթացքում
-              </p>
-              
-              <p className="banner-company-info-mobile" style={{
-                fontSize: 'clamp(1rem, 2.8vw, 1.2rem)',
-                color: '#333',
-                marginBottom: '20px',
-                lineHeight: '1.4',
-                fontWeight: '500',
-                fontStyle: 'italic'
-              }}>
-                բարձրորակ և հարմարավետ գրասենյակային կահույք
               </p>
               
               <div className="banner-button-container-mobile">
