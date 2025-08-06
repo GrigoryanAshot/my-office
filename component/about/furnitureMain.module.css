@@ -18,6 +18,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   position: relative;
+  touch-action: manipulation; /* Prevent unwanted touch behaviors */
 }
 
 /* Card content styles */
@@ -183,4 +184,28 @@
 .pagination span {
   font-weight: 500;
   color: #4b5563;
+} 
+
+/* Disable hover effects on mobile/touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .card:hover {
+    transform: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .card:hover .image {
+    transform: none;
+  }
+}
+
+/* Alternative approach for older browsers */
+@media (max-width: 768px) {
+  .card:hover {
+    transform: none !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  .card:hover .image {
+    transform: none !important;
+  }
 } 

@@ -50,6 +50,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   position: relative;
+  touch-action: manipulation; /* Prevent unwanted touch behaviors */
 }
 
 /* Card content styles */
@@ -656,5 +657,65 @@
     gap: 1rem !important;
     flex-wrap: wrap !important;
     overflow-x: visible !important;
+  }
+}
+
+/* Disable hover effects on mobile/touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .card:hover {
+    transform: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .card:hover .image {
+    transform: none;
+  }
+  
+  .mainCategoriesGrid .card:hover {
+    transform: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mainCategoriesGrid .card:hover .image {
+    transform: none;
+  }
+  
+  .furniturePageGrid .card:hover {
+    transform: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .furniturePageGrid .card:hover .image {
+    transform: none;
+  }
+}
+
+/* Alternative approach for older browsers */
+@media (max-width: 768px) {
+  .card:hover {
+    transform: none !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  .card:hover .image {
+    transform: none !important;
+  }
+  
+  .mainCategoriesGrid .card:hover {
+    transform: none !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .mainCategoriesGrid .card:hover .image {
+    transform: none !important;
+  }
+  
+  .furniturePageGrid .card:hover {
+    transform: none !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .furniturePageGrid .card:hover .image {
+    transform: none !important;
   }
 }
