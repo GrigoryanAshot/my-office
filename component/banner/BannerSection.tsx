@@ -15,6 +15,9 @@ interface BannerItem {
   description: string;
   price: string;
   link: string;
+  originalItem?: {
+    oldPrice: string;
+  };
 }
 
 const BannerSection = () => {
@@ -306,7 +309,7 @@ const BannerSection = () => {
                            fontWeight: '600',
                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.6)'
                          }}>
-                           {slide.price} դրամ
+                           {slide.originalItem?.oldPrice || slide.price} դրամ
                          </span>
                       </div>
                       
