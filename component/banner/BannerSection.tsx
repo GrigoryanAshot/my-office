@@ -140,7 +140,16 @@ const BannerSection = () => {
               justifyContent: 'center',
               height: '100%'
             }}>
-
+              <p className="banner-company-info-mobile" style={{
+                fontSize: 'clamp(1rem, 2.8vw, 1.2rem)',
+                color: '#333',
+                marginBottom: '15px',
+                lineHeight: '1.4',
+                fontWeight: '500',
+                fontStyle: 'italic'
+              }}>
+                բարձրորակ և հարմարավետ գրասենյակային կահույք
+              </p>
               <div className="banner-headings-mobile" style={{ marginBottom: '20px' }}>
                 <h1 className="banner-heading-mobile" style={{
                   fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
@@ -180,16 +189,7 @@ const BannerSection = () => {
                 </h1>
               </div>
               
-              <p className="banner-company-info-mobile" style={{
-                fontSize: 'clamp(1rem, 2.8vw, 1.2rem)',
-                color: '#333',
-                marginBottom: '15px',
-                lineHeight: '1.4',
-                fontWeight: '500',
-                fontStyle: 'italic'
-              }}>
-                բարձրորակ և հարմարավետ գրասենյակային կահույք
-              </p>
+              
               
               <p className="banner-description-mobile" style={{
                 fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
