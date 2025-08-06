@@ -32,7 +32,7 @@ const DataLoading: React.FC<DataLoadingProps> = ({
             margin: '0 auto',
             padding: '0 20px'
           }}>
-            <img src="/images/logo.png" alt="My-Office.am" style={{ height: '40px' }} />
+            {/* Logo removed to prevent brief appearance during loading */}
           </div>
         </div>
       )}
