@@ -51,6 +51,9 @@
   transition: all 0.3s ease;
   position: relative;
   touch-action: manipulation; /* Prevent unwanted touch behaviors */
+  width: 100%; /* Ensure full width */
+  min-width: 200px; /* Minimum width to prevent narrow cards */
+  max-width: 300px; /* Maximum width for consistency */
 }
 
 /* Card content styles */
@@ -277,6 +280,8 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-width: 200px; /* Minimum width to prevent narrow cards */
+  max-width: 300px; /* Maximum width for consistency */
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.05);
   text-align: center;
@@ -530,7 +535,8 @@
 
 .itemsGrid .card {
   width: 100%;
-  max-width: 100%;
+  min-width: 200px; /* Minimum width to prevent narrow cards */
+  max-width: 300px; /* Maximum width for consistency */
   padding: 0.5rem;
   box-sizing: border-box;
 }
@@ -562,6 +568,8 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-width: 200px; /* Minimum width to prevent narrow cards */
+  max-width: 300px; /* Maximum width for consistency */
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.05);
   text-align: center;
@@ -639,6 +647,7 @@
   
   .mainCategoriesGrid .card {
     width: 100% !important;
+    min-width: 250px !important; /* Ensure minimum width on mobile */
     max-width: 100% !important;
   }
   
@@ -657,6 +666,22 @@
     gap: 1rem !important;
     flex-wrap: wrap !important;
     overflow-x: visible !important;
+  }
+  
+  /* Ensure all cards have consistent width on mobile */
+  .card {
+    min-width: 250px !important;
+    width: 100% !important;
+  }
+  
+  .furniturePageGrid .card {
+    min-width: 250px !important;
+    width: 100% !important;
+  }
+  
+  .itemsGrid .card {
+    min-width: 250px !important;
+    width: 100% !important;
   }
 }
 

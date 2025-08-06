@@ -19,6 +19,9 @@
   transition: all 0.3s ease;
   position: relative;
   touch-action: manipulation; /* Prevent unwanted touch behaviors */
+  width: 100%; /* Ensure full width */
+  min-width: 200px; /* Minimum width to prevent narrow cards */
+  max-width: 300px; /* Maximum width for consistency */
 }
 
 /* Card content styles */
