@@ -190,6 +190,17 @@ const BannerSection = () => {
                 Պատվերներն իրականացվում են հաշված օրերի ընթացքում
               </p>
               
+              <p className="banner-company-info-mobile" style={{
+                fontSize: 'clamp(1rem, 2.8vw, 1.2rem)',
+                color: '#333',
+                marginBottom: '20px',
+                lineHeight: '1.4',
+                fontWeight: '500',
+                fontStyle: 'italic'
+              }}>
+                բարձրորակ և հարմարավետ գրասենյակային կահույք
+              </p>
+              
               <div className="banner-button-container-mobile">
                 <button 
                   className="common_btn banner-button-mobile" 
