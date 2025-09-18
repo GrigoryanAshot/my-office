@@ -14,7 +14,7 @@ const FooterSection = () => {
                 
                 </Link>
                 <p>
-                Լոֆթ ոճի կահույք "Ջերմ Օջախ"-ի կողմից
+                Գրասենյակային կահույք My Office-ի կողմից
                 </p>
                 <ul className="d-flex flex-wrap">
                   <li>
@@ -67,7 +67,7 @@ const FooterSection = () => {
             <div className="col-xl-3 col-sm-10 col-md-7 col-lg-col-lg-6" style={{ marginLeft: '10px' }}>
               <div className="tf__footer_content xs_mt_30">
                 <h3>Կապ մեզ հետ</h3>
-                <p>ք․ Աբովյան, Սևանի փ․ 11</p>
+                <p>Արգավանդ, Մայրաքաղաքային փ․ 89</p>
                 <p>
                   <span> Phone: <Link href='tel: 060 810 810'>060 810 810</Link></span>
                 </p>
@@ -87,7 +87,7 @@ const FooterSection = () => {
                 
                 <ul className="d-flex flex-wrap">
                   <li>
-                    <Link href="/privacy-policy">Կայքը պատրաստեց</Link>
+                    <Link href="/privacy-policy">Կայքը պատրաստեց Touch Web Agency-ն | Բոլոր իրավունքները պահպանված են</Link>
                   </li>
                 </ul>
               </div>
