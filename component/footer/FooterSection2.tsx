@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import styles from './FooterSection.module.css';
 
 const FooterSection = () => {
   return (
@@ -13,21 +14,21 @@ const FooterSection = () => {
                 
                 </Link>
                 <p>
-                Լոֆթ ոճի կահույք "Ջերմ Օջախ"-ի կողմից
+                Գրասենյակային կահույք My Office-ի կողմից
                 </p>
                 <ul className="d-flex flex-wrap">
                   <li>
-                    <a href="https://www.facebook.com/LoftJermOjax?locale=hy_AM" target="_blank">
+                    <a href="https://www.facebook.com/myofficefurniturearm?locale=hy_AM" target="_blank">
                       <i className="fab fa-facebook-f"></i>
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.instagram.com/loftjermojax" target="_blank">
+                    <a href="https://www.instagram.com/myoffice_furniture/" target="_blank">
                     <i className="fa-brands fa-instagram"></i>
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.list.am/u/loftjermojax" target="_blank">
+                    <a href="/#" target="_blank">
                     <i className="fa-solid fa-list"></i>
                     </a>
                   </li>
@@ -44,7 +45,7 @@ const FooterSection = () => {
                 </ul>
               </div>
             </div>
-            <div className="col-xl-2 col-sm-10 col-md-5 col-lg-5">
+            <div className={`col-xl-2 col-sm-10 col-md-5 col-lg-5 ${styles.footerServiceListCol}`}>
               <div className="tf__footer_content xs_mt_50">
                 <h3>Ընտրեք ծառայությունը</h3>
                 <ul>
@@ -63,10 +64,10 @@ const FooterSection = () => {
                 </ul>
               </div>
             </div>
-            <div className="col-xl-3 col-sm-10 col-md-7 col-lg-col-lg-6">
+            <div className="col-xl-3 col-sm-10 col-md-7 col-lg-col-lg-6" style={{ marginLeft: '10px' }}>
               <div className="tf__footer_content xs_mt_30">
                 <h3>Կապ մեզ հետ</h3>
-                <p>ք․ Աբովյան, Սևանի փ․ 11</p>
+                <p>Արգավանդ, Մայրաքաղաքային փ․ 89</p>
                 <p>
                   <span> Phone: <Link href='tel: 060 810 810'>060 810 810</Link></span>
                 </p>
@@ -86,7 +87,7 @@ const FooterSection = () => {
                 
                 <ul className="d-flex flex-wrap">
                   <li>
-                    <Link href="/privacy-policy">Կայքը պատրաստեց</Link>
+                    <Link href="/privacy-policy">Կայքը պատրաստեց Touch Web Agency-ն | Բոլոր իրավունքները պահպանված են</Link>
                   </li>
                 </ul>
               </div>
