@@ -14,7 +14,7 @@ const FooterSection = () => {
                 
                 </Link>
                 <p>
-                Գրասենյակային կահույք My-Office.am-ից
+                Լոֆթ ոճի կահույք "Ջերմ Օջախ"-ի կողմից
                 </p>
                 <ul className="d-flex flex-wrap">
                   <li>
@@ -33,12 +33,12 @@ const FooterSection = () => {
                     </a>
                   </li>
                   <li>
-                    <a href="https://wa.me/+37455160161" target="_blank">
+                    <a href="https://wa.me/+37460810810" target="_blank">
                     <i className="fa-brands fa-whatsapp"></i>
                     </a>
                   </li>
                   <li>
-                    <a href="https://t.me/+37455160161" target="_blank">
+                    <a href="https://t.me/+37460810810" target="_blank">
                     <i className="fa-brands fa-telegram"></i>
                     </a>
                   </li>
@@ -87,7 +87,7 @@ const FooterSection = () => {
                 
                 <ul className="d-flex flex-wrap">
                   <li>
-                    <Link href="https://www.my-home.am" target="_blank" rel="noopener noreferrer">Գտեք նաև կահույք ձեր բնակարանի համար</Link>
+                    <Link href="/privacy-policy">Կայքը պատրաստեց</Link>
                   </li>
                 </ul>
               </div>
