@@ -53,7 +53,7 @@ const ContactPageSection = () => {
                 </div>
                 <div className="text">
                   <h3>Հասցե</h3>
-                  <p>ք․ Աբովյան, Սևանի փ․ 11</p>
+                  <p>Արգավանդ, Մայրաքաղաքային փ․ 89</p>
                 </div>
               </div>
             </div>
@@ -61,11 +61,8 @@ const ContactPageSection = () => {
 
           <div className="col-xl-12 wow fadeInUp">
             <div className="tf__contact_map mt_100">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4865.622283419117!2d44.62313419230683!3d40.28203865669623!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x406aa02a9b46fee3%3A0x8fb70bce9249f58a!2zMTEg1Y3Wh9Wh1bYg1oPVuNWy1bjWgSwg1LHVotW41b7VtdWh1bYgMjIwNA!5e1!3m2!1shy!2sam!4v1711393966069!5m2!1shy!2sam"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d609.2899176964128!2d44.424958883152!3d40.1610493785973!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1shy!2sam!4v1758203858274!5m2!1shy!2sam" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
             </div>
           </div>
         </div>
