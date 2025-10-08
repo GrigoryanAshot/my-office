@@ -36,13 +36,22 @@ export default function WardrobeDetailPage() {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await fetch(`/api/wardrobes/${id}`);
+        const response = await fetch(`/api/wardrobes?t=${Date.now()}&r=${Math.random()}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
         if (!response.ok) {
-          throw new Error('Failed to fetch item');
+          throw new Error('Failed to fetch wardrobes data');
         }
         const data = await response.json();
-        setItem(data);
-        setImages([data.imageUrl, ...(data.images || [])]);
+        const found = (data.items || []).find((it: any) => String(it.id) === String(id));
+        if (!found) throw new Error('Item not found');
+        setItem(found);
+        setImages([found.imageUrl, ...(found.images || [])]);
       } catch (error) {
         console.error('Error fetching item:', error);
       } finally {
