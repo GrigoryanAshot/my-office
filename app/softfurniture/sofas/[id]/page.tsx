@@ -57,6 +57,11 @@ export default function SofaDetailPage() {
           throw new Error('Item not found');
         }
         
+        // Debug: Log the description to see if line breaks are preserved
+        console.log('Item description from API:', JSON.stringify(item.description));
+        console.log('Item description length:', item.description.length);
+        console.log('Item description includes newlines:', item.description.includes('\n'));
+        
         setItem(item);
         setImages([item.imageUrl, ...(item.images || [])]);
       } catch (error) {

@@ -292,6 +292,12 @@ export const useAdminPanel = (apiEndpoint: string) => {
         types: updatedTypes
       };
       
+      // Debug: Log the description of the item being saved
+      const itemBeingSaved = selectedItem || itemWithImage;
+      console.log('Item being saved description:', JSON.stringify(itemBeingSaved.description));
+      console.log('Item being saved description length:', itemBeingSaved.description.length);
+      console.log('Item being saved description includes newlines:', itemBeingSaved.description.includes('\n'));
+      
       console.log('Sending data to API:', {
         endpoint: apiEndpoint,
         requestBody,
