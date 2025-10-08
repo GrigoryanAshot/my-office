@@ -36,13 +36,23 @@ export default function SofaDetailPage() {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await fetch(`/api/sofas/${id}`);
+        // Fetch all sofas and find the item by id (align with tables implementation)
+        const response = await fetch(`/api/sofas?t=${Date.now()}&r=${Math.random()}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
         if (!response.ok) {
-          throw new Error('Failed to fetch item');
+          throw new Error('Failed to fetch sofas data');
         }
         const data = await response.json();
-        setItem(data);
-        setImages([data.imageUrl, ...(data.images || [])]);
+        const found = (data.items || []).find((it: any) => String(it.id) === String(id));
+        if (!found) throw new Error('Item not found');
+        setItem(found);
+        setImages([found.imageUrl, ...(found.images || [])]);
       } catch (error) {
         console.error('Error fetching item:', error);
       } finally {
@@ -138,7 +148,7 @@ export default function SofaDetailPage() {
                 </div>
               </div>
             )}
-            <div className={styles.description}>{item.description}</div>
+            <div className={styles.description} style={{ whiteSpace: 'pre-line' }}>{item.description}</div>
             <div className={styles.type}>Տեսակ: {item.type}</div>
             <div className={styles.availability}>
               {item.isAvailable ? 'Առկա է' : 'Պատվիրել'}
