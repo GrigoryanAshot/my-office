@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "Բազկաթոռ",
+      "description": "Հարմարավետ բազկաթոռ բարձր որակի նյութերից պատրաստված",
+      "price": "85000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909767/uitvp4ap0gszegxhxr2q.png",
+      "images": [],
+      "type": "Բազկաթոռ",
+      "url": "/furniture/armchairs/1",
+      "isAvailable": true
+    },
+    {
+      "id": 2,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "1111",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909767/uitvp4ap0gszegxhxr2q.png",
+      "images": [],
+      "type": "dddd",
+      "url": "/furniture/chairs/2",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "afafs",
+    "dddd",
+    "aa"
+  ]
+}

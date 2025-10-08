@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "cvcv",
+      "description": "ddd",
+      "price": "51515",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748636083/a9xtalffpgdyii2ygoic.webp",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703890/kvgdtptbybijke4pdb3s.jpg"
+      ],
+      "type": "cxcc",
+      "url": "",
+      "isAvailable": false
+    },
+    {
+      "id": 2,
+      "name": "afaf",
+      "description": "afsafs",
+      "price": "2511",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748636543/fvbrvtwnvecqiwibcn2d.jpg",
+      "images": [],
+      "type": "",
+      "url": "",
+      "isAvailable": true
+    },
+    {
+      "id": 3,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "55222",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750339477/ildjdnscxkdfs5oba4qf.png",
+      "images": [],
+      "type": "hhhh",
+      "url": "shelving/3",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "սդֆսդվ",
+    "զդվսդգսգ",
+    "cxcc",
+    "ffas",
+    "hhhh"
+  ]
+}

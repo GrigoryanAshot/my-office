@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "ԿՈԴ 2546",
+      "description": "ագադ",
+      "price": "450000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748355159/zlwqafejvvofwj4vfetd.jpg",
+      "images": [],
+      "type": "ator",
+      "url": "/furniture/chairs/1",
+      "isAvailable": true
+    },
+    {
+      "id": 2,
+      "name": "sbfsfb",
+      "description": "sbsg",
+      "price": "45000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748355580/htrnmb9f977v4vop4jjw.webp",
+      "images": [],
+      "type": "xekavar",
+      "url": "/furniture/chairs/2",
+      "isAvailable": true
+    },
+    {
+      "id": 3,
+      "name": "սդֆսդֆգ",
+      "description": "սդգսդդգվս",
+      "price": "75000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748361878/xhbtq41pi74lheiycmxu.webp",
+      "images": [],
+      "type": "ator",
+      "url": "/furniture/chairs/3",
+      "isAvailable": true
+    },
+    {
+      "id": 4,
+      "name": "aass",
+      "description": "asfas",
+      "price": "4500",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749986188/dhmjie2ftghtq7eagthx.webp",
+      "images": [],
+      "type": "",
+      "url": "/furniture/chairs/4",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "ator",
+    "xekavar",
+    "dddd",
+    "asas"
+  ]
+}

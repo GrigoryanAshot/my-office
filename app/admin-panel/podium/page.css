@@ -1,0 +1,11 @@
+.home_3 {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.home_3 main {
+  flex: 1;
+}
+
+/* Add any additional custom styles here */ 

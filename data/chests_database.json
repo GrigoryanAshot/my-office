@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "asfaf",
+      "description": "asfasf",
+      "price": "6555",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748694101/virmhbqanfdjbg9j1oyy.webp",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703928/tkmsxim5y3vttfgtry7v.jpg"
+      ],
+      "type": "",
+      "url": "",
+      "isAvailable": false
+    },
+    {
+      "id": 2,
+      "name": "ddd",
+      "description": "ddd",
+      "price": "5115",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750340027/jjndmozounaqwne9vmsh.png",
+      "images": [],
+      "type": "",
+      "url": "chests/2",
+      "isAvailable": true
+    }
+  ],
+  "types": []
+}

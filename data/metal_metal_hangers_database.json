@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "dvdf",
+      "description": "dfbdfg",
+      "price": "75000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748534072/ay4e2kbkrbiw4cpbpyxm.jpg",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703983/dgaqd3uzx8iknuxnpznz.png"
+      ],
+      "isAvailable": true,
+      "url": "/other/hangers/1",
+      "type": ""
+    },
+    {
+      "id": 2,
+      "name": "ddd",
+      "description": "dddd",
+      "price": "5555",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750340143/oky1quvn3uahepew5dk7.png",
+      "images": [],
+      "isAvailable": true,
+      "url": "/other/hangers/2",
+      "type": "dddd"
+    }
+  ],
+  "types": [
+    "dfvdfvfv",
+    "dddd"
+  ]
+}

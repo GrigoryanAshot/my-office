@@ -1,0 +1,58 @@
+{
+  "items": [
+    {
+      "id": 2,
+      "name": "afaddf",
+      "description": "afsaz x",
+      "price": "85000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748363271/tvgjtnqrm64w8s61lpky.webp",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703689/gqzlaox2edik3ke64ewz.png",
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703693/gvln3v1guujogdwmafmp.jpg",
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703696/z8rbvmxzh8ffknolaexp.webp"
+      ],
+      "type": "afasfasf",
+      "url": "/furniture/sofas/2",
+      "isAvailable": true
+    },
+    {
+      "id": 3,
+      "name": "vczsvadsf",
+      "description": "zvcsdv",
+      "price": "75000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748364014/iwwnwhfwjx0env78rep9.jpg",
+      "images": [],
+      "type": "asfasfasf",
+      "url": "/furniture/sofas/3",
+      "isAvailable": true
+    },
+    {
+      "id": 4,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "1111",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909724/ovbx8ep0ieerntdpf3hz.png",
+      "images": [],
+      "type": "dddd",
+      "url": "/furniture/chairs/4",
+      "isAvailable": true
+    },
+    {
+      "id": 5,
+      "name": "asfaf",
+      "description": "asfasf",
+      "price": "25000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749979822/dg6jf29iofpi6eegt2xa.png",
+      "images": [],
+      "type": "asfasfasf",
+      "url": "sofas/5",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "afasfasf",
+    "asfasfasf",
+    "dddd",
+    "aa"
+  ]
+}

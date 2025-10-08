@@ -1,0 +1,33 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "աֆսասֆ",
+      "description": "ասֆաֆս",
+      "price": "56521652",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748632968/wbguq0fmglt94z2seelj.webp",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748703853/w0mhqk4eyafb1ul5zsfk.png"
+      ],
+      "type": "aֆաֆ",
+      "url": "",
+      "isAvailable": true
+    },
+    {
+      "id": 2,
+      "name": "asfafs",
+      "description": "afsasf",
+      "price": "6554",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748633368/yx0tqb6orlgnwfmnygyp.webp",
+      "images": [],
+      "type": "aֆաֆ",
+      "url": "",
+      "isAvailable": false
+    }
+  ],
+  "types": [
+    "dfdfdf",
+    "աացց",
+    "aֆաֆ"
+  ]
+}
