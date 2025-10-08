@@ -79,7 +79,7 @@ export default function TakhtDetailPage() {
         </div>
         <div className={styles.right}>
           <h2 className={styles.itemName}>{takht.name}</h2>
-          <p className={styles.description}>{takht.description}</p>
+          <p className={styles.description} style={{ whiteSpace: 'pre-line' }}>{takht.description}</p>
           <p className={styles.sizes}><strong>Տեսակ:</strong> {takht.type}</p>
           {takht.isAvailable ? (
             <p className={styles.price}><strong>Գին:</strong> {takht.price}</p>

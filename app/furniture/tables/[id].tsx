@@ -84,7 +84,7 @@ export default function TableDetailPage() {
                 </div>
               )}
 
-              <div style={{ fontSize: 16, color: '#666', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 16, color: '#666', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
                 <span style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Նկարագրություն:</span>
                 {item.description}
               </div>

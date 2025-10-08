@@ -148,7 +148,7 @@ export default function StandDetailPage() {
                 </div>
               </div>
             )}
-            <div className={styles.description}>{item.description}</div>
+            <div className={styles.description} style={{ whiteSpace: 'pre-line' }}>{item.description}</div>
             <div className={styles.type}>Տեսակ: {item.type}</div>
             <div className={styles.availability}>
               {item.isAvailable ? 'Առկա է' : 'Պատվիրել'}

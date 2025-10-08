@@ -150,7 +150,8 @@ export default function FurnitureDetail() {
               <p style={{
                 fontSize: '18px',
                 color: '#64748b',
-                marginBottom: '30px'
+                marginBottom: '30px',
+                whiteSpace: 'pre-line'
               }}>{item.description}</p>
             </div>
           </div>

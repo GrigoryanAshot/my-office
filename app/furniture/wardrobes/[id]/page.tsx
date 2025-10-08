@@ -138,7 +138,7 @@ export default function WardrobeDetailPage() {
                 </div>
               </div>
             )}
-            <div className={styles.description}>{item.description}</div>
+            <div className={styles.description} style={{ whiteSpace: 'pre-line' }}>{item.description}</div>
             <div className={styles.type}>
               Տեսակ: {typeof item.type === 'object' && item.type !== null && 'name' in item.type ? (item.type as { name: string }).name : item.type}
             </div>

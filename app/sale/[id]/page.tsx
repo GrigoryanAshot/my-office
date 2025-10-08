@@ -152,7 +152,7 @@ export default function SaleDetailPage() {
             {item.description && (
               <div className={styles.descriptionSection}>
                 <h3 className={styles.descriptionTitle}>Նկարագրություն:</h3>
-                <p className={styles.descriptionText}>{item.description}</p>
+                <p className={styles.descriptionText} style={{ whiteSpace: 'pre-line' }}>{item.description}</p>
               </div>
             )}
 
@@ -162,7 +162,7 @@ export default function SaleDetailPage() {
                 <h3 className={styles.originalItemTitle}>Լրացուցիչ տեղեկություններ:</h3>
                 <div className={styles.originalItemContent}>
                   {item.originalItem.description && (
-                    <p className={styles.originalItemDescription}>{item.originalItem.description}</p>
+                    <p className={styles.originalItemDescription} style={{ whiteSpace: 'pre-line' }}>{item.originalItem.description}</p>
                   )}
                   {item.originalItem.isAvailable !== undefined && (
                     <p className={styles.availability}>
