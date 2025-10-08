@@ -36,8 +36,10 @@ export default function TablesPage() {
   // Function to handle page change with scroll to top
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    // Scroll to top of the page
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll to top of the page with a small delay to ensure content updates first
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
   useEffect(() => {
