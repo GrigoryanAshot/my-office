@@ -555,6 +555,11 @@ body {
   }
 }
 
+/* Footer Copyright Text - Remove Capitalization */
+.tf__copyright ul li a {
+  text-transform: none !important;
+}
+
 /* Mobile Navigation Dropdown Styles */
 @media (max-width: 991px) {
   /* Ensure mobile menu is on top layer */
