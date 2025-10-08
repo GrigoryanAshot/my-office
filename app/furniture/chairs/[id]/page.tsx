@@ -36,7 +36,9 @@ export default function ChairDetailPage() {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await fetch('/api/chairs');
+        const response = await fetch(`/api/chairs?t=${Date.now()}`, {
+          cache: 'no-store'
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch chairs');
         }

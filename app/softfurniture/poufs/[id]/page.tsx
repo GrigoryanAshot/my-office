@@ -36,7 +36,9 @@ export default function PoufDetailPage() {
       setLoading(true);
       setError('');
       try {
-        const response = await fetch(`/api/poufs/${id}`);
+        const response = await fetch(`/api/poufs/${id}?t=${Date.now()}`, {
+          cache: 'no-store'
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch item');
         }

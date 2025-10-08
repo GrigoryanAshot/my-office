@@ -36,7 +36,9 @@ export default function ArmchairDetailPage() {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await fetch(`/api/armchairs/${id}`);
+        const response = await fetch(`/api/armchairs/${id}?t=${Date.now()}`, {
+          cache: 'no-store'
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch item');
         }

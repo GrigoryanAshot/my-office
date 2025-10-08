@@ -47,7 +47,7 @@ export default function SofasPage() {
       setError(null);
       try {
         console.log('Fetching sofas data...');
-        const response = await fetch('/api/sofas', {
+        const response = await fetch(`/api/sofas?t=${Date.now()}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
