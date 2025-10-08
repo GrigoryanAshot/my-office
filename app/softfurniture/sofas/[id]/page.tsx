@@ -36,8 +36,13 @@ export default function SofaDetailPage() {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await fetch(`/api/sofas/${id}?t=${Date.now()}`, {
-          cache: 'no-store'
+        const response = await fetch(`/api/sofas/${id}?t=${Date.now()}&r=${Math.random()}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
         });
         if (!response.ok) {
           throw new Error('Failed to fetch item');
