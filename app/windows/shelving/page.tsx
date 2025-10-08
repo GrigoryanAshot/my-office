@@ -25,7 +25,16 @@ export default function ShelvingPage() {
   const [selectedType, setSelectedType] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
-  const itemsPerPage = 8;
+  const itemsPerPage = 12;
+
+  // Function to handle page change with scroll to top
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    // Scroll to top of the page with a small delay to ensure content updates first
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
 
   // Get unique types from the data
   const types = useMemo(() => {

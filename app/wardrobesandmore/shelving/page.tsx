@@ -30,7 +30,16 @@ export default function ShelvingPage() {
   const [items, setItems] = useState<FurnitureItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const itemsPerPage = 8;
+  const itemsPerPage = 12;
+
+  // Function to handle page change with scroll to top
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    // Scroll to top of the page with a small delay to ensure content updates first
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -248,7 +257,7 @@ export default function ShelvingPage() {
         {totalPages > 1 && (
           <div className={styles.pagination}>
             <button 
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
               disabled={currentPage === 1}
               className={styles.paginationButton}
             >
@@ -258,7 +267,7 @@ export default function ShelvingPage() {
               Էջ {currentPage} / {totalPages}
             </span>
             <button 
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
               disabled={currentPage === totalPages}
               className={styles.paginationButton}
             >

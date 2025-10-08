@@ -30,7 +30,16 @@ export default function PoufsPage() {
   const [items, setItems] = useState<FurnitureItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const itemsPerPage = 8;
+  const itemsPerPage = 12;
+
+  // Function to handle page change with scroll to top
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    // Scroll to top of the page with a small delay to ensure content updates first
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -231,7 +240,7 @@ export default function PoufsPage() {
               <button
                 key={i + 1}
                 className={styles.paginationButton}
-                onClick={() => setCurrentPage(i + 1)}
+                onClick={() => handlePageChange(i + 1)}
                 disabled={currentPage === i + 1}
               >
                 {i + 1}

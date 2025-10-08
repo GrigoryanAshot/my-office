@@ -25,7 +25,16 @@ export default function WardrobesPage() {
   const [selectedType, setSelectedType] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
-  const itemsPerPage = 8;
+  const itemsPerPage = 12;
+
+  // Function to handle page change with scroll to top
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    // Scroll to top of the page with a small delay to ensure content updates first
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
 
   // Get unique types from the data
   const types = useMemo(() => {
@@ -159,7 +168,7 @@ export default function WardrobesPage() {
           <div className={styles.pagination}>
             <button
               className={styles.paginationButton}
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
               disabled={currentPage === 1}
             >
               Նախորդ
@@ -167,7 +176,7 @@ export default function WardrobesPage() {
             <span>Էջ {currentPage} / {totalPages}-ից</span>
             <button
               className={styles.paginationButton}
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
               disabled={currentPage === totalPages}
             >
               Հաջորդ
