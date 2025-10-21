@@ -72,7 +72,7 @@ export default function ChairsPage() {
         
         // Calculate max price from data
         if (items.length > 0) {
-          const prices = items.map((item: FurnitureItem) => parseInt(item.price.replace(/[^0-9]/g, ''))).filter(price => !isNaN(price));
+          const prices = items.map((item: FurnitureItem) => parseInt(item.price.replace(/[^0-9]/g, ''))).filter((price: number) => !isNaN(price));
           const maxPrice = prices.length > 0 ? Math.max(...prices) : 1000000;
           setPriceRange(prev => ({ ...prev, max: maxPrice }));
           setTempPriceRange(prev => ({ ...prev, max: maxPrice }));
