@@ -38,25 +38,37 @@ export default function TablesPage() {
 
   // Initialize page from URL parameters on mount (client-side only)
   useEffect(() => {
+    console.error('🔍 URL INIT EFFECT - searchParams:', searchParams?.toString());
+    
     // Use a timeout to ensure this runs after hydration
     const timer = setTimeout(() => {
+      console.error('🔍 URL INIT TIMEOUT - executing');
       let pageParam = searchParams?.get('page');
+      console.error('🔍 URL INIT - pageParam from searchParams:', pageParam);
       
       // Fallback: try to get from window.location if searchParams is not available
       if (!pageParam && typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         pageParam = urlParams.get('page');
+        console.error('🔍 URL INIT - pageParam from window.location:', pageParam);
       }
       
+      console.error('🔍 URL INIT - Final pageParam:', pageParam, 'currentPage:', currentPage);
       if (pageParam) {
         const page = parseInt(pageParam, 10);
+        console.error('🔍 URL INIT - parsed page:', page);
         if (page > 0) {
+          console.error('🔍 URL INIT - Setting currentPage from', currentPage, 'to', page);
           setCurrentPage(page);
+          console.error('🔍 URL INIT - setCurrentPage called');
         }
+      } else {
+        console.error('🔍 URL INIT - No pageParam found');
       }
     }, 100); // Increased timeout to ensure hydration is complete
     
     return () => {
+      console.error('🔍 URL INIT - cleanup');
       clearTimeout(timer);
     };
   }, [searchParams]);
@@ -162,19 +174,28 @@ export default function TablesPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
   
+  console.error('🔍 RENDER - currentPage:', currentPage, 'totalPages:', totalPages, 'startIndex:', startIndex);
+  console.error('🔍 RENDER - URL:', typeof window !== 'undefined' ? window.location.href : 'server');
+  console.error('🔍 RENDER - searchParams:', searchParams?.toString());
+  console.error('🔍 RENDER - currentItems length:', currentItems.length);
+  
 
   // Reset to first page when filters change (but not on initial load)
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
+    console.error('🔍 FILTER RESET - hasInitialized:', hasInitialized, 'currentPage:', currentPage);
     if (hasInitialized) {
+      console.error('🔍 FILTER RESET - setting currentPage to 1');
       setCurrentPage(1);
     }
   }, [selectedType, priceRange, showSaleOnly, hasInitialized]);
   
   // Mark as initialized after URL parameter processing
   useEffect(() => {
+    console.error('🔍 HAS INITIALIZED - searchParams:', searchParams?.toString());
     if (searchParams) {
+      console.error('🔍 HAS INITIALIZED - setting to true');
       setHasInitialized(true);
     }
   }, [searchParams]);
