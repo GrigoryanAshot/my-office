@@ -241,6 +241,7 @@ export default function TablesPage() {
           {currentItems.map((item: FurnitureItem) => {
             // Preserve current page in the link
             const currentPageParam = currentPage > 1 ? `?page=${currentPage}` : '';
+            console.log('Generating link for item', item.id, 'currentPage:', currentPage, 'link:', `/furniture/tables/${item.id}${currentPageParam}`);
             return (
             <Link key={item.id} href={`/furniture/tables/${item.id}${currentPageParam}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className={styles.card} style={{ cursor: 'pointer' }}>

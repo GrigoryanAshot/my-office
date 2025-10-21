@@ -31,6 +31,9 @@ export default function TableDetailPage() {
   const searchParams = useSearchParams();
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
   const router = useRouter();
+  
+  console.log('TableDetailPage - searchParams:', searchParams?.toString());
+  console.log('TableDetailPage - page param:', searchParams?.get('page'));
   const [item, setItem] = useState<FurnitureItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImg, setCurrentImg] = useState(0);
@@ -89,11 +92,14 @@ export default function TableDetailPage() {
 
   const handleBackNavigation = () => {
     const pageParam = searchParams?.get('page');
+    console.log('Back navigation - pageParam:', pageParam);
     if (pageParam && parseInt(pageParam, 10) > 1) {
       // Navigate back to the specific page
+      console.log('Navigating back to page:', pageParam);
       router.push(`/furniture/tables?page=${pageParam}`);
     } else {
       // Navigate back to the first page
+      console.log('Navigating back to first page');
       router.push('/furniture/tables');
     }
   };
