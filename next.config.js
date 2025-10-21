@@ -24,10 +24,6 @@ const nextConfig = {
     },
     scrollRestoration: true,
   },
-  // Optimize CSS loading
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
-  },
   // CSS optimization (these are default in Next.js 15+)
   // Vercel deployment optimizations
   env: {
