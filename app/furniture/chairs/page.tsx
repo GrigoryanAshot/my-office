@@ -26,16 +26,21 @@ export default function ChairsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  // Get initial page from URL immediately
+  // Get initial values from URL immediately
   const initialPage = searchParams?.get('page') ? parseInt(searchParams.get('page')!, 10) : 1;
-  console.error('🔍 INITIAL PAGE from searchParams:', initialPage);
+  const initialType = searchParams?.get('type') || 'all';
+  const initialMinPrice = searchParams?.get('minPrice') ? parseInt(searchParams.get('minPrice')!, 10) : 0;
+  const initialMaxPrice = searchParams?.get('maxPrice') ? parseInt(searchParams.get('maxPrice')!, 10) : 1000000;
+  const initialShowSale = searchParams?.get('sale') === 'true';
+  
+  console.error('🔍 INITIAL VALUES from searchParams:', { initialPage, initialType, initialMinPrice, initialMaxPrice, initialShowSale });
   
   const [items, setItems] = useState<FurnitureItem[]>([]);
   const [currentPage, setCurrentPage] = useState(initialPage);
-  const [selectedType, setSelectedType] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
-  const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
-  const [showSaleOnly, setShowSaleOnly] = useState(false);
+  const [selectedType, setSelectedType] = useState<string>(initialType);
+  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: initialMinPrice, max: initialMaxPrice });
+  const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: initialMinPrice, max: initialMaxPrice });
+  const [showSaleOnly, setShowSaleOnly] = useState(initialShowSale);
   const itemsPerPage = 12;
 
   // Sync with URL parameter changes
@@ -49,14 +54,43 @@ export default function ChairsPage() {
     }
   }, [searchParams]);
 
+  // Helper function to build URL with all current filter parameters
+  const buildFilterUrl = (page: number, type: string, minPrice: number, maxPrice: number, saleOnly: boolean) => {
+    const params = new URLSearchParams();
+    if (page > 1) params.set('page', page.toString());
+    if (type !== 'all') params.set('type', type);
+    if (minPrice > 0) params.set('minPrice', minPrice.toString());
+    if (maxPrice < 1000000) params.set('maxPrice', maxPrice.toString());
+    if (saleOnly) params.set('sale', 'true');
+    return params.toString() ? `?${params.toString()}` : '';
+  };
+
+  // Update URL with current filters
+  const updateUrlWithFilters = (page: number, type: string, minPrice: number, maxPrice: number, saleOnly: boolean) => {
+    const url = `/furniture/chairs${buildFilterUrl(page, type, minPrice, maxPrice, saleOnly)}`;
+    router.replace(url, { scroll: false });
+  };
+
+  // Handle type change
+  const handleTypeChange = (newType: string) => {
+    setSelectedType(newType);
+    updateUrlWithFilters(1, newType, priceRange.min, priceRange.max, showSaleOnly);
+  };
+
+  // Handle sale toggle
+  const handleSaleToggle = () => {
+    const newShowSale = !showSaleOnly;
+    setShowSaleOnly(newShowSale);
+    updateUrlWithFilters(1, selectedType, priceRange.min, priceRange.max, newShowSale);
+  };
+
   // Function to handle page change with scroll to top
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     
-    // Update URL with new page parameter
-    const params = new URLSearchParams(searchParams?.toString() || '');
-    params.set('page', newPage.toString());
-    router.replace(`/furniture/chairs?${params.toString()}`, { scroll: false });
+    // Update URL with all current parameters
+    const url = `/furniture/chairs${buildFilterUrl(newPage, selectedType, priceRange.min, priceRange.max, showSaleOnly)}`;
+    router.replace(url, { scroll: false });
     
     // Scroll to top of the page with a small delay to ensure content updates first
     setTimeout(() => {
@@ -144,6 +178,7 @@ export default function ChairsPage() {
 
   const handleApplyFilters = () => {
     setPriceRange(tempPriceRange);
+    updateUrlWithFilters(1, selectedType, tempPriceRange.min, tempPriceRange.max, showSaleOnly);
   };
 
   return (
@@ -161,7 +196,7 @@ export default function ChairsPage() {
           marginTop: '15px'
         }}>
           <button 
-            onClick={() => setShowSaleOnly(!showSaleOnly)}
+            onClick={handleSaleToggle}
             style={{
               padding: '8px 16px',
               backgroundColor: showSaleOnly ? '#dc3545' : '#6c757d',
@@ -181,7 +216,7 @@ export default function ChairsPage() {
             <label style={{ marginRight: '10px', marginBottom: '0' }}>Տեսակ:</label>
             <select 
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
+              onChange={(e) => handleTypeChange(e.target.value)}
               style={{ padding: '8px', borderRadius: '4px', height: '36px' }}
             >
               {types.map(type => (
@@ -219,10 +254,10 @@ export default function ChairsPage() {
 
         <div className={styles.grid}>
           {currentItems.map((item: FurnitureItem) => {
-            // Preserve current page in the link
-            const currentPageParam = currentPage > 1 ? `?page=${currentPage}` : '';
+            // Preserve all current filters and page in the link
+            const filterParams = buildFilterUrl(currentPage, selectedType, priceRange.min, priceRange.max, showSaleOnly);
             return (
-            <Link key={item.id} href={`/furniture/chairs/${item.id}${currentPageParam}`} className={styles.card} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link key={item.id} href={`/furniture/chairs/${item.id}${filterParams}`} className={styles.card} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className={styles.imageContainer}>
                 <Image
                   src={item.imageUrl}
