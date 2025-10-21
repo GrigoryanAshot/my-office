@@ -9,6 +9,7 @@ import styles from '@/component/about/FurnitureGrid.module.css';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
+import { useScrollRestoration } from '@/hooks/useScrollRestoration';
 
 interface FurnitureItem {
   id: number;
@@ -46,6 +47,12 @@ export default function TablesPage() {
   const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 12;
 
+  // Use scroll restoration hook
+  const { saveScrollPosition, clearScrollRestoration } = useScrollRestoration({
+    items,
+    storageKey: 'tables',
+  });
+
   // Sync with URL parameter changes
   useEffect(() => {
     console.error('🔍 URL SYNC EFFECT - searchParams:', searchParams?.toString());
@@ -78,11 +85,7 @@ export default function TablesPage() {
   const handleTypeChange = (newType: string) => {
     setSelectedType(newType);
     updateUrlWithFilters(1, newType, priceRange.min, priceRange.max, showSaleOnly); // Reset to page 1 when filter changes
-    // Clear scroll restoration when filters change
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('tables_scroll_position');
-      sessionStorage.removeItem('tables_restore_scroll');
-    }
+    clearScrollRestoration();
   };
 
   // Handle sale toggle
@@ -90,11 +93,7 @@ export default function TablesPage() {
     const newShowSale = !showSaleOnly;
     setShowSaleOnly(newShowSale);
     updateUrlWithFilters(1, selectedType, priceRange.min, priceRange.max, newShowSale); // Reset to page 1 when filter changes
-    // Clear scroll restoration when filters change
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('tables_scroll_position');
-      sessionStorage.removeItem('tables_restore_scroll');
-    }
+    clearScrollRestoration();
   };
 
   // Function to handle page change with scroll to top
@@ -106,10 +105,7 @@ export default function TablesPage() {
     router.replace(url, { scroll: false });
     
     // Clear the scroll restoration flag when manually changing pages
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('tables_scroll_position');
-      sessionStorage.removeItem('tables_restore_scroll');
-    }
+    clearScrollRestoration();
     
     // Scroll to top of the page with a small delay to ensure content updates first
     setTimeout(() => {
@@ -117,24 +113,6 @@ export default function TablesPage() {
     }, 100);
   };
 
-  // Restore scroll position when coming back from item detail page
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const shouldRestore = sessionStorage.getItem('tables_restore_scroll');
-      const scrollPosition = sessionStorage.getItem('tables_scroll_position');
-      
-      if (shouldRestore === 'true' && scrollPosition && items.length > 0) {
-        console.log('🔍 RESTORING SCROLL POSITION:', scrollPosition);
-        // Wait for images to load before restoring scroll
-        setTimeout(() => {
-          window.scrollTo({ top: parseInt(scrollPosition, 10), behavior: 'instant' });
-          // Clear the flags after restoring
-          sessionStorage.removeItem('tables_scroll_position');
-          sessionStorage.removeItem('tables_restore_scroll');
-        }, 100);
-      }
-    }
-  }, [items]);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -261,11 +239,7 @@ export default function TablesPage() {
   const handleApplyFilters = () => {
     setPriceRange(tempPriceRange);
     updateUrlWithFilters(1, selectedType, tempPriceRange.min, tempPriceRange.max, showSaleOnly); // Reset to page 1 when filter changes
-    // Clear scroll restoration when filters change
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('tables_scroll_position');
-      sessionStorage.removeItem('tables_restore_scroll');
-    }
+    clearScrollRestoration();
   };
 
   if (loading) {
@@ -355,21 +329,12 @@ export default function TablesPage() {
             // Preserve all current filters and page in the link
             const filterParams = buildFilterUrl(currentPage, selectedType, priceRange.min, priceRange.max, showSaleOnly);
             
-            // Handle click to save scroll position
-            const handleItemClick = () => {
-              if (typeof window !== 'undefined') {
-                sessionStorage.setItem('tables_scroll_position', window.scrollY.toString());
-                sessionStorage.setItem('tables_restore_scroll', 'true');
-                console.log('🔍 SAVING SCROLL POSITION:', window.scrollY);
-              }
-            };
-            
             return (
             <Link 
               key={item.id} 
               href={`/furniture/tables/${item.id}${filterParams}`} 
               style={{ textDecoration: 'none', color: 'inherit' }}
-              onClick={handleItemClick}
+              onClick={saveScrollPosition}
             >
               <div className={styles.card} style={{ cursor: 'pointer' }}>
                 <div className={styles.imageContainer}>
