@@ -26,18 +26,7 @@ interface FurnitureItem {
 export default function TablesPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
-  // Initialize currentPage from URL parameter immediately
-  const getInitialPage = () => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const pageParam = urlParams.get('page');
-      return pageParam ? parseInt(pageParam, 10) : 1;
-    }
-    return 1;
-  };
-  
-  const [currentPage, setCurrentPage] = useState(getInitialPage());
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedType, setSelectedType] = useState<string>('Բոլորը');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
@@ -47,19 +36,31 @@ export default function TablesPage() {
   const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 12;
 
-  // Sync page with URL parameters when they change
+  // Initialize page from URL parameters on mount (client-side only)
   useEffect(() => {
-    const pageParam = searchParams?.get('page');
-    console.log('Tables page - URL pageParam:', pageParam, 'currentPage:', currentPage);
-    if (pageParam) {
-      const page = parseInt(pageParam, 10);
-      console.log('Tables page - parsed page:', page);
-      if (page > 0 && page !== currentPage) {
-        console.log('Tables page - updating currentPage from', currentPage, 'to', page);
-        setCurrentPage(page);
+    // Use a timeout to ensure this runs after hydration
+    const timer = setTimeout(() => {
+      let pageParam = searchParams?.get('page');
+      
+      // Fallback: try to get from window.location if searchParams is not available
+      if (!pageParam && typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        pageParam = urlParams.get('page');
       }
-    }
-  }, [searchParams, currentPage]);
+      
+      console.log('Tables page - URL pageParam:', pageParam, 'currentPage:', currentPage);
+      if (pageParam) {
+        const page = parseInt(pageParam, 10);
+        console.log('Tables page - parsed page:', page);
+        if (page > 0) {
+          console.log('Tables page - setting currentPage to:', page);
+          setCurrentPage(page);
+        }
+      }
+    }, 100); // Increased timeout to ensure hydration is complete
+    
+    return () => clearTimeout(timer);
+  }, [searchParams]); // Remove currentPage from dependencies to avoid infinite loop
 
   // Function to handle page change with scroll to top
   const handlePageChange = (newPage: number) => {
