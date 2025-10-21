@@ -132,13 +132,6 @@ export default function HangersPage() {
     });
   }, [items, selectedType, priceRange, showSaleOnly]);
 
-  const handleApplyFilters = () => {
-    setPriceRange({
-      min: tempPriceRange.min ? parseInt(tempPriceRange.min) : 0,
-      max: tempPriceRange.max ? parseInt(tempPriceRange.max) : Infinity
-    });
-  };
-
   // Reset to first page when filters change (but not on initial load or price range initialization)
   useEffect(() => {
     if (hasInitialized && !isInitialPriceSetup) {
