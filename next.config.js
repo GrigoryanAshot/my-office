@@ -24,22 +24,7 @@ const nextConfig = {
     },
     scrollRestoration: true,
   },
-  // Optimize CSS preloading
-  optimizeFonts: true,
-  swcMinify: true,
-  // CSS optimization
-  webpack: (config, { dev, isServer }) => {
-    if (!dev && !isServer) {
-      // Optimize CSS preloading in production
-      config.optimization.splitChunks.cacheGroups.styles = {
-        name: 'styles',
-        test: /\.(css|scss|sass)$/,
-        chunks: 'all',
-        enforce: true,
-      };
-    }
-    return config;
-  },
+  // CSS optimization (these are default in Next.js 15+)
   // Vercel deployment optimizations
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
