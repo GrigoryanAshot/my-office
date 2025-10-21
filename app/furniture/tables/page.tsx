@@ -39,9 +39,12 @@ export default function TablesPage() {
   // Initialize page from URL parameters
   useEffect(() => {
     const pageParam = searchParams?.get('page');
+    console.log('Tables page - URL pageParam:', pageParam);
     if (pageParam) {
       const page = parseInt(pageParam, 10);
+      console.log('Tables page - parsed page:', page);
       if (page > 0) {
+        console.log('Tables page - setting currentPage to:', page);
         setCurrentPage(page);
       }
     }
@@ -145,11 +148,24 @@ export default function TablesPage() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
+  
+  console.log('Tables page render - currentPage:', currentPage, 'totalPages:', totalPages, 'startIndex:', startIndex);
 
-  // Reset to first page when filters change
+  // Reset to first page when filters change (but not on initial load)
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
   useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedType, priceRange, showSaleOnly]);
+    if (hasInitialized) {
+      setCurrentPage(1);
+    }
+  }, [selectedType, priceRange, showSaleOnly, hasInitialized]);
+  
+  // Mark as initialized after URL parameter processing
+  useEffect(() => {
+    if (searchParams) {
+      setHasInitialized(true);
+    }
+  }, [searchParams]);
 
   const handleApplyFilters = () => {
     setPriceRange(tempPriceRange);
