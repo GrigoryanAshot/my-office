@@ -3,10 +3,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams, useRouter } from 'next/navigation';
 import styles from '@/component/about/FurnitureGrid.module.css';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
+import { useScrollRestoration } from '@/hooks/useScrollRestoration';
 
 interface FurnitureItem {
   id: number;
@@ -21,13 +23,87 @@ interface FurnitureItem {
 }
 
 export default function HangersPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Get initial values from URL
+  const initialPage = searchParams?.get('page') ? parseInt(searchParams.get('page')!, 10) : 1;
+  const initialType = searchParams?.get('type') || 'all';
+  const initialMinPrice = searchParams?.get('minPrice') ? parseInt(searchParams.get('minPrice')!, 10) : 0;
+  const initialMaxPrice = searchParams?.get('maxPrice') ? parseInt(searchParams.get('maxPrice')!, 10) : Infinity;
+  const initialShowSale = searchParams?.get('sale') === 'true';
+  
   const [items, setItems] = useState<FurnitureItem[]>([]);
   const [types, setTypes] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedType, setSelectedType] = useState('all');
-  const [priceRange, setPriceRange] = useState({ min: 0, max: Infinity });
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [selectedType, setSelectedType] = useState(initialType);
+  const [priceRange, setPriceRange] = useState({ min: initialMinPrice, max: initialMaxPrice });
   const [tempPriceRange, setTempPriceRange] = useState({ min: '', max: '' });
-  const [showSaleOnly, setShowSaleOnly] = useState(false);
+  const [showSaleOnly, setShowSaleOnly] = useState(initialShowSale);
+  
+  // Track initialization
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const [isInitialPriceSetup, setIsInitialPriceSetup] = useState(true);
+
+  // Use scroll restoration hook
+  const { saveScrollPosition, clearScrollRestoration } = useScrollRestoration({
+    items,
+    storageKey: 'hangers',
+  });
+
+  // Helper function to build URL with all current filter parameters
+  const buildFilterUrl = (page: number, type: string, minPrice: number, maxPrice: number, saleOnly: boolean) => {
+    const params = new URLSearchParams();
+    if (page > 1) params.set('page', page.toString());
+    if (type !== 'all') params.set('type', type);
+    if (minPrice > 0) params.set('minPrice', minPrice.toString());
+    if (maxPrice < Infinity) params.set('maxPrice', maxPrice.toString());
+    if (saleOnly) params.set('sale', 'true');
+    return params.toString() ? `?${params.toString()}` : '';
+  };
+
+  // Update URL with current filters
+  const updateUrlWithFilters = (page: number, type: string, minPrice: number, maxPrice: number, saleOnly: boolean) => {
+    const url = `/other/hangers${buildFilterUrl(page, type, minPrice, maxPrice, saleOnly)}`;
+    router.replace(url, { scroll: false });
+  };
+
+  // Handle type change
+  const handleTypeChange = (newType: string) => {
+    setSelectedType(newType);
+    setCurrentPage(1);
+    updateUrlWithFilters(1, newType, priceRange.min, priceRange.max, showSaleOnly);
+    clearScrollRestoration();
+  };
+
+  // Handle sale toggle
+  const handleSaleToggle = () => {
+    const newShowSale = !showSaleOnly;
+    setShowSaleOnly(newShowSale);
+    setCurrentPage(1);
+    updateUrlWithFilters(1, selectedType, priceRange.min, priceRange.max, newShowSale);
+    clearScrollRestoration();
+  };
+
+  // Handle page change with scroll to top
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    updateUrlWithFilters(newPage, selectedType, priceRange.min, priceRange.max, showSaleOnly);
+    clearScrollRestoration();
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
+
+  // Handle apply filters
+  const handleApplyFilters = () => {
+    const min = tempPriceRange.min ? parseInt(tempPriceRange.min) : 0;
+    const max = tempPriceRange.max ? parseInt(tempPriceRange.max) : Infinity;
+    setPriceRange({ min, max });
+    setCurrentPage(1);
+    updateUrlWithFilters(1, selectedType, min, max, showSaleOnly);
+    clearScrollRestoration();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,10 +139,26 @@ export default function HangersPage() {
     });
   };
 
-  // Reset to first page when filters change
+  // Reset to first page when filters change (but not on initial load or price range initialization)
   useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedType, priceRange, showSaleOnly]);
+    if (hasInitialized && !isInitialPriceSetup) {
+      setCurrentPage(1);
+    }
+  }, [selectedType, priceRange.min, showSaleOnly, hasInitialized]);
+  
+  // Mark initial price setup as complete after items are loaded
+  useEffect(() => {
+    if (items.length > 0 && isInitialPriceSetup) {
+      setIsInitialPriceSetup(false);
+    }
+  }, [items, isInitialPriceSetup]);
+  
+  // Mark as initialized after URL parameter processing
+  useEffect(() => {
+    if (searchParams) {
+      setHasInitialized(true);
+    }
+  }, [searchParams]);
 
   const itemsPerPage = 8;
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
@@ -82,7 +174,7 @@ export default function HangersPage() {
         <h1 className={styles.description1}>Կախիչներ</h1>
         <div className={styles.filters} style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'center', marginTop: '15px' }}>
           <button
-            onClick={() => setShowSaleOnly(!showSaleOnly)}
+            onClick={handleSaleToggle}
             style={{
               padding: '8px 16px',
               borderRadius: '4px',
@@ -103,7 +195,7 @@ export default function HangersPage() {
             <label style={{ marginRight: '10px', marginBottom: '0' }}>Տեսակ:</label>
             <select 
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
+              onChange={(e) => handleTypeChange(e.target.value)}
               style={{ padding: '8px', borderRadius: '4px', height: '36px' }}
             >
               {typesWithAll.map(type => (
@@ -140,8 +232,16 @@ export default function HangersPage() {
         </div>
         
         <div className={styles.grid}>
-          {currentItems.map((item: FurnitureItem) => (
-            <Link key={item.id} href={`/other/hangers/${item.id}`} className={styles.card} style={{ textDecoration: 'none', color: 'inherit' }}>
+          {currentItems.map((item: FurnitureItem) => {
+            const filterParams = buildFilterUrl(currentPage, selectedType, priceRange.min, priceRange.max, showSaleOnly);
+            return (
+            <Link 
+              key={item.id} 
+              href={`/other/hangers/${item.id}${filterParams}`} 
+              className={styles.card} 
+              style={{ textDecoration: 'none', color: 'inherit' }}
+              onClick={saveScrollPosition}
+            >
               <div className={styles.imageContainer}>
                 <Image
                   src={item.imageUrl}
@@ -183,7 +283,8 @@ export default function HangersPage() {
                 )}
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
         {filteredItems.length === 0 && (
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
@@ -195,7 +296,7 @@ export default function HangersPage() {
           <div className={styles.pagination}>
             <button
               className={styles.paginationButton}
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
               disabled={currentPage === 1}
             >
               Նախորդ
@@ -203,7 +304,7 @@ export default function HangersPage() {
             <span>Էջ {currentPage} / {totalPages}-ից</span>
             <button
               className={styles.paginationButton}
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
               disabled={currentPage === totalPages}
             >
               Հաջորդ
