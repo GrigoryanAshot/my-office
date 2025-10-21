@@ -25,24 +25,43 @@ interface FurnitureItem {
 export default function ChairsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  
+  // Initialize currentPage from URL on client-side
+  const getInitialPage = () => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const pageParam = urlParams.get('page');
+      if (pageParam) {
+        const page = parseInt(pageParam, 10);
+        if (page > 0) {
+          console.error('🔍 INITIAL PAGE - Setting from URL:', page);
+          return page;
+        }
+      }
+    }
+    return 1;
+  };
+  
   const [items, setItems] = useState<FurnitureItem[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(getInitialPage);
   const [selectedType, setSelectedType] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [showSaleOnly, setShowSaleOnly] = useState(false);
   const itemsPerPage = 12;
 
-  // Initialize page from URL parameters
+  // Sync with URL parameters when they change
   useEffect(() => {
+    console.error('🔍 URL SYNC EFFECT - searchParams:', searchParams?.toString());
     const pageParam = searchParams?.get('page');
     if (pageParam) {
       const page = parseInt(pageParam, 10);
-      if (page > 0) {
+      if (page > 0 && page !== currentPage) {
+        console.error('🔍 URL SYNC - Updating currentPage from', currentPage, 'to', page);
         setCurrentPage(page);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, currentPage]);
 
   // Function to handle page change with scroll to top
   const handlePageChange = (newPage: number) => {
@@ -107,10 +126,25 @@ export default function ChairsPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
 
-  // Reset to first page when filters change
+  // Reset to first page when filters change (but not on initial load)
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
   useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedType, priceRange, showSaleOnly]);
+    console.error('🔍 FILTER RESET - hasInitialized:', hasInitialized, 'currentPage:', currentPage);
+    if (hasInitialized) {
+      console.error('🔍 FILTER RESET - setting currentPage to 1');
+      setCurrentPage(1);
+    }
+  }, [selectedType, priceRange, showSaleOnly, hasInitialized]);
+  
+  // Mark as initialized after URL parameter processing
+  useEffect(() => {
+    console.error('🔍 HAS INITIALIZED - searchParams:', searchParams?.toString());
+    if (searchParams) {
+      console.error('🔍 HAS INITIALIZED - setting to true');
+      setHasInitialized(true);
+    }
+  }, [searchParams]);
 
   const handleApplyFilters = () => {
     setPriceRange(tempPriceRange);
