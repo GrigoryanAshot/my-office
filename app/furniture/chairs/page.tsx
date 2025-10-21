@@ -26,42 +26,32 @@ export default function ChairsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  // Initialize currentPage from URL on client-side
-  const getInitialPage = () => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const pageParam = urlParams.get('page');
-      if (pageParam) {
-        const page = parseInt(pageParam, 10);
-        if (page > 0) {
-          console.error('🔍 INITIAL PAGE - Setting from URL:', page);
-          return page;
-        }
-      }
-    }
-    return 1;
-  };
-  
   const [items, setItems] = useState<FurnitureItem[]>([]);
-  const [currentPage, setCurrentPage] = useState(getInitialPage);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedType, setSelectedType] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [showSaleOnly, setShowSaleOnly] = useState(false);
   const itemsPerPage = 12;
 
-  // Sync with URL parameters when they change
+  // Initialize page from URL parameters on mount and when they change
   useEffect(() => {
-    console.error('🔍 URL SYNC EFFECT - searchParams:', searchParams?.toString());
+    console.error('🔍 URL INIT EFFECT - searchParams:', searchParams?.toString());
     const pageParam = searchParams?.get('page');
     if (pageParam) {
       const page = parseInt(pageParam, 10);
-      if (page > 0 && page !== currentPage) {
-        console.error('🔍 URL SYNC - Updating currentPage from', currentPage, 'to', page);
+      if (page > 0) {
+        console.error('🔍 URL INIT - Setting currentPage from', currentPage, 'to', page);
         setCurrentPage(page);
       }
+    } else {
+      // If no page param, ensure we're on page 1
+      if (currentPage !== 1) {
+        console.error('🔍 URL INIT - No page param, setting to 1');
+        setCurrentPage(1);
+      }
     }
-  }, [searchParams, currentPage]);
+  }, [searchParams]);
 
   // Function to handle page change with scroll to top
   const handlePageChange = (newPage: number) => {
