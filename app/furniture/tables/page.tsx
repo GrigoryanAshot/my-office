@@ -24,12 +24,12 @@ interface FurnitureItem {
 }
 
 export default function TablesPage() {
-  console.log('🚨 COMPONENT LOADED - TablesPage component is rendering');
+  console.error('🚨 COMPONENT LOADED - TablesPage component is rendering');
   alert('🚨 TablesPage component loaded! Check console for debug logs.');
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  console.log('🚨 INITIAL STATE - currentPage:', currentPage);
+  console.error('🚨 INITIAL STATE - currentPage:', currentPage);
   const [selectedType, setSelectedType] = useState<string>('Բոլորը');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
@@ -41,7 +41,7 @@ export default function TablesPage() {
 
   // Initialize page from URL parameters on mount (client-side only)
   useEffect(() => {
-    console.log('🔍 DEBUG: useEffect triggered, searchParams:', searchParams?.toString());
+    console.error('🔍 DEBUG: useEffect triggered, searchParams:', searchParams?.toString());
     
     // Use a timeout to ensure this runs after hydration
     const timer = setTimeout(() => {

@@ -14,7 +14,7 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: false, // Temporarily disable to see console logs
   },
   poweredByHeader: false,
   reactStrictMode: true,
