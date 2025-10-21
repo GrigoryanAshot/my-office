@@ -178,7 +178,7 @@ export default function TablesPage() {
       console.error('🔍 FILTER RESET - setting currentPage to 1');
       setCurrentPage(1);
     }
-  }, [selectedType, priceRange.min, showSaleOnly, hasInitialized, isInitialPriceSetup]);
+  }, [selectedType, priceRange.min, showSaleOnly, hasInitialized]);
   
   // Mark as initialized after URL parameter processing
   useEffect(() => {
