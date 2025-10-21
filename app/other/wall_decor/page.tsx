@@ -180,10 +180,6 @@ export default function WallDecorPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
 
-  const handleApplyFilters = () => {
-    setPriceRange(tempPriceRange);
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
