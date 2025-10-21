@@ -116,16 +116,26 @@ export default function ChairsPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
 
-  // Reset to first page when filters change (but not on initial load)
+  // Reset to first page when filters change (but not on initial load or price range initialization)
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [isInitialPriceSetup, setIsInitialPriceSetup] = useState(true);
+  
+  // Mark initial price setup as complete after items are loaded
+  useEffect(() => {
+    if (items.length > 0 && isInitialPriceSetup) {
+      console.error('🔍 INITIAL PRICE SETUP - completed');
+      setIsInitialPriceSetup(false);
+    }
+  }, [items, isInitialPriceSetup]);
   
   useEffect(() => {
-    console.error('🔍 FILTER RESET - hasInitialized:', hasInitialized, 'currentPage:', currentPage);
-    if (hasInitialized) {
+    console.error('🔍 FILTER RESET - hasInitialized:', hasInitialized, 'isInitialPriceSetup:', isInitialPriceSetup);
+    // Only reset if initialized AND not during initial price setup
+    if (hasInitialized && !isInitialPriceSetup) {
       console.error('🔍 FILTER RESET - setting currentPage to 1');
       setCurrentPage(1);
     }
-  }, [selectedType, priceRange, showSaleOnly, hasInitialized]);
+  }, [selectedType, priceRange.min, showSaleOnly, hasInitialized, isInitialPriceSetup]);
   
   // Mark as initialized after URL parameter processing
   useEffect(() => {
