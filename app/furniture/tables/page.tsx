@@ -25,7 +25,6 @@ interface FurnitureItem {
 
 export default function TablesPage() {
   console.error('🚨 COMPONENT LOADED - TablesPage component is rendering');
-  alert('🚨 TablesPage component loaded! Check console for debug logs.');
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,36 +44,36 @@ export default function TablesPage() {
     
     // Use a timeout to ensure this runs after hydration
     const timer = setTimeout(() => {
-      console.log('🔍 DEBUG: setTimeout callback executing');
-      console.log('🔍 DEBUG: window available:', typeof window !== 'undefined');
-      console.log('🔍 DEBUG: current URL:', typeof window !== 'undefined' ? window.location.href : 'N/A');
+      console.error('🔍 DEBUG: setTimeout callback executing');
+      console.error('🔍 DEBUG: window available:', typeof window !== 'undefined');
+      console.error('🔍 DEBUG: current URL:', typeof window !== 'undefined' ? window.location.href : 'N/A');
       
       let pageParam = searchParams?.get('page');
-      console.log('🔍 DEBUG: pageParam from searchParams:', pageParam);
+      console.error('🔍 DEBUG: pageParam from searchParams:', pageParam);
       
       // Fallback: try to get from window.location if searchParams is not available
       if (!pageParam && typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         pageParam = urlParams.get('page');
-        console.log('🔍 DEBUG: pageParam from window.location:', pageParam);
+        console.error('🔍 DEBUG: pageParam from window.location:', pageParam);
       }
       
-      console.log('🔍 DEBUG: Final pageParam:', pageParam, 'currentPage:', currentPage);
+      console.error('🔍 DEBUG: Final pageParam:', pageParam, 'currentPage:', currentPage);
       if (pageParam) {
         const page = parseInt(pageParam, 10);
-        console.log('🔍 DEBUG: parsed page:', page);
+        console.error('🔍 DEBUG: parsed page:', page);
         if (page > 0) {
-          console.log('🔍 DEBUG: Setting currentPage from', currentPage, 'to', page);
+          console.error('🔍 DEBUG: Setting currentPage from', currentPage, 'to', page);
           setCurrentPage(page);
-          console.log('🔍 DEBUG: setCurrentPage called with:', page);
+          console.error('🔍 DEBUG: setCurrentPage called with:', page);
         }
       } else {
-        console.log('🔍 DEBUG: No pageParam found, keeping currentPage:', currentPage);
+        console.error('🔍 DEBUG: No pageParam found, keeping currentPage:', currentPage);
       }
     }, 100); // Increased timeout to ensure hydration is complete
     
     return () => {
-      console.log('🔍 DEBUG: useEffect cleanup');
+      console.error('🔍 DEBUG: useEffect cleanup');
       clearTimeout(timer);
     };
   }, [searchParams]); // Remove currentPage from dependencies to avoid infinite loop
@@ -178,27 +177,27 @@ export default function TablesPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
   
-  console.log('🔍 DEBUG: RENDER - currentPage:', currentPage, 'totalPages:', totalPages, 'startIndex:', startIndex);
-  console.log('🔍 DEBUG: RENDER - URL:', typeof window !== 'undefined' ? window.location.href : 'server');
-  console.log('🔍 DEBUG: RENDER - searchParams:', searchParams?.toString());
-  console.log('🔍 DEBUG: RENDER - currentItems length:', currentItems.length);
+  console.error('🔍 DEBUG: RENDER - currentPage:', currentPage, 'totalPages:', totalPages, 'startIndex:', startIndex);
+  console.error('🔍 DEBUG: RENDER - URL:', typeof window !== 'undefined' ? window.location.href : 'server');
+  console.error('🔍 DEBUG: RENDER - searchParams:', searchParams?.toString());
+  console.error('🔍 DEBUG: RENDER - currentItems length:', currentItems.length);
 
   // Reset to first page when filters change (but not on initial load)
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    console.log('🔍 DEBUG: Filter reset effect - hasInitialized:', hasInitialized, 'currentPage:', currentPage);
+    console.error('🔍 DEBUG: Filter reset effect - hasInitialized:', hasInitialized, 'currentPage:', currentPage);
     if (hasInitialized) {
-      console.log('🔍 DEBUG: Filter reset - setting currentPage to 1');
+      console.error('🔍 DEBUG: Filter reset - setting currentPage to 1');
       setCurrentPage(1);
     }
   }, [selectedType, priceRange, showSaleOnly, hasInitialized]);
   
   // Mark as initialized after URL parameter processing
   useEffect(() => {
-    console.log('🔍 DEBUG: hasInitialized effect - searchParams:', searchParams?.toString());
+    console.error('🔍 DEBUG: hasInitialized effect - searchParams:', searchParams?.toString());
     if (searchParams) {
-      console.log('🔍 DEBUG: Setting hasInitialized to true');
+      console.error('🔍 DEBUG: Setting hasInitialized to true');
       setHasInitialized(true);
     }
   }, [searchParams]);
