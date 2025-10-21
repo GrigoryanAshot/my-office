@@ -26,7 +26,18 @@ interface FurnitureItem {
 export default function TablesPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Initialize currentPage from URL parameter immediately
+  const getInitialPage = () => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const pageParam = urlParams.get('page');
+      return pageParam ? parseInt(pageParam, 10) : 1;
+    }
+    return 1;
+  };
+  
+  const [currentPage, setCurrentPage] = useState(getInitialPage());
   const [selectedType, setSelectedType] = useState<string>('Բոլորը');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
@@ -36,19 +47,19 @@ export default function TablesPage() {
   const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 12;
 
-  // Initialize page from URL parameters
+  // Sync page with URL parameters when they change
   useEffect(() => {
     const pageParam = searchParams?.get('page');
-    console.log('Tables page - URL pageParam:', pageParam);
+    console.log('Tables page - URL pageParam:', pageParam, 'currentPage:', currentPage);
     if (pageParam) {
       const page = parseInt(pageParam, 10);
       console.log('Tables page - parsed page:', page);
-      if (page > 0) {
-        console.log('Tables page - setting currentPage to:', page);
+      if (page > 0 && page !== currentPage) {
+        console.log('Tables page - updating currentPage from', currentPage, 'to', page);
         setCurrentPage(page);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, currentPage]);
 
   // Function to handle page change with scroll to top
   const handlePageChange = (newPage: number) => {
@@ -149,7 +160,7 @@ export default function TablesPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
   
-  console.log('Tables page render - currentPage:', currentPage, 'totalPages:', totalPages, 'startIndex:', startIndex);
+  console.log('Tables page render - currentPage:', currentPage, 'totalPages:', totalPages, 'startIndex:', startIndex, 'URL:', typeof window !== 'undefined' ? window.location.href : 'server');
 
   // Reset to first page when filters change (but not on initial load)
   const [hasInitialized, setHasInitialized] = useState(false);
