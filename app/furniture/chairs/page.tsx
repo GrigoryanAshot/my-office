@@ -3,11 +3,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter} from 'next/navigation';
 import styles from '@/component/about/FurnitureGrid.module.css';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
+import { useScrollRestoration } from '@/hooks/useScrollRestoration';
 
 interface FurnitureItem {
   id: number;
@@ -43,6 +44,12 @@ export default function ChairsPage() {
   const [showSaleOnly, setShowSaleOnly] = useState(initialShowSale);
   const itemsPerPage = 12;
 
+  // Use scroll restoration hook
+  const { saveScrollPosition, clearScrollRestoration } = useScrollRestoration({
+    items,
+    storageKey: 'chairs',
+  });
+
   // Sync with URL parameter changes
   useEffect(() => {
     console.error('🔍 URL SYNC EFFECT - searchParams:', searchParams?.toString());
@@ -75,11 +82,7 @@ export default function ChairsPage() {
   const handleTypeChange = (newType: string) => {
     setSelectedType(newType);
     updateUrlWithFilters(1, newType, priceRange.min, priceRange.max, showSaleOnly);
-    // Clear scroll restoration when filters change
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('chairs_scroll_position');
-      sessionStorage.removeItem('chairs_restore_scroll');
-    }
+    clearScrollRestoration();
   };
 
   // Handle sale toggle
@@ -87,11 +90,7 @@ export default function ChairsPage() {
     const newShowSale = !showSaleOnly;
     setShowSaleOnly(newShowSale);
     updateUrlWithFilters(1, selectedType, priceRange.min, priceRange.max, newShowSale);
-    // Clear scroll restoration when filters change
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('chairs_scroll_position');
-      sessionStorage.removeItem('chairs_restore_scroll');
-    }
+    clearScrollRestoration();
   };
 
   // Function to handle page change with scroll to top
@@ -103,35 +102,13 @@ export default function ChairsPage() {
     router.replace(url, { scroll: false });
     
     // Clear the scroll restoration flag when manually changing pages
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('chairs_scroll_position');
-      sessionStorage.removeItem('chairs_restore_scroll');
-    }
+    clearScrollRestoration();
     
     // Scroll to top of the page with a small delay to ensure content updates first
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };
-
-  // Restore scroll position when coming back from item detail page
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const shouldRestore = sessionStorage.getItem('chairs_restore_scroll');
-      const scrollPosition = sessionStorage.getItem('chairs_scroll_position');
-      
-      if (shouldRestore === 'true' && scrollPosition && items.length > 0) {
-        console.log('🔍 RESTORING SCROLL POSITION:', scrollPosition);
-        // Wait for images to load before restoring scroll
-        setTimeout(() => {
-          window.scrollTo({ top: parseInt(scrollPosition, 10), behavior: 'instant' });
-          // Clear the flags after restoring
-          sessionStorage.removeItem('chairs_scroll_position');
-          sessionStorage.removeItem('chairs_restore_scroll');
-        }, 100);
-      }
-    }
-  }, [items]);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -214,11 +191,7 @@ export default function ChairsPage() {
   const handleApplyFilters = () => {
     setPriceRange(tempPriceRange);
     updateUrlWithFilters(1, selectedType, tempPriceRange.min, tempPriceRange.max, showSaleOnly);
-    // Clear scroll restoration when filters change
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('chairs_scroll_position');
-      sessionStorage.removeItem('chairs_restore_scroll');
-    }
+    clearScrollRestoration();
   };
 
   return (
@@ -297,22 +270,13 @@ export default function ChairsPage() {
             // Preserve all current filters and page in the link
             const filterParams = buildFilterUrl(currentPage, selectedType, priceRange.min, priceRange.max, showSaleOnly);
             
-            // Handle click to save scroll position
-            const handleItemClick = () => {
-              if (typeof window !== 'undefined') {
-                sessionStorage.setItem('chairs_scroll_position', window.scrollY.toString());
-                sessionStorage.setItem('chairs_restore_scroll', 'true');
-                console.log('🔍 SAVING SCROLL POSITION:', window.scrollY);
-              }
-            };
-            
             return (
             <Link 
               key={item.id} 
               href={`/furniture/chairs/${item.id}${filterParams}`} 
               className={styles.card} 
               style={{ textDecoration: 'none', color: 'inherit' }}
-              onClick={handleItemClick}
+              onClick={saveScrollPosition}
             >
               <div className={styles.imageContainer}>
                 <Image
