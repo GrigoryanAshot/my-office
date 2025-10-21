@@ -27,7 +27,11 @@ export default function TablesPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  const [currentPage, setCurrentPage] = useState(1);
+  // Get initial page from URL immediately
+  const initialPage = searchParams?.get('page') ? parseInt(searchParams.get('page')!, 10) : 1;
+  console.error('🔍 INITIAL PAGE from searchParams:', initialPage);
+  
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [selectedType, setSelectedType] = useState<string>('Բոլորը');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
@@ -37,22 +41,14 @@ export default function TablesPage() {
   const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 12;
 
-  // Initialize page from URL parameters on mount and when they change
+  // Sync with URL parameter changes
   useEffect(() => {
-    console.error('🔍 URL INIT EFFECT - searchParams:', searchParams?.toString());
+    console.error('🔍 URL SYNC EFFECT - searchParams:', searchParams?.toString());
     const pageParam = searchParams?.get('page');
-    if (pageParam) {
-      const page = parseInt(pageParam, 10);
-      if (page > 0) {
-        console.error('🔍 URL INIT - Setting currentPage from', currentPage, 'to', page);
-        setCurrentPage(page);
-      }
-    } else {
-      // If no page param, ensure we're on page 1
-      if (currentPage !== 1) {
-        console.error('🔍 URL INIT - No page param, setting to 1');
-        setCurrentPage(1);
-      }
+    const newPage = pageParam ? parseInt(pageParam, 10) : 1;
+    if (newPage > 0 && newPage !== currentPage) {
+      console.error('🔍 URL SYNC - Updating currentPage from', currentPage, 'to', newPage);
+      setCurrentPage(newPage);
     }
   }, [searchParams]);
 
