@@ -312,7 +312,8 @@ export default function WallDecorPage() {
                 </div>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
 
         {filteredItems.length === 0 && (
