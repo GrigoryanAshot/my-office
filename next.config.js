@@ -19,8 +19,26 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   experimental: {
-    optimizeCss: true,
+    optimizeCss: {
+      logLevel: 'error', // Only show errors, not warnings
+    },
     scrollRestoration: true,
+  },
+  // Optimize CSS preloading
+  optimizeFonts: true,
+  swcMinify: true,
+  // CSS optimization
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      // Optimize CSS preloading in production
+      config.optimization.splitChunks.cacheGroups.styles = {
+        name: 'styles',
+        test: /\.(css|scss|sass)$/,
+        chunks: 'all',
+        enforce: true,
+      };
+    }
+    return config;
   },
   // Vercel deployment optimizations
   env: {
