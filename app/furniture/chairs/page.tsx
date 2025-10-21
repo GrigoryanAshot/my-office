@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams, useRouter } from 'next/navigation';
 import styles from '@/component/about/FurnitureGrid.module.css';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
@@ -22,6 +23,8 @@ interface FurnitureItem {
 }
 
 export default function ChairsPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [items, setItems] = useState<FurnitureItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedType, setSelectedType] = useState<string>('all');
@@ -30,9 +33,26 @@ export default function ChairsPage() {
   const [showSaleOnly, setShowSaleOnly] = useState(false);
   const itemsPerPage = 12;
 
+  // Initialize page from URL parameters
+  useEffect(() => {
+    const pageParam = searchParams.get('page');
+    if (pageParam) {
+      const page = parseInt(pageParam, 10);
+      if (page > 0) {
+        setCurrentPage(page);
+      }
+    }
+  }, [searchParams]);
+
   // Function to handle page change with scroll to top
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
+    
+    // Update URL with new page parameter
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', newPage.toString());
+    router.replace(`/furniture/chairs?${params.toString()}`, { scroll: false });
+    
     // Scroll to top of the page with a small delay to ensure content updates first
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -165,8 +185,11 @@ export default function ChairsPage() {
         </div>
 
         <div className={styles.grid}>
-          {currentItems.map((item: FurnitureItem) => (
-            <Link key={item.id} href={`/furniture/chairs/${item.id}`} className={styles.card} style={{ textDecoration: 'none', color: 'inherit' }}>
+          {currentItems.map((item: FurnitureItem) => {
+            // Preserve current page in the link
+            const currentPageParam = currentPage > 1 ? `?page=${currentPage}` : '';
+            return (
+            <Link key={item.id} href={`/furniture/chairs/${item.id}${currentPageParam}`} className={styles.card} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className={styles.imageContainer}>
                 <Image
                   src={item.imageUrl}
@@ -208,7 +231,8 @@ export default function ChairsPage() {
                 )}
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
 
         {filteredItems.length === 0 && (

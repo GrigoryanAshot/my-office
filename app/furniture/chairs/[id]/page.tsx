@@ -4,7 +4,7 @@ import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import styles from './TableDetail.module.css';
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
 import CallOrderPopup from '@/component/banner/CallOrderPopup';
 import DataLoading from '@/component/loading/DataLoading';
@@ -24,6 +24,7 @@ interface FurnitureItem {
 
 export default function ChairDetailPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
   const router = useRouter();
   const [item, setItem] = useState<FurnitureItem | null>(null);
@@ -74,6 +75,17 @@ export default function ChairDetailPage() {
     setCurrentImg((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  const handleBackNavigation = () => {
+    const pageParam = searchParams.get('page');
+    if (pageParam && parseInt(pageParam, 10) > 1) {
+      // Navigate back to the specific page
+      router.push(`/furniture/chairs?page=${pageParam}`);
+    } else {
+      // Navigate back to the first page
+      router.push('/furniture/chairs');
+    }
+  };
+
   if (loading) {
     return <DataLoading />;
   }
@@ -88,7 +100,7 @@ export default function ChairDetailPage() {
             <p className={styles.errorMessage}>
               Ցավոք, մենք չենք կարող գտնել այս ապրանքը: Խնդրում ենք ստուգել URL-ը կամ վերադառնալ գլխավոր էջ:
             </p>
-            <button className={styles.backButton} onClick={() => router.back()}>
+            <button className={styles.backButton} onClick={handleBackNavigation}>
               Վերադառնալ
             </button>
           </div>
