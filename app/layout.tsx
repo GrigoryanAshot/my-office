@@ -5,7 +5,6 @@ import "slick-carousel/slick/slick-theme.css";
 import "react-toastify/dist/ReactToastify.css";
 import "../public/css/style.css";
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'
 import { Providers } from "@/redux/provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
