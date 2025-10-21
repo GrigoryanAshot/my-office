@@ -88,7 +88,7 @@ export default function TableDetailPage() {
   };
 
   const handleBackNavigation = () => {
-    const pageParam = searchParams.get('page');
+    const pageParam = searchParams?.get('page');
     if (pageParam && parseInt(pageParam, 10) > 1) {
       // Navigate back to the specific page
       router.push(`/furniture/tables?page=${pageParam}`);

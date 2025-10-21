@@ -38,7 +38,7 @@ export default function TablesPage() {
 
   // Initialize page from URL parameters
   useEffect(() => {
-    const pageParam = searchParams.get('page');
+    const pageParam = searchParams?.get('page');
     if (pageParam) {
       const page = parseInt(pageParam, 10);
       if (page > 0) {
@@ -52,7 +52,7 @@ export default function TablesPage() {
     setCurrentPage(newPage);
     
     // Update URL with new page parameter
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     params.set('page', newPage.toString());
     router.replace(`/furniture/tables?${params.toString()}`, { scroll: false });
     
