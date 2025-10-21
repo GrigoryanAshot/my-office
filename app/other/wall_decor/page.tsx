@@ -43,6 +43,10 @@ export default function WallDecorPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 8;
+  
+  // Track initialization to prevent filter reset on first load
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const [isInitialPriceSetup, setIsInitialPriceSetup] = useState(true);
 
   // Use scroll restoration hook
   const { saveScrollPosition, clearScrollRestoration } = useScrollRestoration({
@@ -170,10 +174,26 @@ export default function WallDecorPage() {
     });
   }, [items, selectedType, priceRange, showSaleOnly]);
 
-  // Reset to first page when filters change
+  // Reset to first page when filters change (but not on initial load or price range initialization)
   useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedType, priceRange, showSaleOnly]);
+    if (hasInitialized && !isInitialPriceSetup) {
+      setCurrentPage(1);
+    }
+  }, [selectedType, priceRange.min, showSaleOnly, hasInitialized]);
+  
+  // Mark initial price setup as complete after items are loaded
+  useEffect(() => {
+    if (items.length > 0 && isInitialPriceSetup) {
+      setIsInitialPriceSetup(false);
+    }
+  }, [items, isInitialPriceSetup]);
+  
+  // Mark as initialized after URL parameter processing
+  useEffect(() => {
+    if (searchParams) {
+      setHasInitialized(true);
+    }
+  }, [searchParams]);
 
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
