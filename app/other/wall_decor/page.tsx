@@ -3,10 +3,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams, useRouter } from 'next/navigation';
 import styles from '@/component/about/FurnitureGrid.module.css';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
+import { useScrollRestoration } from '@/hooks/useScrollRestoration';
 
 interface FurnitureItem {
   id: number;
@@ -22,15 +24,83 @@ interface FurnitureItem {
 }
 
 export default function WallDecorPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedType, setSelectedType] = useState<string>('Բոլորը');
-  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
-  const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
-  const [showSaleOnly, setShowSaleOnly] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Get initial values from URL immediately
+  const initialPage = searchParams?.get('page') ? parseInt(searchParams.get('page')!, 10) : 1;
+  const initialType = searchParams?.get('type') || 'Բոլորը';
+  const initialMinPrice = searchParams?.get('minPrice') ? parseInt(searchParams.get('minPrice')!, 10) : 0;
+  const initialMaxPrice = searchParams?.get('maxPrice') ? parseInt(searchParams.get('maxPrice')!, 10) : 1000000;
+  const initialShowSale = searchParams?.get('sale') === 'true';
+  
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [selectedType, setSelectedType] = useState<string>(initialType);
+  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: initialMinPrice, max: initialMaxPrice });
+  const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: initialMinPrice, max: initialMaxPrice });
+  const [showSaleOnly, setShowSaleOnly] = useState(initialShowSale);
   const [items, setItems] = useState<FurnitureItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 8;
+
+  // Use scroll restoration hook
+  const { saveScrollPosition, clearScrollRestoration } = useScrollRestoration({
+    items,
+    storageKey: 'wall_decor',
+  });
+
+  // Helper function to build URL with all current filter parameters
+  const buildFilterUrl = (page: number, type: string, minPrice: number, maxPrice: number, saleOnly: boolean) => {
+    const params = new URLSearchParams();
+    if (page > 1) params.set('page', page.toString());
+    if (type !== 'Բոլորը') params.set('type', type);
+    if (minPrice > 0) params.set('minPrice', minPrice.toString());
+    if (maxPrice < 1000000) params.set('maxPrice', maxPrice.toString());
+    if (saleOnly) params.set('sale', 'true');
+    return params.toString() ? `?${params.toString()}` : '';
+  };
+
+  // Update URL with current filters
+  const updateUrlWithFilters = (page: number, type: string, minPrice: number, maxPrice: number, saleOnly: boolean) => {
+    const url = `/other/wall_decor${buildFilterUrl(page, type, minPrice, maxPrice, saleOnly)}`;
+    router.replace(url, { scroll: false });
+  };
+
+  // Handle type change
+  const handleTypeChange = (newType: string) => {
+    setSelectedType(newType);
+    setCurrentPage(1);
+    updateUrlWithFilters(1, newType, priceRange.min, priceRange.max, showSaleOnly);
+    clearScrollRestoration();
+  };
+
+  // Handle sale toggle
+  const handleSaleToggle = () => {
+    const newShowSale = !showSaleOnly;
+    setShowSaleOnly(newShowSale);
+    setCurrentPage(1);
+    updateUrlWithFilters(1, selectedType, priceRange.min, priceRange.max, newShowSale);
+    clearScrollRestoration();
+  };
+
+  // Handle page change with scroll to top
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    updateUrlWithFilters(newPage, selectedType, priceRange.min, priceRange.max, showSaleOnly);
+    clearScrollRestoration();
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  };
+
+  // Handle apply filters
+  const handleApplyFilters = () => {
+    setPriceRange(tempPriceRange);
+    setCurrentPage(1);
+    updateUrlWithFilters(1, selectedType, tempPriceRange.min, tempPriceRange.max, showSaleOnly);
+    clearScrollRestoration();
+  };
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -131,7 +201,7 @@ export default function WallDecorPage() {
         {/* Filters */}
         <div className={styles.filters} style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'center', marginTop: '15px' }}>
           <button
-            onClick={() => setShowSaleOnly(!showSaleOnly)}
+            onClick={handleSaleToggle}
             style={{
               padding: '8px 16px',
               borderRadius: '4px',
@@ -152,7 +222,7 @@ export default function WallDecorPage() {
             <label style={{ marginRight: '10px', marginBottom: '0' }}>Տեսակ:</label>
             <select 
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
+              onChange={(e) => handleTypeChange(e.target.value)}
               style={{ padding: '8px', borderRadius: '4px', height: '36px' }}
             >
               {types.map(type => (
@@ -190,8 +260,15 @@ export default function WallDecorPage() {
         </div>
 
         <div className={styles.grid}>
-          {currentItems.map((item: FurnitureItem) => (
-            <Link key={item.id} href={`/other/wall_decor/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          {currentItems.map((item: FurnitureItem) => {
+            const filterParams = buildFilterUrl(currentPage, selectedType, priceRange.min, priceRange.max, showSaleOnly);
+            return (
+            <Link 
+              key={item.id} 
+              href={`/other/wall_decor/${item.id}${filterParams}`} 
+              style={{ textDecoration: 'none', color: 'inherit' }}
+              onClick={saveScrollPosition}
+            >
               <div className={styles.card} style={{ cursor: 'pointer' }}>
                 <div className={styles.imageContainer}>
                   <Image
@@ -247,7 +324,7 @@ export default function WallDecorPage() {
         {totalPages > 1 && (
           <div className={styles.pagination}>
             <button 
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
               disabled={currentPage === 1}
               className={styles.paginationButton}
             >
@@ -257,7 +334,7 @@ export default function WallDecorPage() {
               Էջ {currentPage} / {totalPages}
             </span>
             <button 
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
               disabled={currentPage === totalPages}
               className={styles.paginationButton}
             >
