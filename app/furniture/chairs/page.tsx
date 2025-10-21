@@ -71,9 +71,12 @@ export default function ChairsPage() {
         setItems(items);
         
         // Calculate max price from data
-        const maxPrice = Math.max(...items.map((item: FurnitureItem) => parseInt(item.price.replace(/[^0-9]/g, ''))));
-        setPriceRange(prev => ({ ...prev, max: maxPrice }));
-        setTempPriceRange(prev => ({ ...prev, max: maxPrice }));
+        if (items.length > 0) {
+          const prices = items.map((item: FurnitureItem) => parseInt(item.price.replace(/[^0-9]/g, ''))).filter(price => !isNaN(price));
+          const maxPrice = prices.length > 0 ? Math.max(...prices) : 1000000;
+          setPriceRange(prev => ({ ...prev, max: maxPrice }));
+          setTempPriceRange(prev => ({ ...prev, max: maxPrice }));
+        }
       } catch (error) {
         console.error('Error loading chairs:', error);
       }

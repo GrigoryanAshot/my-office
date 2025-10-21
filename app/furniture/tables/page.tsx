@@ -24,11 +24,9 @@ interface FurnitureItem {
 }
 
 export default function TablesPage() {
-  console.error('🚨 COMPONENT LOADED - TablesPage component is rendering');
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  console.error('🚨 INITIAL STATE - currentPage:', currentPage);
   const [selectedType, setSelectedType] = useState<string>('Բոլորը');
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
   const [tempPriceRange, setTempPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000000 });
@@ -40,43 +38,28 @@ export default function TablesPage() {
 
   // Initialize page from URL parameters on mount (client-side only)
   useEffect(() => {
-    console.error('🔍 DEBUG: useEffect triggered, searchParams:', searchParams?.toString());
-    
     // Use a timeout to ensure this runs after hydration
     const timer = setTimeout(() => {
-      console.error('🔍 DEBUG: setTimeout callback executing');
-      console.error('🔍 DEBUG: window available:', typeof window !== 'undefined');
-      console.error('🔍 DEBUG: current URL:', typeof window !== 'undefined' ? window.location.href : 'N/A');
-      
       let pageParam = searchParams?.get('page');
-      console.error('🔍 DEBUG: pageParam from searchParams:', pageParam);
       
       // Fallback: try to get from window.location if searchParams is not available
       if (!pageParam && typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         pageParam = urlParams.get('page');
-        console.error('🔍 DEBUG: pageParam from window.location:', pageParam);
       }
       
-      console.error('🔍 DEBUG: Final pageParam:', pageParam, 'currentPage:', currentPage);
       if (pageParam) {
         const page = parseInt(pageParam, 10);
-        console.error('🔍 DEBUG: parsed page:', page);
         if (page > 0) {
-          console.error('🔍 DEBUG: Setting currentPage from', currentPage, 'to', page);
           setCurrentPage(page);
-          console.error('🔍 DEBUG: setCurrentPage called with:', page);
         }
-      } else {
-        console.error('🔍 DEBUG: No pageParam found, keeping currentPage:', currentPage);
       }
     }, 100); // Increased timeout to ensure hydration is complete
     
     return () => {
-      console.error('🔍 DEBUG: useEffect cleanup');
       clearTimeout(timer);
     };
-  }, [searchParams]); // Remove currentPage from dependencies to avoid infinite loop
+  }, [searchParams]);
 
   // Function to handle page change with scroll to top
   const handlePageChange = (newPage: number) => {
@@ -152,7 +135,9 @@ export default function TablesPage() {
 
   // Calculate max price from data
   const maxPrice = useMemo(() => {
-    return Math.max(...items.map(item => parseInt(item.price.replace(/[^0-9]/g, ''))));
+    if (items.length === 0) return 1000000; // Default max price
+    const prices = items.map(item => parseInt(item.price.replace(/[^0-9]/g, ''))).filter(price => !isNaN(price));
+    return prices.length > 0 ? Math.max(...prices) : 1000000;
   }, [items]);
 
   // Set initial max price
@@ -177,27 +162,19 @@ export default function TablesPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
   
-  console.error('🔍 DEBUG: RENDER - currentPage:', currentPage, 'totalPages:', totalPages, 'startIndex:', startIndex);
-  console.error('🔍 DEBUG: RENDER - URL:', typeof window !== 'undefined' ? window.location.href : 'server');
-  console.error('🔍 DEBUG: RENDER - searchParams:', searchParams?.toString());
-  console.error('🔍 DEBUG: RENDER - currentItems length:', currentItems.length);
 
   // Reset to first page when filters change (but not on initial load)
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    console.error('🔍 DEBUG: Filter reset effect - hasInitialized:', hasInitialized, 'currentPage:', currentPage);
     if (hasInitialized) {
-      console.error('🔍 DEBUG: Filter reset - setting currentPage to 1');
       setCurrentPage(1);
     }
   }, [selectedType, priceRange, showSaleOnly, hasInitialized]);
   
   // Mark as initialized after URL parameter processing
   useEffect(() => {
-    console.error('🔍 DEBUG: hasInitialized effect - searchParams:', searchParams?.toString());
     if (searchParams) {
-      console.error('🔍 DEBUG: Setting hasInitialized to true');
       setHasInitialized(true);
     }
   }, [searchParams]);
@@ -292,7 +269,6 @@ export default function TablesPage() {
           {currentItems.map((item: FurnitureItem) => {
             // Preserve current page in the link
             const currentPageParam = currentPage > 1 ? `?page=${currentPage}` : '';
-            console.log('Generating link for item', item.id, 'currentPage:', currentPage, 'link:', `/furniture/tables/${item.id}${currentPageParam}`);
             return (
             <Link key={item.id} href={`/furniture/tables/${item.id}${currentPageParam}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className={styles.card} style={{ cursor: 'pointer' }}>
