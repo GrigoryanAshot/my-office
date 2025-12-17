@@ -22,8 +22,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: 'Product Not Found | My Office',
       description: 'The requested product could not be found.',
     };
-  }
-
+        }
+        
   return generateProductMetadata({
     product,
     category: 'sofas',
@@ -56,4 +56,4 @@ export default async function SofaDetailPage({ params }: PageProps) {
       <SofaDetailClient item={product} />
     </>
   );
-}
+} 

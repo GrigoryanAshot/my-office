@@ -51,4 +51,4 @@ export default async function PoufDetailPage({ params }: PageProps) {
       <PoufDetailClient item={product} />
     </>
   );
-}
+} 

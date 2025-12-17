@@ -35,9 +35,9 @@ export default async function ArmchairsPage() {
         categoryName={categoryName}
         items={items}
         basePath="softfurniture"
-      />
+            />
       <BreadcrumbSchema items={breadcrumbItems} />
       <ArmchairsPageClient initialItems={items} />
     </>
   );
-}
+} 
