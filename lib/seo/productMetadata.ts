@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { getKeywordsForCategory, categoryKeywords } from './keywords';
+import { getBaseUrl } from './getBaseUrl';
 
 export interface ProductData {
   id: number | string;
@@ -29,10 +30,11 @@ export function generateProductMetadata({
   product,
   category,
   categoryName,
-  baseUrl = 'https://www.my-office.am',
+  baseUrl,
   basePath = 'softfurniture',
 }: ProductMetadataOptions): Metadata {
-  const productUrl = `${baseUrl}/${basePath}/${category}/${product.id}`;
+  const actualBaseUrl = baseUrl || getBaseUrl();
+  const productUrl = `${actualBaseUrl}/${basePath}/${category}/${product.id}`;
   const images = [product.imageUrl, ...(product.images || [])];
   const primaryImage = images[0];
   
@@ -79,8 +81,8 @@ export function generateProductMetadata({
       title: `${product.name} | My Office`,
       description: metaDescription,
       siteName: 'My Office Armenia',
-      images: images.slice(0, 4).map((img) => ({
-        url: img.startsWith('http') ? img : `${baseUrl}${img}`,
+          images: images.slice(0, 4).map((img) => ({
+            url: img.startsWith('http') ? img : `${actualBaseUrl}${img}`,
         width: 1200,
         height: 630,
         alt: product.name,
@@ -92,7 +94,7 @@ export function generateProductMetadata({
       card: 'summary_large_image',
       title: `${product.name} | My Office`,
       description: metaDescription,
-      images: [primaryImage.startsWith('http') ? primaryImage : `${baseUrl}${primaryImage}`],
+          images: [primaryImage.startsWith('http') ? primaryImage : `${actualBaseUrl}${primaryImage}`],
     },
     alternates: {
       canonical: productUrl,

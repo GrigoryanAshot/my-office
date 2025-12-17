@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { getKeywordsForCategory, categoryKeywords } from './keywords';
 import { getCategoryDisplayName } from './fetchProduct';
+import { getBaseUrl } from './getBaseUrl';
 
 export interface CategoryMetadataOptions {
   category: string;
@@ -16,11 +17,12 @@ export interface CategoryMetadataOptions {
 export function generateCategoryMetadata({
   category,
   categoryName,
-  baseUrl = 'https://www.my-office.am',
+  baseUrl,
   basePath = 'softfurniture',
   itemCount = 0,
 }: CategoryMetadataOptions): Metadata {
-  const categoryUrl = `${baseUrl}/${basePath}/${category}`;
+  const actualBaseUrl = baseUrl || getBaseUrl();
+  const categoryUrl = `${actualBaseUrl}/${basePath}/${category}`;
   const categoryKw = categoryKeywords[category] || {};
   
   // Get optimized title with keywords
@@ -58,7 +60,7 @@ export function generateCategoryMetadata({
       siteName: 'My Office Armenia',
       images: [
         {
-          url: `${baseUrl}/images/og-category.jpg`,
+          url: `${actualBaseUrl}/images/og-category.jpg`,
           width: 1200,
           height: 630,
           alt: categoryName,
@@ -71,7 +73,7 @@ export function generateCategoryMetadata({
       card: 'summary_large_image',
       title: `${categoryName} | My Office`,
       description: metaDescription,
-      images: [`${baseUrl}/images/og-category.jpg`],
+      images: [`${actualBaseUrl}/images/og-category.jpg`],
     },
     alternates: {
       canonical: categoryUrl,

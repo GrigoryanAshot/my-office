@@ -1,4 +1,5 @@
 import { ProductData } from '@/lib/seo/productMetadata';
+import { getBaseUrl } from '@/lib/seo/getBaseUrl';
 
 interface CollectionSchemaProps {
   category: string;
@@ -16,10 +17,11 @@ export default function CollectionSchema({
   category,
   categoryName,
   items,
-  baseUrl = 'https://www.my-office.am',
+  baseUrl,
   basePath = 'softfurniture',
 }: CollectionSchemaProps) {
-  const categoryUrl = `${baseUrl}/${basePath}/${category}`;
+  const actualBaseUrl = baseUrl || getBaseUrl();
+  const categoryUrl = `${actualBaseUrl}/${basePath}/${category}`;
   
   // Only render schema if we have items
   if (!items || items.length === 0) {
@@ -47,8 +49,8 @@ export default function CollectionSchema({
             '@type': 'Product',
             name: item.name,
             description: item.description || `${item.name} - ${categoryName}`,
-            image: item.imageUrl?.startsWith('http') ? item.imageUrl : `${baseUrl}${item.imageUrl || ''}`,
-            url: `${baseUrl}/${basePath}/${category}/${item.id}`,
+          image: item.imageUrl?.startsWith('http') ? item.imageUrl : `${actualBaseUrl}${item.imageUrl || ''}`,
+          url: `${actualBaseUrl}/${basePath}/${category}/${item.id}`,
             sku: String(item.id),
             category: categoryName,
             brand: {
@@ -57,16 +59,16 @@ export default function CollectionSchema({
             },
             offers: {
               '@type': 'Offer',
-              url: `${baseUrl}/${basePath}/${category}/${item.id}`,
-              priceCurrency: 'AMD',
-              availability: item.isAvailable 
-                ? 'https://schema.org/InStock' 
-                : 'https://schema.org/PreOrder',
-              seller: {
-                '@type': 'Organization',
-                name: 'My Office Armenia',
-                url: baseUrl,
-              },
+            url: `${actualBaseUrl}/${basePath}/${category}/${item.id}`,
+            priceCurrency: 'AMD',
+            availability: item.isAvailable 
+              ? 'https://schema.org/InStock' 
+              : 'https://schema.org/PreOrder',
+            seller: {
+              '@type': 'Organization',
+              name: 'My Office Armenia',
+              url: actualBaseUrl,
+            },
             },
           },
         };

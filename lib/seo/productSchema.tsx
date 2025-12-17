@@ -1,4 +1,5 @@
 import { ProductData } from './productMetadata';
+import { getBaseUrl } from './getBaseUrl';
 
 export interface ProductSchemaProps {
   product: ProductData;
@@ -16,10 +17,11 @@ export function generateProductSchema({
   product,
   category,
   categoryName,
-  baseUrl = 'https://www.my-office.am',
+  baseUrl,
   basePath = 'softfurniture',
 }: ProductSchemaProps) {
-  const productUrl = `${baseUrl}/${basePath}/${category}/${product.id}`;
+  const actualBaseUrl = baseUrl || getBaseUrl();
+  const productUrl = `${actualBaseUrl}/${basePath}/${category}/${product.id}`;
   const images = [product.imageUrl, ...(product.images || [])];
   
   // Extract numeric price (remove currency symbols, commas, and "դրամ")
@@ -36,7 +38,7 @@ export function generateProductSchema({
     '@type': 'Product',
     name: product.name,
     description: product.description || `${product.name} - ${categoryName} from My Office Armenia`,
-    image: images.map(img => img.startsWith('http') ? img : `${baseUrl}${img}`),
+    image: images.map(img => img.startsWith('http') ? img : `${actualBaseUrl}${img}`),
     sku: String(product.id),
     category: categoryName,
     brand: {

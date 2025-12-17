@@ -1,5 +1,6 @@
 import { ProductData } from '@/lib/seo/productMetadata';
 import { generateProductSchema } from '@/lib/seo/productSchema';
+import { getBaseUrl } from '@/lib/seo/getBaseUrl';
 
 interface ProductSchemaProps {
   product: ProductData;
@@ -17,14 +18,15 @@ export default function ProductSchema({
   product,
   category,
   categoryName,
-  baseUrl = 'https://www.my-office.am',
+  baseUrl,
   basePath = 'softfurniture',
 }: ProductSchemaProps) {
+  const actualBaseUrl = baseUrl || getBaseUrl();
   const schema = generateProductSchema({
     product,
     category,
     categoryName,
-    baseUrl,
+    baseUrl: actualBaseUrl,
     basePath,
   });
 
