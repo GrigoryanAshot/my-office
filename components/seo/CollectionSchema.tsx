@@ -21,6 +21,11 @@ export default function CollectionSchema({
 }: CollectionSchemaProps) {
   const categoryUrl = `${baseUrl}/${basePath}/${category}`;
   
+  // Only render schema if we have items
+  if (!items || items.length === 0) {
+    return null;
+  }
+  
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -30,36 +35,49 @@ export default function CollectionSchema({
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: items.length,
-      itemListElement: items.slice(0, 20).map((item, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        item: {
-          '@type': 'Product',
-          name: item.name,
-          description: item.description || `${item.name} - ${categoryName}`,
-          image: item.imageUrl.startsWith('http') ? item.imageUrl : `${baseUrl}${item.imageUrl}`,
-          url: `${baseUrl}/${basePath}/${category}/${item.id}`,
-          sku: String(item.id),
-          category: categoryName,
-          brand: {
-            '@type': 'Brand',
-            name: 'My Office',
-          },
-          offers: {
-            '@type': 'Offer',
+      itemListElement: items.slice(0, 20).map((item, index) => {
+        // Extract numeric price for offers
+        const priceMatch = item.price?.match(/[\d,]+/);
+        const numericPrice = priceMatch ? priceMatch[0].replace(/,/g, '') : null;
+        
+        const listItem: any = {
+          '@type': 'ListItem',
+          position: index + 1,
+          item: {
+            '@type': 'Product',
+            name: item.name,
+            description: item.description || `${item.name} - ${categoryName}`,
+            image: item.imageUrl?.startsWith('http') ? item.imageUrl : `${baseUrl}${item.imageUrl || ''}`,
             url: `${baseUrl}/${basePath}/${category}/${item.id}`,
-            priceCurrency: 'AMD',
-            availability: item.isAvailable 
-              ? 'https://schema.org/InStock' 
-              : 'https://schema.org/PreOrder',
-            seller: {
-              '@type': 'Organization',
-              name: 'My Office Armenia',
-              url: baseUrl,
+            sku: String(item.id),
+            category: categoryName,
+            brand: {
+              '@type': 'Brand',
+              name: 'My Office',
+            },
+            offers: {
+              '@type': 'Offer',
+              url: `${baseUrl}/${basePath}/${category}/${item.id}`,
+              priceCurrency: 'AMD',
+              availability: item.isAvailable 
+                ? 'https://schema.org/InStock' 
+                : 'https://schema.org/PreOrder',
+              seller: {
+                '@type': 'Organization',
+                name: 'My Office Armenia',
+                url: baseUrl,
+              },
             },
           },
-        },
-      })),
+        };
+        
+        // Add price if available
+        if (numericPrice) {
+          listItem.item.offers.price = String(numericPrice);
+        }
+        
+        return listItem;
+      }),
     },
   };
 

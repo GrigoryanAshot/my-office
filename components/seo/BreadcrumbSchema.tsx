@@ -10,6 +10,11 @@ interface BreadcrumbSchemaProps {
  * Helps search engines understand page hierarchy
  */
 export default function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
+  // Only render if we have items
+  if (!items || items.length === 0) {
+    return null;
+  }
+  
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
