@@ -24,7 +24,7 @@ export default function PodiumPageClient({ initialItems }: PodiumPageClientProps
   const itemsPerPage = 8;
 
   useEffect(() => {
-    const uniqueTypes = Array.from(new Set(items.map(item => item.type))) as string[]);
+    const uniqueTypes = Array.from(new Set(items.map(item => item.type))) as string[];
     setTypes(['all', ...uniqueTypes]);
 
     if (items.length > 0) {
