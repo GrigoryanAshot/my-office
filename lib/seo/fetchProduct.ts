@@ -85,7 +85,7 @@ export function getCategoryDisplayName(category: string): string {
     poufs: 'Պուֆեր',
     chairs: 'Աթոռներ',
     tables: 'Սեղաններ',
-    wardrobes: 'Զգեստապահարաններ',
+    wardrobes: 'Պահարաններ',
     chests: 'Պահարաններ',
     takht: 'Տախտ',
     stands: 'Դարակներ',
