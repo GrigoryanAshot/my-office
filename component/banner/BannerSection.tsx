@@ -302,10 +302,12 @@ const BannerSection = () => {
               position: 'relative',
               width: '100%',
               height: '400px',
+              minHeight: '400px',
               overflow: 'hidden',
               borderRadius: '10px',
               boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)',
-              marginTop: '0'
+              marginTop: '0',
+              backgroundColor: '#f3f4f6' // Prevent flash of white
             }}>
               {/* Navigation Arrows - Removed */}
 
