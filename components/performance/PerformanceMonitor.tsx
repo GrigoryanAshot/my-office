@@ -2,6 +2,17 @@
 
 import { useEffect } from 'react';
 
+// Type declaration for gtag (Google Analytics)
+declare global {
+  interface Window {
+    gtag?: (
+      command: string,
+      targetId: string,
+      config?: Record<string, any>
+    ) => void;
+  }
+}
+
 /**
  * Performance monitoring component
  * Tracks Core Web Vitals and sends to analytics
@@ -23,7 +34,7 @@ export default function PerformanceMonitor() {
           console.log('LCP:', lcp);
           
           // Send to analytics if needed
-          if (typeof window.gtag !== 'undefined') {
+          if (window.gtag) {
             window.gtag('event', 'web_vitals', {
               event_category: 'Web Vitals',
               event_label: 'LCP',
@@ -40,7 +51,7 @@ export default function PerformanceMonitor() {
           const fid = entry.processingStart - entry.startTime;
           console.log('FID:', fid);
           
-          if (typeof window.gtag !== 'undefined') {
+          if (window.gtag) {
             window.gtag('event', 'web_vitals', {
               event_category: 'Web Vitals',
               event_label: 'FID',
@@ -59,7 +70,7 @@ export default function PerformanceMonitor() {
             clsValue += entry.value;
             console.log('CLS:', clsValue);
             
-            if (typeof window.gtag !== 'undefined') {
+            if (window.gtag) {
               window.gtag('event', 'web_vitals', {
                 event_category: 'Web Vitals',
                 event_label: 'CLS',
@@ -78,7 +89,7 @@ export default function PerformanceMonitor() {
             const fcp = entry.startTime;
             console.log('FCP:', fcp);
             
-            if (typeof window.gtag !== 'undefined') {
+            if (window.gtag) {
               window.gtag('event', 'web_vitals', {
                 event_category: 'Web Vitals',
                 event_label: 'FCP',
