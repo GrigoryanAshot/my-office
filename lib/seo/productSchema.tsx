@@ -54,7 +54,7 @@ export function generateProductSchema({
       seller: {
         '@type': 'Organization',
         name: 'My Office Armenia',
-        url: baseUrl,
+        url: actualBaseUrl,
       },
       ...(product.oldPrice && {
         priceSpecification: {
