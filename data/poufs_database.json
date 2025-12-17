@@ -1,0 +1,35 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "sdvsdv",
+      "description": "sdvsdv",
+      "price": "95626",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748707330/njhgouaiwj0aqxygyewf.png",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748707333/uazalpudojldplejay3h.png"
+      ],
+      "type": "dfbfb",
+      "url": "poufs/1",
+      "isAvailable": true
+    },
+    {
+      "id": 2,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "1111",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909795/do5d6ftozob7vxowhona.png",
+      "images": [],
+      "type": "",
+      "url": "/furniture/chairs/2",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "adfaf",
+    "dfbfb",
+    "dddd",
+    "es",
+    "asas"
+  ]
+}

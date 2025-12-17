@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "afafs",
+      "description": "afsasf",
+      "price": "445000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748352746/ss03pcidopgrjgavtsri.webp",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748702906/xtbhlvaibw0yo9opsoq6.jpg",
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748702910/bkfvcvexx8a138i9dr0u.webp",
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748702913/ui7nfcgvzby9f8t132vy.webp"
+      ],
+      "type": "Ղեկավարի սեղան",
+      "url": "/furniture/tables/1",
+      "isAvailable": true
+    },
+    {
+      "id": 2,
+      "name": "ԿՈԴ 4512300",
+      "description": "աֆաղվդվսեսֆոեֆ",
+      "price": "250000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748353632/l21nczsifqsd92rm01nc.jpg",
+      "images": [],
+      "type": "Տնօրենի սեղան",
+      "url": "/furniture/tables/2",
+      "isAvailable": true
+    },
+    {
+      "id": 3,
+      "name": "ԿՈԴ 154521020",
+      "description": "աֆաֆասֆ",
+      "price": "45000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748361815/dcqj7tmyw6mjnbn095oe.jpg",
+      "images": [],
+      "type": "Ղեկավարի սեղան",
+      "url": "/furniture/tables/3",
+      "isAvailable": true
+    },
+    {
+      "id": 4,
+      "name": "աֆքեֆ",
+      "description": "դվսեֆսեգֆ",
+      "price": "75000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748443730/ufabf5slhpvphvmpafjq.webp",
+      "images": [],
+      "type": "Ղեկավարի սեղան",
+      "url": "/furniture/tables/4",
+      "isAvailable": true
+    },
+    {
+      "id": 5,
+      "name": "զղֆզդֆ",
+      "description": "զդֆադսֆդսֆ",
+      "price": "582626",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748543422/naqqb6ax8mzbn1dvtdik.webp",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750343690/h40xzcpge39c9dxfr8yt.png",
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750343694/eamzdewkzii5ff4joil3.png"
+      ],
+      "type": "սուրճի սեղան",
+      "url": "/furniture/tables/5",
+      "isAvailable": false
+    },
+    {
+      "id": 6,
+      "name": "dddd",
+      "description": "ddd",
+      "price": "11111",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909476/cgz4t9u34zi8gmqzqojj.png",
+      "images": [],
+      "type": "ddddd",
+      "url": "tables/6",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "Test Type",
+    "sexan",
+    "Ղեկավարի սեղան",
+    "afaf",
+    "Տնօրենի սեղան",
+    "սուրճի սեղան",
+    "afsasf",
+    "ddddd",
+    "dd"
+  ]
+}

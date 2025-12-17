@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "id": 2,
+      "name": "asasf",
+      "description": "afsasf",
+      "price": "75000",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748539615/zphyiy0waoglkjnrz066.jpg",
+      "images": [],
+      "type": "",
+      "url": "/softfurniture/takht/2",
+      "isAvailable": true
+    },
+    {
+      "id": 3,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "1111",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1749909823/ufdgk3f5pnbicss2efim.png",
+      "images": [],
+      "type": "dddd",
+      "url": "/furniture/chairs/3",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "afafs",
+    "dddd",
+    "aaa"
+  ]
+}

@@ -1,0 +1,50 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Sofa {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  image       String
+  type        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SofaType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WardrobeType {
+  id    String   @id @default(cuid())
+  name  String   @unique
+  wardrobes Wardrobe[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Wardrobe {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  image       String
+  price       String?
+  oldPrice    String?
+  images      String[]
+  isAvailable Boolean  @default(true)
+  url         String?
+  typeId      String?
+  type        WardrobeType? @relation(fields: [typeId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+} 

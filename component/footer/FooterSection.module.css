@@ -1,0 +1,8 @@
+.footerServiceListCol {
+  padding-right: 20px;
+}
+
+.footerServiceListCol ul li {
+  white-space: nowrap;
+  margin-right: 5px;
+} 

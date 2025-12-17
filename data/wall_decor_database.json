@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "asfasf",
+      "description": "afsasf",
+      "price": "745222",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748704450/qsvihuuq0dm7llxjlbjo.png",
+      "images": [
+        "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1748704455/gcm4s9cuywiyviixwdse.png"
+      ],
+      "type": "",
+      "url": "wall-decor/1",
+      "isAvailable": true
+    },
+    {
+      "id": 2,
+      "name": "dddd",
+      "description": "dddd",
+      "price": "5252",
+      "imageUrl": "https://res.cloudinary.com/dpbsyoxw8/image/upload/v1750340101/tebytnbfav1bd9c8pfth.png",
+      "images": [],
+      "type": "",
+      "url": "wall-decor/2",
+      "isAvailable": true
+    }
+  ],
+  "types": [
+    "Մետաղական",
+    "Փայտե",
+    "Ակրիլային",
+    "afasf",
+    "dddd",
+    "1"
+  ]
+}

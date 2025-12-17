@@ -1,0 +1,128 @@
+{
+  "furniture": {
+    "id": "furniture",
+    "name": "Սեղաններ և աթոռներ",
+    "url": "/furniture",
+    "imageUrl": "https://i.postimg.cc/zfLnFdK2/gate.png",
+    "order": 1
+  },
+  "furniture_tables": {
+    "id": "furniture_tables",
+    "name": "Սեղաններ",
+    "url": "/furniture/tables",
+    "imageUrl": "/images/table.png",
+    "order": 2
+  },
+  "furniture_chairs": {
+    "id": "furniture_chairs",
+    "name": "Աթոռներ",
+    "url": "/furniture/chairs",
+    "imageUrl": "/images/chair.png",
+    "order": 3
+  },
+  "doors": {
+    "id": "doors",
+    "name": "Փափուկ կահույք",
+    "url": "/doors",
+    "imageUrl": "https://i.postimg.cc/CMXsFGdw/1b46b74c-60fd-4f2d-90c4-199f627a9da8.jpg",
+    "order": 2
+  },
+  "doors_sofas": {
+    "id": "doors_sofas",
+    "name": "Բազմոցներ",
+    "url": "/softfurniture/sofas",
+    "imageUrl": "/images/sofa.png",
+    "order": 3
+  },
+  "doors_armchairs": {
+    "id": "doors_armchairs",
+    "name": "Բազկաթոռեր",
+    "url": "/softfurniture/armchairs",
+    "imageUrl": "/images/armchair.png",
+    "order": 4
+  },
+  "doors_poufs": {
+    "id": "doors_poufs",
+    "name": "Պուֆիկներ",
+    "url": "/softfurniture/poufs",
+    "imageUrl": "/images/pouf.png",
+    "order": 5
+  },
+  "windows": {
+    "id": "windows",
+    "name": "Պահարաններ և ավելին",
+    "url": "/wardrobesandmore",
+    "imageUrl": "https://i.postimg.cc/FF7xrvmd/9b132849cf151713ae4672aac52a0a31.jpg",
+    "order": 3
+  },
+  "windows_wardrobes": {
+    "id": "windows_wardrobes",
+    "name": "Պահարաններ",
+    "url": "/wardrobesandmore/wardrobes",
+    "imageUrl": "/images/wardrobe.png",
+    "order": 4
+  },
+  "windows_shelving": {
+    "id": "windows_shelving",
+    "name": "Դարակաշարեր",
+    "url": "/wardrobesandmore/shelving",
+    "imageUrl": "/images/shelving.png",
+    "order": 5
+  },
+  "windows_chests": {
+    "id": "windows_chests",
+    "name": "Տումբաներ և Կոմոդներ",
+    "url": "/wardrobesandmore/chests",
+    "imageUrl": "/images/chest.png",
+    "order": 6
+  },
+  "metal": {
+    "id": "metal",
+    "name": "Այլ",
+    "url": "/other",
+    "imageUrl": "https://i.postimg.cc/zfLnFdK2/gate.png",
+    "order": 4
+  },
+  "doors_doors_takht": {
+    "id": "doors_doors_takht",
+    "name": "Թախտեր",
+    "url": "/softfurniture/takht",
+    "imageUrl": "/images/takht.png",
+    "order": 8
+  },
+  "metal_metal_wall_decor": {
+    "id": "metal_metal_wall_decor",
+    "name": "Պատի դեկորներ",
+    "url": "/other/wall_decor",
+    "imageUrl": "/images/walldecor.png",
+    "order": 5
+  },
+  "metal_metal_hangers": {
+    "id": "metal_metal_hangers",
+    "name": "Կախիչներ",
+    "url": "/other/hangers",
+    "imageUrl": "/images/hanger.png",
+    "order": 6
+  },
+  "metal_metal_podium": {
+    "id": "metal_metal_podium",
+    "name": "Ամբիոն",
+    "url": "/other/podium",
+    "imageUrl": "/images/podium.png",
+    "order": 7
+  },
+  "metal_Գրատախտակ": {
+    "id": "metal_Գրատախտակ",
+    "name": "Գրատախտակ",
+    "url": "/other/whiteboard",
+    "imageUrl": "/images/whiteboard.png",
+    "order": 18
+  },
+  "windows_windows_takhtir": {
+    "id": "windows_windows_takhtir",
+    "name": "Տակդիրներ",
+    "url": "/wardrobesandmore/stands",
+    "imageUrl": "/images/stand.png",
+    "order": 7
+  }
+}
