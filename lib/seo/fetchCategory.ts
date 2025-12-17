@@ -1,6 +1,7 @@
 import { Redis } from '@upstash/redis';
 import { getRedisKeyForCategory } from './fetchProduct';
 import { ProductData } from './productMetadata';
+import { unstable_cache } from 'next/cache';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -8,10 +9,10 @@ const redis = new Redis({
 });
 
 /**
- * Fetches all products for a category from Redis
- * This is a server-side function for use in server components
+ * Internal function to fetch products from Redis
+ * This is wrapped with Next.js cache for better performance
  */
-export async function fetchCategoryProducts(
+async function fetchCategoryProductsFromRedis(
   category: string
 ): Promise<ProductData[]> {
   try {
@@ -46,5 +47,29 @@ export async function fetchCategoryProducts(
     console.error('Error fetching category products:', error);
     return [];
   }
+}
+
+/**
+ * Fetches all products for a category from Redis with caching
+ * This is a server-side function for use in server components
+ * 
+ * Cache duration: 60 seconds (revalidate every minute)
+ * This balances freshness with performance
+ */
+export async function fetchCategoryProducts(
+  category: string
+): Promise<ProductData[]> {
+  // Use Next.js unstable_cache for server-side caching
+  // This reduces Redis calls and improves response time
+  const cachedFetch = unstable_cache(
+    async (cat: string) => fetchCategoryProductsFromRedis(cat),
+    [`category-products-${category}`],
+    {
+      revalidate: 60, // Revalidate every 60 seconds
+      tags: [`category-${category}`], // Allow manual revalidation via tag
+    }
+  );
+
+  return cachedFetch(category);
 }
 

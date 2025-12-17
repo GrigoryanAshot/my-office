@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import OptimizedImage from '@/components/optimized/OptimizedImage';
 import styles from '@/component/about/FurnitureGrid.module.css';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import FooterSection from '@/component/footer/FooterSection';
@@ -142,12 +142,14 @@ export default function ArmchairsPageClient({ initialItems }: ArmchairsPageClien
             <Link key={item.id} href={`/softfurniture/armchairs/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className={styles.card} style={{ cursor: 'pointer' }}>
                 <div className={styles.imageContainer}>
-                  <Image
+                  <OptimizedImage
                     src={item.imageUrl}
                     alt={item.name}
                     width={400}
                     height={300}
                     className={styles.image}
+                    priority={currentPage === 1 && currentItems.indexOf(item) < 4}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
                 <div className={styles.cardContent} style={{ textAlign: 'center' }}>
