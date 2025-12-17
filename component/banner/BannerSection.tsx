@@ -74,13 +74,88 @@ const BannerSection = () => {
     router.push(`/sale`);
   };
 
+  // Show default content immediately to prevent layout shift and improve LCP
   if (loading) {
     return (
-      <section className="tf__banner" style={{ marginTop: '-1px', paddingTop: '30px' }}>
+      <section className="tf__banner" style={{ marginTop: '-1px', paddingTop: '30px', minHeight: '400px' }}>
         <div className="container tf__banner-container">
           <div className="row">
-            <div className="col-12 text-center">
-              <h2>Բեռնվում է...</h2>
+            <div className="col-xl-7 col-lg-8">
+              <div className="tf__banner_text wow fadeInUp banner-text-mobile" style={{
+                padding: '20px 0',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                height: '100%'
+              }}>
+                <p className="banner-company-info-mobile" style={{
+                  fontSize: 'clamp(1rem, 2.8vw, 1.2rem)',
+                  color: '#333',
+                  marginBottom: '15px',
+                  lineHeight: '1.4',
+                  fontWeight: '500',
+                  fontStyle: 'italic'
+                }}>
+                  բարձրորակ և հարմարավետ գրասենյակային կահույք
+                </p>
+                <div className="banner-headings-mobile" style={{ marginBottom: '20px' }}>
+                  <h1 className="banner-heading-mobile" style={{
+                    fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+                    fontWeight: '700',
+                    margin: '0 0 8px 0',
+                    lineHeight: '1.1',
+                    color: '#333'
+                  }}>
+                    անվճար <span style={{ color: '#ff6b35' }}>չափագրում</span>
+                  </h1>
+                  <h1 className="banner-heading-mobile" style={{
+                    fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+                    fontWeight: '700',
+                    margin: '0 0 8px 0',
+                    lineHeight: '1.1',
+                    color: '#333'
+                  }}>
+                    անվճար <span style={{ color: '#ff6b35' }}>3D մոդելավորում</span>
+                  </h1>
+                  <h1 className="banner-heading-mobile" style={{
+                    fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+                    fontWeight: '700',
+                    margin: '0 0 8px 0',
+                    lineHeight: '1.1',
+                    color: '#333'
+                  }}>
+                    անվճար <span style={{ color: '#ff6b35' }}>տեղափոխում</span>
+                  </h1>
+                  <h1 className="banner-heading-mobile" style={{
+                    fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+                    fontWeight: '700',
+                    margin: '0 0 15px 0',
+                    lineHeight: '1.1',
+                    color: '#333'
+                  }}>
+                    անվճար <span style={{ color: '#ff6b35' }}>տեղադրում</span>
+                  </h1>
+                </div>
+                <p className="banner-description-mobile" style={{
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                  color: '#666',
+                  marginBottom: '25px',
+                  lineHeight: '1.5',
+                  fontWeight: '400'
+                }}>
+                  Պատվերներն իրականացվում են հաշված օրերի ընթացքում
+                </p>
+                <ul className="d-flex flex-wrap align-items-center" id="banner-button">
+                  <li>
+                    <button 
+                      className="common_btn" 
+                      onClick={handleCallOrderClick}
+                    >
+                      պատվիրել զանգ
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -262,7 +337,9 @@ const BannerSection = () => {
                       objectFit: 'cover',
                       transition: 'transform 0.3s ease'
                     }}
-                    priority={index === 0}
+                    priority={index === 0 && currentSlide === 0}
+                    quality={85}
+                    loading={index === 0 ? undefined : 'lazy'}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = '/images/placeholder.jpg';
