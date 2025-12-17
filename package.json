@@ -26,7 +26,7 @@
     "critters": "^0.0.25",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.511.0",
-    "next": "^15.3.3",
+    "next": "15.3.8",
     "next-cloudinary": "^6.16.0",
     "next-sanity": "^7.0.12",
     "nodemailer": "^7.0.3",
