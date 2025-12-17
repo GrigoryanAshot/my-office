@@ -158,12 +158,14 @@ export default function WardrobesPageClient({ initialItems }: WardrobesPageClien
             <Link key={item.id} href={`/furniture/wardrobes/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className={styles.card} style={{ cursor: 'pointer' }}>
                 <div className={styles.imageContainer}>
-                  <Image
+                  <OptimizedImage
                     src={item.imageUrl}
                     alt={item.name}
                     width={400}
                     height={300}
                     className={styles.image}
+                    priority={currentPage === 1 && currentItems.indexOf(item) < 4}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
                 <div className={styles.cardContent} style={{ textAlign: 'center' }}>
