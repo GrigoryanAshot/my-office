@@ -1,155 +1,56 @@
-"use client";
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import ShelvingDetailClient from './ShelvingDetailClient';
+import ProductSchema from '@/components/seo/ProductSchema';
+import { fetchProductById, getRedisKeyForCategory, getCategoryDisplayName } from '@/lib/seo/fetchProduct';
+import { generateProductMetadata } from '@/lib/seo/productMetadata';
 
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import NavbarSection from "@/component/navbar/NavbarSection";
-import FooterSection from "@/component/footer/FooterSection";
-import ScrollToTopButton from "@/component/utils/ScrollToTopButton";
-import styles from "./TableDetail.module.css";
-import DataLoading from "@/component/loading/DataLoading";
-
-interface FurnitureItem {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  oldPrice?: string;
-  imageUrl: string;
-  images: string[];
-  type: string;
-  url: string;
-  isAvailable: boolean;
+interface PageProps {
+  params: Promise<{ id: string }>;
 }
 
-export default function ShelvingDetailPage() {
-  const params = useParams();
-  const [item, setItem] = useState<FurnitureItem | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentImg, setCurrentImg] = useState(0);
-  const [images, setImages] = useState<string[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchItem = async () => {
-      if (!params?.id) {
-        setError("Missing shelving ID");
-        setLoading(false);
-        return;
-      }
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/shelving/${params.id}`);
-        if (!response.ok) {
-          throw new Error("");
-        }
-        const data = await response.json();
-        setItem(data);
-        setImages([data.imageUrl, ...(data.images || [])]);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setLoading(false);
-      }
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const redisKey = getRedisKeyForCategory('shelving');
+  const categoryName = getCategoryDisplayName('shelving');
+  
+  const product = await fetchProductById(id, redisKey);
+  
+  if (!product) {
+    return {
+      title: 'Product Not Found | My Office',
+      description: 'The requested product could not be found.',
     };
-    fetchItem();
-  }, [params]);
-
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
-  const nextImg = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentImg((prev) => (prev + 1) % images.length);
-  };
-  const prevImg = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentImg((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  if (loading) {
-    return <DataLoading />;
   }
-  if (error || !item) {
-    return (
-      <>
-        <NavbarSection style="" logo="/images/logo.png" />
-        <div className={styles.wrapper}>
-          <div className={styles.errorContainer}>
-            <h2 className={styles.errorTitle}>Ապրանքը չի գտնվել</h2>
-            <p className={styles.errorMessage}>{error || "Item not found"}</p>
-          </div>
-        </div>
-        <FooterSection />
-        <ScrollToTopButton style="" />
-      </>
-    );
+
+  return generateProductMetadata({
+    product,
+    category: 'shelving',
+    categoryName,
+    basePath: 'wardrobesandmore',
+  });
+}
+
+export default async function ShelvingDetailPage({ params }: PageProps) {
+  const { id } = await params;
+  const redisKey = getRedisKeyForCategory('shelving');
+  const categoryName = getCategoryDisplayName('shelving');
+  
+  const product = await fetchProductById(id, redisKey);
+
+  if (!product) {
+    notFound();
   }
 
   return (
     <>
-      <NavbarSection style="" logo="/images/logo.png" />
-      <div className={styles.wrapper}>
-        <div className={styles.container}>
-          <div className={styles.imageSection}>
-            <div className={styles.mainImage} onClick={openModal}>
-              <img src={images[currentImg]} alt={item.name} />
-            </div>
-            {images.length > 1 && (
-              <div className={styles.thumbnailContainer}>
-                {images.map((img, idx) => (
-                  <div
-                    key={idx}
-                    className={`${styles.thumbnail} ${currentImg === idx ? styles.active : ''}`}
-                    onClick={() => setCurrentImg(idx)}
-                  >
-                    <img src={img} alt={`${item.name} - ${idx + 1}`} />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className={styles.detailsSection}>
-            <h1 className={styles.title}>{item.name}</h1>
-            {item.isAvailable && (
-              <div className={styles.price}>
-                {item.oldPrice && item.oldPrice.trim() && (
-                  <div style={{ 
-                    textDecoration: 'line-through', 
-                    color: '#dc3545', 
-                    fontSize: '0.9em',
-                    marginBottom: '4px'
-                  }}>
-                    {item.oldPrice} դրամ
-                  </div>
-                )}
-                <div style={{ fontWeight: 'bold' }}>
-                  {item.price} դրամ
-                </div>
-              </div>
-            )}
-            <div className={styles.description}>{item.description}</div>
-            <div className={styles.type}>Տեսակ: {item.type}</div>
-            <div className={styles.availability}>
-              {item.isAvailable ? 'Առկա է' : 'Պատվիրել'}
-            </div>
-            <button className={styles.orderCallBtn}>
-              Պատվիրել զանգ
-            </button>
-          </div>
-        </div>
-      </div>
-      {modalOpen && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <button className={styles.modalClose} onClick={closeModal}>&times;</button>
-            <button className={styles.modalArrow} onClick={prevImg} aria-label="Previous photo">&#8592;</button>
-            <img src={images[currentImg]} alt={item.name} className={styles.modalImg} />
-            <button className={styles.modalArrow} onClick={nextImg} aria-label="Next photo">&#8594;</button>
-          </div>
-        </div>
-      )}
-      <FooterSection />
-      <ScrollToTopButton style="" />
+      <ProductSchema
+        product={product}
+        category="shelving"
+        categoryName={categoryName}
+        basePath="wardrobesandmore"
+      />
+      <ShelvingDetailClient item={product} />
     </>
   );
 } 

@@ -12,6 +12,7 @@ import { Suspense } from "react";
 import AdminKeyPressWrapper from '@/component/AdminKeyPressWrapper';
 import GlobalAdminShortcut from '@/component/GlobalAdminShortcut';
 import PerformanceMonitor from '@/components/performance/PerformanceMonitor';
+import OrganizationSchema from '@/components/seo/OrganizationSchema';
 // import GlobalAdminShortcut from '@/component/GlobalAdminShortcut';
 
 const inter = Inter({ 
@@ -90,10 +91,13 @@ export const metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'your-google-site-verification',
-    yandex: 'your-yandex-verification',
-  },
+    verification: {
+      // Google Search Console verification
+      // Replace with your actual verification code from Google Search Console
+      // Format: google: 'your-verification-code-here'
+      google: process.env.GOOGLE_SITE_VERIFICATION || 'your-google-site-verification',
+      yandex: process.env.YANDEX_VERIFICATION || 'your-yandex-verification',
+    },
   alternates: {
     canonical: 'https://www.my-office.am',
     languages: {
@@ -137,6 +141,7 @@ export default function RootLayout({
         <link rel="alternate" hrefLang="x-default" href="https://www.my-office.am" />
       </head>
       <body className={inter.className}>
+        <OrganizationSchema />
         <Providers>
           <Suspense fallback={
             <div className="flex items-center justify-center min-h-screen">

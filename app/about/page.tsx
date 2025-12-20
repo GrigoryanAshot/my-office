@@ -11,9 +11,48 @@ import type { Metadata } from 'next'
 import { ActivityType, BlogType, CourseType, FaqType, ServiceType } from '@/types'
 import { getActivity, getBlog, getCourse, getFaq, getService } from '@/sanity/sanity.query'
  
-export const metadata: Metadata = {
-  title: "My-Office.am",
-  description: "My-Office.am - Office Furniture",
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = 'https://www.my-office.am';
+  
+  return {
+    title: 'About Us | My Office Armenia - Premium Office Furniture',
+    description: 'Learn about My Office Armenia - your trusted partner for premium office furniture. We offer modern, ergonomic solutions with free delivery, 3D modeling, and installation across Yerevan and Armenia.',
+    keywords: [
+      'office furniture Armenia',
+      'about My Office',
+      'office furniture company Yerevan',
+      'կահույք ընկերություն',
+      'գրասենյակային կահույք Երևան',
+    ],
+    openGraph: {
+      type: 'website',
+      url: `${baseUrl}/about`,
+      title: 'About Us | My Office Armenia',
+      description: 'Learn about My Office Armenia - your trusted partner for premium office furniture.',
+      siteName: 'My Office Armenia',
+      images: [
+        {
+          url: `${baseUrl}/images/og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: 'My Office Armenia',
+        }
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'About Us | My Office Armenia',
+      description: 'Learn about My Office Armenia - your trusted partner for premium office furniture.',
+      images: [`${baseUrl}/images/og-image.jpg`],
+    },
+    alternates: {
+      canonical: `${baseUrl}/about`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
 }
 const page = async() => {
   const serviceData: ServiceType[] = await getService();

@@ -6,10 +6,7 @@ import NavbarSection from '@/component/navbar/NavbarSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
 import MainCategoriesGrid from '@/component/categories/MainCategoriesGrid';
 
-export const metadata: Metadata = {
-  title: 'My-Office.am',
-  description: 'My-Office.am - Office Furniture',
-};
+// Metadata is now handled in app/page.tsx
 
 // Loading fallback for banner
 function BannerLoading() {
