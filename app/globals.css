@@ -965,7 +965,9 @@ body {
 @media (max-width: 599px) {
   .mobile-call-button {
     display: flex !important;
-    position: static !important;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
     animation: callButtonPulse 2s ease-in-out infinite;
   }
   

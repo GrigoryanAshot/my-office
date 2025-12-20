@@ -45,7 +45,9 @@ const CallButton = () => {
       onClick={handleCall}
       aria-label="Call us"
       style={{
-        position: 'static',
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -57,7 +59,6 @@ const CallButton = () => {
         cursor: 'pointer',
         boxShadow: '0 4px 12px rgba(255, 107, 53, 0.4)',
         transition: 'all 0.3s ease',
-        margin: '20px auto',
         zIndex: 1000,
       }}
       onMouseEnter={(e) => {
