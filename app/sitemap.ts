@@ -1,7 +1,9 @@
 import { MetadataRoute } from 'next';
 import { fetchCategoryProducts } from '@/lib/seo/fetchCategory';
-import { getRedisKeyForCategory, getCategoryDisplayName } from '@/lib/seo/fetchProduct';
+import { getRedisKeyForCategory, getCategoryDisplayName, type ProductData } from '@/lib/seo/fetchProduct';
 import { getBaseUrl } from '@/lib/seo/getBaseUrl';
+import type { EventType, CourseType, TeamType, BlogType } from '@/types';
+import type { SaleItem } from '@/lib/seo/fetchSale';
 
 // Categories configuration
 const softfurnitureCategories = [
@@ -76,7 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       // Add product pages for this category
       const products = await fetchCategoryProducts(category);
-      products.forEach(product => {
+      products.forEach((product: ProductData) => {
         sitemapEntries.push({
           url: `${baseUrl}/softfurniture/${category}/${product.id}`,
           lastModified: now,
@@ -109,7 +111,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       // Add product pages for this category
       const products = await fetchCategoryProducts(category);
-      products.forEach(product => {
+      products.forEach((product: ProductData) => {
         sitemapEntries.push({
           url: `${baseUrl}/furniture/${category}/${product.id}`,
           lastModified: now,
@@ -142,7 +144,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       // Add product pages for this category
       const products = await fetchCategoryProducts(category);
-      products.forEach(product => {
+      products.forEach((product: ProductData) => {
         sitemapEntries.push({
           url: `${baseUrl}/wardrobesandmore/${category}/${product.id}`,
           lastModified: now,
@@ -178,7 +180,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       // Add product pages for this category
       const products = await fetchCategoryProducts(category);
-      products.forEach(product => {
+      products.forEach((product: ProductData) => {
         sitemapEntries.push({
           url: `${baseUrl}/other/${urlCategory}/${product.id}`,
           lastModified: now,
@@ -213,7 +215,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     // Add sale detail pages
-    saleItems.forEach(item => {
+    saleItems.forEach((item: SaleItem) => {
       sitemapEntries.push({
         url: `${baseUrl}/sale/${item.id}`,
         lastModified: now,
@@ -237,7 +239,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { getEvent } = await import('@/sanity/sanity.query');
     const events = await getEvent();
     
-    events.forEach(event => {
+    events.forEach((event: EventType) => {
       sitemapEntries.push({
         url: `${baseUrl}/events/${event.slug}`,
         lastModified: now,
@@ -254,7 +256,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { getCourse } = await import('@/sanity/sanity.query');
     const courses = await getCourse();
     
-    courses.forEach(course => {
+    courses.forEach((course: CourseType) => {
       sitemapEntries.push({
         url: `${baseUrl}/courses/${course.slug}`,
         lastModified: now,
@@ -271,7 +273,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { getTeam } = await import('@/sanity/sanity.query');
     const team = await getTeam();
     
-    team.forEach(member => {
+    team.forEach((member: TeamType) => {
       sitemapEntries.push({
         url: `${baseUrl}/team/${member.slug}`,
         lastModified: now,
@@ -288,7 +290,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { getBlog } = await import('@/sanity/sanity.query');
     const blogs = await getBlog();
     
-    blogs.forEach(blog => {
+    blogs.forEach((blog: BlogType) => {
       sitemapEntries.push({
         url: `${baseUrl}/blog/${blog.slug}`,
         lastModified: now,
