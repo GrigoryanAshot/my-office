@@ -15,13 +15,6 @@ const LOGO = '/images/logo.png'; // Use the same path as the main page
 // Phone number constant - update with your actual phone number
 const PHONE_NUMBER = process.env.NEXT_PUBLIC_PHONE_NUMBER || '+374-XX-XXX-XXX';
 
-// Extend Window interface for gtag
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-  }
-}
-
 const NavbarSection = ({ style, logo }: Props) => {
   // Sticky Header Section on Scroll
   const dispatch = useAppDispatch()
@@ -155,8 +148,8 @@ const NavbarSection = ({ style, logo }: Props) => {
             }}
             onClick={(e) => {
               // Track click event if Google Analytics is available
-              if (typeof window !== 'undefined' && window.gtag) {
-                window.gtag('event', 'click', {
+              if (typeof window !== 'undefined' && (window as any).gtag) {
+                (window as any).gtag('event', 'click', {
                   event_category: 'Phone',
                   event_label: 'Navbar Call Button',
                   value: PHONE_NUMBER
