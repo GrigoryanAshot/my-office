@@ -1000,6 +1000,27 @@ body {
   }
 }
 
+/* Make scroll button round on all devices - like call button */
+.tf__scroll_btn:not(.tf__call_btn) {
+  transform: none !important;
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+  -o-transform: none !important;
+  animation: none !important;
+  -webkit-animation: none !important;
+  padding: 0 !important;
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
 /* Show phone button in burger menu on desktop */
 @media (min-width: 992px) {
   .navbar-phone-menu-item {
