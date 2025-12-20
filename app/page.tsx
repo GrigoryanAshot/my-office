@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: 'website',
-    locale: ['en_US', 'hy_AM'],
+    locale: 'en_US',
     alternateLocale: ['hy_AM', 'en_US'],
     url: getBaseUrl(),
     siteName: 'My Office Armenia',

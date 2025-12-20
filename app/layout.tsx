@@ -59,7 +59,7 @@ export const metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: ['en_US', 'hy_AM'],
+    locale: 'en_US',
     alternateLocale: ['hy_AM', 'en_US'],
     url: 'https://www.my-office.am',
     siteName: 'My Office Armenia',
