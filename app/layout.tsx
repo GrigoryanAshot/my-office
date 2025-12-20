@@ -121,8 +121,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         
-        {/* Preload critical resources for faster LCP */}
-        <link rel="preload" href="/images/logo.png" as="image" type="image/png" />
         
         {/* Load fonts with display=swap to prevent FOIT (Flash of Invisible Text) */}
         <link 

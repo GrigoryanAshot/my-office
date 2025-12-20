@@ -49,8 +49,9 @@ export default function HomePage() {
   return (
     <>
       <NavbarSection style="" logo="images/logo.png" />
-      {/* Banner is critical above-the-fold content - don't lazy load */}
-      <BannerSection />
+      <Suspense fallback={<BannerLoading />}>
+        <BannerSection />
+      </Suspense>
       <MainCategoriesGrid />
       <Suspense fallback={null}>
         <HomePageSeoText />
