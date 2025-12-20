@@ -13,6 +13,13 @@ body {
   background: rgb(var(--background-end-rgb));
 }
 
+/* Add padding for fixed navbar on mobile */
+@media (max-width: 991px) {
+  body {
+    padding-top: 80px !important;
+  }
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -575,10 +582,45 @@ body {
     background: var(--colorWhite) !important;
   }
   
-  /* Ensure the entire navbar is on top */
+  /* Ensure the entire navbar is ALWAYS fixed on mobile from the start */
   .main_menu {
     z-index: 99999 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background: var(--colorWhite) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* On mobile, keep it fixed even when menu_fix is applied - just enhance shadow */
+  .main_menu.menu_fix {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background: var(--colorWhite) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  }
+  
+  /* Ensure container doesn't cause issues */
+  .main_menu .container {
     position: relative !important;
+  }
+  
+  /* Add padding to body on mobile to prevent content from going under fixed navbar */
+  body {
+    padding-top: 80px !important;
+  }
+  
+  @media (max-width: 991px) {
+    body {
+      padding-top: 80px !important;
+    }
   }
   
   /* Hide dropdowns by default on mobile */
@@ -642,5 +684,111 @@ body {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
+  }
+}
+
+/* Navbar Phone Button - Centered, visible only on mobile (when burger menu appears) */
+.navbar-phone-button {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(-50% + 20px), -50%);
+  display: none; /* Hidden by default (desktop) */
+  z-index: 1000;
+}
+
+/* Phone Button Link Styles */
+.navbar-phone-link {
+  position: relative;
+  overflow: visible;
+}
+
+/* Pulsing animation for phone icon */
+@keyframes phonePulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Glowing animation */
+@keyframes phoneGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(255, 107, 53, 0.5),
+                0 0 10px rgba(255, 107, 53, 0.3),
+                0 0 15px rgba(255, 107, 53, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.8),
+                0 0 20px rgba(255, 107, 53, 0.6),
+                0 0 30px rgba(255, 107, 53, 0.4);
+  }
+}
+
+/* Bounce animation for mobile */
+@keyframes phoneBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Apply animations */
+.navbar-phone-icon {
+  animation: phonePulse 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+.navbar-phone-link {
+  animation: phoneGlow 2s ease-in-out infinite;
+}
+
+/* Enhanced animation on mobile (center button) */
+@media (max-width: 991px) {
+  .navbar-phone-menu-item {
+    display: none !important;
+  }
+  
+  /* Show phone button in center of navbar on mobile */
+  .navbar-phone-button {
+    display: block !important;
+  }
+  
+  /* More prominent animation on mobile */
+  .navbar-phone-button .navbar-phone-link {
+    animation: phoneGlow 1.5s ease-in-out infinite,
+               phoneBounce 2s ease-in-out infinite;
+  }
+  
+  .navbar-phone-button .navbar-phone-icon {
+    animation: phonePulse 1.5s ease-in-out infinite;
+  }
+}
+
+/* Show phone button in burger menu on desktop */
+@media (min-width: 992px) {
+  .navbar-phone-menu-item {
+    display: block !important;
+  }
+  
+  /* Hide phone button from center on desktop */
+  .navbar-phone-button {
+    display: none !important;
+  }
+  
+  /* Subtle animation on desktop */
+  .navbar-phone-menu-item .navbar-phone-link {
+    animation: phoneGlow 3s ease-in-out infinite;
+  }
+  
+  .navbar-phone-menu-item .navbar-phone-icon {
+    animation: phonePulse 2.5s ease-in-out infinite;
   }
 } 

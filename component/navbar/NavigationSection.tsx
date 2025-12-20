@@ -210,17 +210,47 @@ const NavigationSection = ({ position, btnPosition, navRef }: Props) => {
           <Navlink href="/contact">Կապ մեզ հետ</Navlink>
         </li>
 
-        {/* Optional Button */}
-        {btnPosition ? null : (
-          <li className="nav-item">
-            <button 
-              className="nav-link common_btn" 
-              onClick={handleCallOrderClick}
-            >
-              Պատվիրել Զանգ
-            </button>
-          </li>
-        )}
+        {/* Click to Call Button - Visible in burger menu on desktop */}
+        <li className="nav-item navbar-phone-menu-item">
+          <a 
+            href={`tel:${(process.env.NEXT_PUBLIC_PHONE_NUMBER || '+374-XX-XXX-XXX').replace(/[^0-9+]/g, '')}`}
+            className="nav-link navbar-phone-link"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#ff6b35',
+              fontWeight: '600',
+              textDecoration: 'none',
+              transition: 'all 0.3s ease',
+              padding: '8px 16px',
+              borderRadius: '25px',
+              backgroundColor: 'rgba(255, 107, 53, 0.1)',
+              border: '2px solid #ff6b35',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.backgroundColor = 'rgba(255, 107, 53, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.backgroundColor = 'rgba(255, 107, 53, 0.1)';
+            }}
+            onClick={(e) => {
+              // Track click event if Google Analytics is available
+              if (typeof window !== 'undefined' && (window as any).gtag) {
+                (window as any).gtag('event', 'click', {
+                  event_category: 'Phone',
+                  event_label: 'Navbar Call Button',
+                  value: process.env.NEXT_PUBLIC_PHONE_NUMBER || '+374-XX-XXX-XXX'
+                });
+              }
+            }}
+          >
+            <i className="fa fa-phone navbar-phone-icon" style={{ fontSize: '18px' }}></i>
+            <span>Զանգահարել</span>
+          </a>
+        </li>
       </ul>
 
       {btnPosition ? (

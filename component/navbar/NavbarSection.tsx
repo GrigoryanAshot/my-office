@@ -12,6 +12,16 @@ type Props = {
 
 const LOGO = '/images/logo.png'; // Use the same path as the main page
 
+// Phone number constant - update with your actual phone number
+const PHONE_NUMBER = process.env.NEXT_PUBLIC_PHONE_NUMBER || '+374-XX-XXX-XXX';
+
+// Extend Window interface for gtag
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
+
 const NavbarSection = ({ style, logo }: Props) => {
   // Sticky Header Section on Scroll
   const dispatch = useAppDispatch()
@@ -23,21 +33,38 @@ const NavbarSection = ({ style, logo }: Props) => {
     dispatch(toggleMobileNavClose())
   } 
   const [isHeaderFixed, setIsHeaderFixed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Check if mobile on mount and resize
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 991);
+    };
+    
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     const handleScroll = () => {
-      if (window.scrollY >= 50) {
+      // On mobile, always keep navbar fixed (always apply menu_fix)
+      if (window.innerWidth <= 991) {
         setIsHeaderFixed(true);
       } else {
-        setIsHeaderFixed(false);
+        // On desktop, only fix after scrolling
+        if (window.scrollY >= 50) {
+          setIsHeaderFixed(true);
+        } else {
+          setIsHeaderFixed(false);
+        }
       }
     };
 
+    // Set initial state for mobile
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
 
     return () => {
-      // Clean up the event listener when the component is unmounted
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", checkMobile);
     };
   }, []);
   const navMenuRef = useRef<HTMLDivElement | null>(null);
@@ -63,14 +90,17 @@ const NavbarSection = ({ style, logo }: Props) => {
     };
   }, [isMobileNavOpen]);
 
+  // On mobile, always keep navbar sticky, just add menu_fix for styling
+  const shouldAddMenuFix = isHeaderFixed;
+
   return (
     <nav
       className={`navbar navbar-expand-lg main_menu ${style} ${
-        isHeaderFixed ? "menu_fix" : ""
+        shouldAddMenuFix ? "menu_fix" : ""
       }`}
       ref={navMenuRef}
     >
-      <div className="container">
+      <div className="container" style={{ position: 'relative' }}>
         <Link className="navbar-brand" href="/">
           <img
             src={LOGO}
@@ -86,6 +116,59 @@ const NavbarSection = ({ style, logo }: Props) => {
             }}
           />
         </Link>
+
+        {/* Click to Call Button - Centered, visible only on mobile (when burger menu appears) */}
+        <div 
+          className="navbar-phone-button"
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(calc(-50% + 20px), -50%)',
+            display: 'none', // Hidden by default (desktop)
+          }}
+        >
+          <a 
+            href={`tel:${PHONE_NUMBER.replace(/[^0-9+]/g, '')}`}
+            className="nav-link navbar-phone-link"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#ff6b35',
+              fontWeight: '600',
+              textDecoration: 'none',
+              transition: 'all 0.3s ease',
+              whiteSpace: 'nowrap',
+              padding: '8px 16px',
+              borderRadius: '25px',
+              backgroundColor: 'rgba(255, 107, 53, 0.1)',
+              border: '2px solid #ff6b35',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.backgroundColor = 'rgba(255, 107, 53, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.backgroundColor = 'rgba(255, 107, 53, 0.1)';
+            }}
+            onClick={(e) => {
+              // Track click event if Google Analytics is available
+              if (typeof window !== 'undefined' && window.gtag) {
+                window.gtag('event', 'click', {
+                  event_category: 'Phone',
+                  event_label: 'Navbar Call Button',
+                  value: PHONE_NUMBER
+                });
+              }
+            }}
+          >
+            <i className="fa fa-phone navbar-phone-icon" style={{ fontSize: '18px' }}></i>
+            <span>Զանգահարել</span>
+          </a>
+        </div>
+
         {isMobileNavOpen ? (
           <button
             className="navbar-toggler"
