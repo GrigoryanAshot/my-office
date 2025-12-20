@@ -18,15 +18,20 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   compiler: {
-    removeConsole: false, // Temporarily disable to see console logs
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
   },
   poweredByHeader: false,
   reactStrictMode: true,
+  swcMinify: true, // Use SWC minification for better performance
+  compress: true, // Enable gzip compression
   experimental: {
     optimizeCss: {
       logLevel: 'error', // Only show errors, not warnings
     },
     scrollRestoration: true,
+    optimizePackageImports: ['react-icons', 'lucide-react'], // Optimize package imports
   },
   // CSS optimization (these are default in Next.js 15+)
   // Vercel deployment optimizations
@@ -46,7 +51,7 @@ const nextConfig = {
     // Will be available on both server and client
     NODE_ENV: process.env.NODE_ENV,
   },
-  // Security headers for production
+  // Security and performance headers for production
   async headers() {
     return [
       {
@@ -63,6 +68,28 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+        ],
+      },
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

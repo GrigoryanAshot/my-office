@@ -1,11 +1,13 @@
 import { Metadata } from 'next';
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import BannerSection from '@/component/banner/BannerSection';
-import FooterSection from '@/component/footer/FooterSection';
 import NavbarSection from '@/component/navbar/NavbarSection';
-import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
 import MainCategoriesGrid from '@/component/categories/MainCategoriesGrid';
-import HomePageSeoText from '@/component/home/HomePageSeoText';
+
+// Lazy load non-critical components for better initial page load
+const FooterSection = lazy(() => import('@/component/footer/FooterSection'));
+const ScrollToTopButton = lazy(() => import('@/component/utils/ScrollToTopButton'));
+const HomePageSeoText = lazy(() => import('@/component/home/HomePageSeoText'));
 
 // Metadata is now handled in app/page.tsx
 
@@ -51,9 +53,15 @@ export default function HomePage() {
         <BannerSection />
       </Suspense>
       <MainCategoriesGrid />
-      <HomePageSeoText />
-      <FooterSection />
-      <ScrollToTopButton style="" />
+      <Suspense fallback={null}>
+        <HomePageSeoText />
+      </Suspense>
+      <Suspense fallback={null}>
+        <FooterSection />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ScrollToTopButton style="" />
+      </Suspense>
     </>
   );
 }

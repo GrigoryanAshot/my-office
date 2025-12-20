@@ -115,30 +115,43 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <head>
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWQ8SX69PN"></script>
+        {/* Resource hints for performance - preconnect to external domains */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        
+        {/* Preload critical resources for faster LCP */}
+        <link rel="preload" href="/images/logo.png" as="image" type="image/png" />
+        
+        {/* Load fonts with display=swap to prevent FOIT (Flash of Invisible Text) */}
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap" 
+          rel="stylesheet"
+        />
+        
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="alternate" hrefLang="en" href="https://www.my-office.am/en" />
+        <link rel="alternate" hrefLang="hy" href="https://www.my-office.am/hy" />
+        <link rel="alternate" hrefLang="x-default" href="https://www.my-office.am" />
+        
+        {/* Google Analytics - loaded asynchronously to not block rendering */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-CWQ8SX69PN"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', 'G-CWQ8SX69PN');
+              gtag('config', 'G-CWQ8SX69PN', {
+                page_path: window.location.pathname,
+              });
             `,
           }}
         />
-        {/* Font optimization - preconnect early for faster font loading */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Load fonts with display=swap to prevent FOIT (Flash of Invisible Text) */}
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&family=Rubik:wght@300;400;500;600;700;800;900&display=swap" 
-          rel="stylesheet"
-        />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="alternate" hrefLang="en" href="https://www.my-office.am/en" />
-        <link rel="alternate" hrefLang="hy" href="https://www.my-office.am/hy" />
-        <link rel="alternate" hrefLang="x-default" href="https://www.my-office.am" />
       </head>
       <body className={inter.className}>
         <OrganizationSchema />
