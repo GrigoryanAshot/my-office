@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params;
   const redisKey = getRedisKeyForCategory('podium');
   const categoryName = getCategoryDisplayName('podium');
-  
+
   const product = await fetchProductById(id, redisKey);
   
   if (!product) {

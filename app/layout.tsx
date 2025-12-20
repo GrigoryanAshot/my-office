@@ -91,13 +91,13 @@ export const metadata = {
       'max-snippet': -1,
     },
   },
-    verification: {
+  verification: {
       // Google Search Console verification
       // Replace with your actual verification code from Google Search Console
       // Format: google: 'your-verification-code-here'
       google: process.env.GOOGLE_SITE_VERIFICATION || 'your-google-site-verification',
       yandex: process.env.YANDEX_VERIFICATION || 'your-yandex-verification',
-    },
+  },
   alternates: {
     canonical: 'https://www.my-office.am',
     languages: {

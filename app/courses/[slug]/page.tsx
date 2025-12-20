@@ -36,8 +36,8 @@ export async function generateMetadata({ params: paramsPromise }: { params: Prom
       course.instructor || 'office furniture expert',
       'կահույք դասընթացներ',
     ],
-    openGraph: {
-      type: 'website',
+  openGraph: {
+    type: 'website',
       url: courseUrl,
       title: course.title,
       description,
@@ -63,8 +63,8 @@ export async function generateMetadata({ params: paramsPromise }: { params: Prom
     robots: {
       index: true,
       follow: true,
-    },
-  };
+  },
+};
 }
 
 const page = async({ params: paramsPromise }: { params: Promise<{ slug: string }> }) => {
@@ -75,15 +75,15 @@ const page = async({ params: paramsPromise }: { params: Promise<{ slug: string }
   return (
     <Layout>
         {courseDesc && <CourseSchema course={courseDesc} />}
-        <BreadcrumbSection header="Course Details" title="Course Details" />
-        {courseDesc ? (
-          <CourseDetailSection
-            course={courseDesc}
-          />
-        ) : (
-          <ErrorSection type="Course" />
-        )}
-    </Layout>
+    <BreadcrumbSection header="Course Details" title="Course Details" />
+    {courseDesc ? (
+      <CourseDetailSection
+        course={courseDesc}
+      />
+    ) : (
+      <ErrorSection type="Course" />
+    )}
+  </Layout>
   )
 }
 

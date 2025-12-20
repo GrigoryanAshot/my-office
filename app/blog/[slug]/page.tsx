@@ -94,5 +94,5 @@ const page = async({ params: paramsPromise }: { params: Promise<{ slug: string }
     </Layout>
   )
 }
- 
+
 export default page

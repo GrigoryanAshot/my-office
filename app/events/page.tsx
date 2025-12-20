@@ -48,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
       follow: true,
     },
   };
-}
+  }
 const page = async () => {
   const event: EventType[] = await getEvent();
   return (

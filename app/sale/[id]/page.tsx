@@ -13,14 +13,14 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const saleItem = await fetchSaleItemById(id);
-  
-  if (!saleItem) {
+        
+        if (!saleItem) {
     return {
       title: 'Sale Item Not Found | My Office',
       description: 'The requested sale item could not be found.',
     };
-  }
-
+        }
+        
   const baseUrl = getBaseUrl();
   const saleUrl = `${baseUrl}/sale/${id}`;
   const description = saleItem.description 

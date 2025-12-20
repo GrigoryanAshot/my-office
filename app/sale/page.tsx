@@ -91,7 +91,7 @@ export default async function SalePage() {
         categoryName="Ակցիա"
         items={productItems}
         basePath="sale"
-      />
+                  />
       <BreadcrumbSchema items={breadcrumbItems} />
       <SalePageClient initialItems={items} />
     </>
