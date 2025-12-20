@@ -14,7 +14,9 @@ export default function EventSchema({ event, baseUrl }: EventSchemaProps) {
   const eventUrl = `${actualBaseUrl}/events/${event.slug}`;
   
   // Parse date/time for schema
-  const startDate = event.date ? new Date(event.date).toISOString() : new Date().toISOString();
+  // EventType has 'time' (time string like "10:00 AM") but not 'date'
+  // Use current date as fallback since we don't have date information
+  const startDate = new Date().toISOString();
   
   const schema = {
     '@context': 'https://schema.org',
