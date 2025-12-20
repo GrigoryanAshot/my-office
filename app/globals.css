@@ -756,11 +756,29 @@ body {
     display: none !important;
   }
   
+  /* Header row wrapper - keeps button position fixed */
+  .navbar-header-row {
+    position: relative !important;
+    min-height: 60px !important; /* Fixed height to prevent movement */
+  }
+  
   /* Show phone button in center of navbar on mobile - always visible even when menu is open */
   .navbar-phone-button {
     display: block !important;
     z-index: 100000 !important; /* Higher than navbar-collapse (99999) to stay on top */
-    position: absolute !important; /* Keep absolute but ensure it's above menu */
+    position: absolute !important; /* Position relative to header row */
+    /* Fix position to navbar header row, not affected by menu dropdown */
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(calc(-50% + 20px), -50%) !important;
+    margin: 0 !important;
+  }
+  
+  /* Ensure navbar header row doesn't expand when menu opens */
+  .main_menu .navbar-header-row {
+    position: relative !important;
+    height: auto !important;
+    min-height: 60px !important;
   }
   
   /* More prominent animation on mobile */

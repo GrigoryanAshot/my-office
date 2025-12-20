@@ -92,93 +92,98 @@ const NavbarSection = ({ style, logo }: Props) => {
         shouldAddMenuFix ? "menu_fix" : ""
       }`}
       ref={navMenuRef}
+      style={{ position: 'relative' }}
     >
       <div className="container" style={{ position: 'relative' }}>
-        <Link className="navbar-brand" href="/">
-          <img
-            src={LOGO}
-            alt="MyOffice"
-            className="navbar-logo"
-            style={{
-              maxHeight: '90px',
-              minHeight: '60px',
-              width: 'auto',
-              display: 'block',
-              margin: '0 auto',
-              objectFit: 'contain'
-            }}
-          />
-        </Link>
+        {/* Header row wrapper - logo, phone button, and burger button */}
+        <div className="navbar-header-row" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <Link className="navbar-brand" href="/">
+            <img
+              src={LOGO}
+              alt="MyOffice"
+              className="navbar-logo"
+              style={{
+                maxHeight: '90px',
+                minHeight: '60px',
+                width: 'auto',
+                display: 'block',
+                margin: '0 auto',
+                objectFit: 'contain'
+              }}
+            />
+          </Link>
 
-        {/* Click to Call Button - Centered, visible only on mobile (when burger menu appears) */}
-        <div 
-          className="navbar-phone-button"
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(calc(-50% + 20px), -50%)',
-            display: 'none', // Hidden by default (desktop)
-          }}
-        >
-          <a 
-            href={`tel:${PHONE_NUMBER.replace(/[^0-9]/g, '')}`}
-            className="nav-link navbar-phone-link"
+          {/* Click to Call Button - Centered, visible only on mobile (when burger menu appears) */}
+          <div 
+            className="navbar-phone-button"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: '#ff6b35',
-              fontWeight: '600',
-              textDecoration: 'none',
-              transition: 'all 0.3s ease',
-              whiteSpace: 'nowrap',
-              padding: '8px 16px',
-              borderRadius: '25px',
-              backgroundColor: 'rgba(255, 107, 53, 0.1)',
-              border: '2px solid #ff6b35',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.backgroundColor = 'rgba(255, 107, 53, 0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.backgroundColor = 'rgba(255, 107, 53, 0.1)';
-            }}
-            onClick={(e) => {
-              // Track click event if Google Analytics is available
-              if (typeof window !== 'undefined' && (window as any).gtag) {
-                (window as any).gtag('event', 'click', {
-                  event_category: 'Phone',
-                  event_label: 'Navbar Call Button',
-                  value: PHONE_NUMBER
-                });
-              }
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(calc(-50% + 20px), -50%)',
+              display: 'none', // Hidden by default (desktop)
+              pointerEvents: 'auto', // Ensure it's clickable
             }}
           >
-            <i className="fa fa-phone navbar-phone-icon" style={{ fontSize: '18px' }}></i>
-            <span>Զանգահարել</span>
-          </a>
+            <a 
+              href={`tel:${PHONE_NUMBER.replace(/[^0-9]/g, '')}`}
+              className="nav-link navbar-phone-link"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#ff6b35',
+                fontWeight: '600',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                whiteSpace: 'nowrap',
+                padding: '8px 16px',
+                borderRadius: '25px',
+                backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                border: '2px solid #ff6b35',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.1)';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 107, 53, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 107, 53, 0.1)';
+              }}
+              onClick={(e) => {
+                // Track click event if Google Analytics is available
+                if (typeof window !== 'undefined' && (window as any).gtag) {
+                  (window as any).gtag('event', 'click', {
+                    event_category: 'Phone',
+                    event_label: 'Navbar Call Button',
+                    value: PHONE_NUMBER
+                  });
+                }
+              }}
+            >
+              <i className="fa fa-phone navbar-phone-icon" style={{ fontSize: '18px' }}></i>
+              <span>Զանգահարել</span>
+            </a>
+          </div>
+
+          {isMobileNavOpen ? (
+            <button
+              className="navbar-toggler"
+              type="button"
+              onClick={handleMobileNavClose}
+            >
+              <i className="fa fa-times close_icon"></i>
+            </button>
+          ) : (
+            <button
+              className="navbar-toggler"
+              type="button"
+              onClick={handleMobileNavOpen}
+            >
+              <i className="fa fa-bars menu_icon"></i>
+            </button>
+          )}
         </div>
-
-        {isMobileNavOpen ? (
-          <button
-            className="navbar-toggler"
-            type="button"
-            onClick={handleMobileNavClose}
-          >
-            <i className="fa fa-times close_icon"></i>
-          </button>
-        ) : (
-          <button
-            className="navbar-toggler"
-            type="button"
-            onClick={handleMobileNavOpen}
-          >
-            <i className="fa fa-bars menu_icon"></i>
-          </button>
-        )}
 
         <NavigationSection
           position="ms-auto"
