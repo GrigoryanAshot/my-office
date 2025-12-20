@@ -78,10 +78,6 @@ const FloatingButtons = () => {
           role="button"
           onClick={handleCall}
           aria-label="Call us"
-          style={{
-            bottom: '120px', // Position above scroll button
-            right: '30px',
-          }}
         >
           <i className="fa fa-phone" aria-hidden="true"></i>
         </div>

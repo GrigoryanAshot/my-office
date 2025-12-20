@@ -965,13 +965,29 @@ body {
 @media (max-width: 599px) {
   .tf__call_btn {
     display: block !important;
-    bottom: 120px !important; /* Position above scroll button */
+    position: fixed !important;
+    bottom: 120px !important; /* Fixed position above scroll button */
+    right: 30px !important; /* Fixed right position */
+    z-index: 111 !important;
     transform: none !important; /* Don't rotate like scroll button */
-    padding: 8px 15px !important;
+    -webkit-transform: none !important;
+    -moz-transform: none !important;
+    -ms-transform: none !important;
+    -o-transform: none !important;
+    animation: none !important; /* Disable scroll animation */
+    -webkit-animation: none !important;
+    padding: 8px 15px 8px 15px !important; /* Fixed padding */
+    width: auto !important;
+    height: auto !important;
+    min-width: 50px !important;
+    min-height: 36px !important;
+    box-sizing: border-box !important;
   }
   
   .tf__call_btn i {
-    font-size: 18px;
+    font-size: 18px !important;
+    display: inline-block !important;
+    line-height: 1 !important;
   }
 }
 
