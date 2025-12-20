@@ -437,6 +437,26 @@ body {
   }
 }
 
+/* Center burger menu icon vertically and horizontally */
+.navbar-toggler {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.navbar-toggler .menu_icon,
+.navbar-toggler .close_icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
 /* Mobile responsive styles for sale detail page */
 @media (max-width: 768px) {
   .sale-detail-container {
@@ -795,7 +815,25 @@ body {
     margin-left: auto !important;
     z-index: 1 !important;
     order: 3 !important;
-    padding: 8px 12px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  /* Center the icons inside the burger button */
+  .main_menu .navbar-toggler .menu_icon,
+  .main_menu .navbar-toggler .close_icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
   }
   
   /* Show phone button in center of navbar on mobile - always visible even when menu is open */
