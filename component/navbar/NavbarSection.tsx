@@ -96,7 +96,7 @@ const NavbarSection = ({ style, logo }: Props) => {
     >
       <div className="container" style={{ position: 'relative' }}>
         {/* Header row wrapper - logo, phone button, and burger button */}
-        <div className="navbar-header-row" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+        <div className="navbar-header-row" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', flexShrink: 0 }}>
           <Link className="navbar-brand" href="/">
             <img
               src={LOGO}

@@ -762,19 +762,22 @@ body {
   min-height: 60px !important; /* Fixed height to prevent movement */
 }
 
-/* Fix navbar navigation items to be in one row and centered */
+/* Fix navbar navigation items to be in one row and centered - not pushed to right */
 @media (min-width: 992px) {
   .main_menu .container {
     display: flex !important;
     align-items: center !important;
     flex-wrap: nowrap !important;
     position: relative !important;
+    justify-content: flex-start !important;
   }
   
   .main_menu .navbar-header-row {
     display: flex !important;
     align-items: center !important;
     flex-shrink: 0 !important;
+    width: auto !important;
+    margin-right: 40px !important;
   }
   
   .main_menu .navbar-collapse {
@@ -784,6 +787,7 @@ body {
     align-items: center !important;
     margin: 0 !important;
     padding: 0 !important;
+    min-width: 0 !important;
   }
   
   .main_menu .navbar-nav {
@@ -792,9 +796,10 @@ body {
     justify-content: center !important;
     align-items: center !important;
     gap: 20px !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     padding: 0 !important;
-    width: 100% !important;
+    width: auto !important;
+    max-width: 100% !important;
   }
   
   /* Override the 50px margin from main CSS - reduce spacing */
@@ -813,7 +818,7 @@ body {
   /* Ensure logo doesn't take too much space */
   .main_menu .navbar-brand {
     flex-shrink: 0 !important;
-    margin-right: 40px !important;
+    margin-right: 0 !important;
   }
 }
   
