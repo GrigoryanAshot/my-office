@@ -694,7 +694,7 @@ body {
   top: 50%;
   transform: translate(calc(-50% + 20px), -50%);
   display: none; /* Hidden by default (desktop) */
-  z-index: 1000;
+  z-index: 100000 !important; /* Higher than navbar-collapse to stay visible */
 }
 
 /* Phone Button Link Styles */
@@ -756,9 +756,11 @@ body {
     display: none !important;
   }
   
-  /* Show phone button in center of navbar on mobile */
+  /* Show phone button in center of navbar on mobile - always visible even when menu is open */
   .navbar-phone-button {
     display: block !important;
+    z-index: 100000 !important; /* Higher than navbar-collapse (99999) to stay on top */
+    position: absolute !important; /* Keep absolute but ensure it's above menu */
   }
   
   /* More prominent animation on mobile */

@@ -213,7 +213,7 @@ const NavigationSection = ({ position, btnPosition, navRef }: Props) => {
         {/* Click to Call Button - Visible in burger menu on desktop */}
         <li className="nav-item navbar-phone-menu-item">
           <a 
-            href={`tel:${(process.env.NEXT_PUBLIC_PHONE_NUMBER || '+374-XX-XXX-XXX').replace(/[^0-9+]/g, '')}`}
+            href={`tel:${(process.env.NEXT_PUBLIC_PHONE_NUMBER || '060810810').replace(/[^0-9]/g, '')}`}
             className="nav-link navbar-phone-link"
             style={{
               display: 'flex',
@@ -242,7 +242,7 @@ const NavigationSection = ({ position, btnPosition, navRef }: Props) => {
                 (window as any).gtag('event', 'click', {
                   event_category: 'Phone',
                   event_label: 'Navbar Call Button',
-                  value: process.env.NEXT_PUBLIC_PHONE_NUMBER || '+374-XX-XXX-XXX'
+                  value: process.env.NEXT_PUBLIC_PHONE_NUMBER || '060810810'
                 });
               }
             }}

@@ -13,7 +13,7 @@ type Props = {
 const LOGO = '/images/logo.png'; // Use the same path as the main page
 
 // Phone number constant - update with your actual phone number
-const PHONE_NUMBER = process.env.NEXT_PUBLIC_PHONE_NUMBER || '+374-XX-XXX-XXX';
+const PHONE_NUMBER = process.env.NEXT_PUBLIC_PHONE_NUMBER || '060810810';
 
 const NavbarSection = ({ style, logo }: Props) => {
   // Sticky Header Section on Scroll
@@ -122,7 +122,7 @@ const NavbarSection = ({ style, logo }: Props) => {
           }}
         >
           <a 
-            href={`tel:${PHONE_NUMBER.replace(/[^0-9+]/g, '')}`}
+            href={`tel:${PHONE_NUMBER.replace(/[^0-9]/g, '')}`}
             className="nav-link navbar-phone-link"
             style={{
               display: 'flex',
