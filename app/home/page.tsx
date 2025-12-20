@@ -5,6 +5,7 @@ import FooterSection from '@/component/footer/FooterSection';
 import NavbarSection from '@/component/navbar/NavbarSection';
 import ScrollToTopButton from '@/component/utils/ScrollToTopButton';
 import MainCategoriesGrid from '@/component/categories/MainCategoriesGrid';
+import HomePageSeoText from '@/component/home/HomePageSeoText';
 
 // Metadata is now handled in app/page.tsx
 
@@ -50,6 +51,7 @@ export default function HomePage() {
         <BannerSection />
       </Suspense>
       <MainCategoriesGrid />
+      <HomePageSeoText />
       <FooterSection />
       <ScrollToTopButton style="" />
     </>
