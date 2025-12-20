@@ -17,7 +17,7 @@ export default function CourseSchema({ course, baseUrl }: CourseSchemaProps) {
     '@context': 'https://schema.org',
     '@type': 'Course',
     name: course.title,
-    description: course.description || course.desc || '',
+    description: course.description || '',
     image: course.imgSrc?.image ? (course.imgSrc.image.startsWith('http') ? course.imgSrc.image : `${actualBaseUrl}${course.imgSrc.image}`) : undefined,
     provider: {
       '@type': 'Organization',
