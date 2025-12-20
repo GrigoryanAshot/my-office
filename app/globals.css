@@ -966,8 +966,8 @@ body {
   .tf__call_btn {
     display: block !important;
     position: fixed !important;
-    bottom: 105px !important; /* Position above scroll button (scroll is ~35px high at 60px, so 60 + 35 + 10 = 105px) */
-    right: 30px !important; /* Fixed right position */
+    bottom: 120px !important; /* Position above scroll button: scroll at 60px + 50px height + 10px gap = 120px */
+    right: 30px !important; /* Fixed right position - same as scroll button */
     z-index: 112 !important; /* Above scroll button */
     transform: none !important; /* Don't rotate like scroll button */
     -webkit-transform: none !important;
@@ -984,6 +984,7 @@ body {
     align-items: center !important;
     justify-content: center !important;
     box-sizing: border-box !important;
+    margin: 0 !important; /* Ensure no margin affecting alignment */
   }
   
   .tf__call_btn i {
@@ -994,9 +995,11 @@ body {
     line-height: 1 !important;
   }
   
-  /* Scroll button stays at bottom: 60px (10px gap below call button) */
+  /* Scroll button - perfectly aligned with call button */
   .tf__scroll_btn:not(.tf__call_btn) {
-    bottom: 60px !important;
+    bottom: 60px !important; /* 10px gap below call button (call at 120px - 50px height - 10px gap = 60px) */
+    right: 30px !important; /* Same right position as call button */
+    margin: 0 !important; /* Ensure no margin affecting alignment */
   }
 }
 
@@ -1019,6 +1022,8 @@ body {
   text-align: center !important;
   font-size: 12px !important;
   line-height: 1 !important;
+  margin: 0 !important; /* Ensure no margin affecting alignment */
+  right: 30px !important; /* Ensure consistent right position */
 }
 
 /* Show phone button in burger menu on desktop */
