@@ -31,9 +31,21 @@ const BannerSection = () => {
   useEffect(() => {
     const fetchSlides = async () => {
       try {
-        const response = await fetch('/api/sale-slider');
+        // Use fetch with cache for faster loading
+        const response = await fetch('/api/sale-slider', {
+          cache: 'default', // Use browser cache
+        });
         const data = await response.json();
         setSlides(data.items || []);
+        
+        // Preload first image for faster LCP
+        if (data.items && data.items[0]?.imageUrl) {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'image';
+          link.href = data.items[0].imageUrl;
+          document.head.appendChild(link);
+        }
       } catch (e) {
         setSlides([]);
       } finally {
@@ -340,8 +352,8 @@ const BannerSection = () => {
                       transition: 'transform 0.3s ease'
                     }}
                     priority={index === 0 && currentSlide === 0}
-                    quality={85}
-                    loading={index === 0 ? undefined : 'lazy'}
+                    quality={index === 0 ? 90 : 75}
+                    loading={index === 0 ? 'eager' : 'lazy'}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = '/images/placeholder.jpg';
