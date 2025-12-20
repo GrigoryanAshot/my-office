@@ -13,6 +13,7 @@ import AdminKeyPressWrapper from '@/component/AdminKeyPressWrapper';
 import GlobalAdminShortcut from '@/component/GlobalAdminShortcut';
 import PerformanceMonitor from '@/components/performance/PerformanceMonitor';
 import OrganizationSchema from '@/components/seo/OrganizationSchema';
+import FloatingButtons from '@/component/utils/FloatingButtons';
 // import GlobalAdminShortcut from '@/component/GlobalAdminShortcut';
 
 const inter = Inter({ 
@@ -176,6 +177,7 @@ export default function RootLayout({
             pauseOnHover
             theme="light"
           />
+          <FloatingButtons />
         </Providers>
       </body> 
     </html>

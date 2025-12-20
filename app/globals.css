@@ -957,27 +957,21 @@ body {
   }
 }
 
-/* Mobile Call Button - Only visible on screens less than 600px */
-.mobile-call-button {
+/* Call Button - styled like scroll button, only visible on mobile */
+.tf__call_btn {
   display: none !important;
 }
 
 @media (max-width: 599px) {
-  .mobile-call-button {
-    display: flex !important;
-    position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
-    animation: callButtonPulse 2s ease-in-out infinite;
+  .tf__call_btn {
+    display: block !important;
+    bottom: 120px !important; /* Position above scroll button */
+    transform: none !important; /* Don't rotate like scroll button */
+    padding: 8px 15px !important;
   }
   
-  @keyframes callButtonPulse {
-    0%, 100% {
-      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
-    }
-    50% {
-      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.7);
-    }
+  .tf__call_btn i {
+    font-size: 18px;
   }
 }
 

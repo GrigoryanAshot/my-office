@@ -6,9 +6,7 @@ import MainCategoriesGrid from '@/component/categories/MainCategoriesGrid';
 
 // Lazy load non-critical components for better initial page load
 const FooterSection = lazy(() => import('@/component/footer/FooterSection'));
-const ScrollToTopButton = lazy(() => import('@/component/utils/ScrollToTopButton'));
 const HomePageSeoText = lazy(() => import('@/component/home/HomePageSeoText'));
-const CallButton = lazy(() => import('@/component/utils/CallButton'));
 
 // Metadata is now handled in app/page.tsx
 
@@ -55,16 +53,10 @@ export default function HomePage() {
       </Suspense>
       <MainCategoriesGrid />
       <Suspense fallback={null}>
-        <CallButton />
-      </Suspense>
-      <Suspense fallback={null}>
         <HomePageSeoText />
       </Suspense>
       <Suspense fallback={null}>
         <FooterSection />
-      </Suspense>
-      <Suspense fallback={null}>
-        <ScrollToTopButton style="" />
       </Suspense>
     </>
   );
