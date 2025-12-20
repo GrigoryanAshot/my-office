@@ -1,6 +1,9 @@
 import { Metadata } from 'next';
 import HomePage from './home/page';
-import OrganizationSchema from '@/components/seo/OrganizationSchema';
+import WebSiteSchema from '@/components/seo/WebSiteSchema';
+import HomePageItemListSchema from '@/components/seo/HomePageItemListSchema';
+import HomePageBreadcrumbSchema from '@/components/seo/HomePageBreadcrumbSchema';
+import ServiceSchema from '@/components/seo/ServiceSchema';
 import { getBaseUrl } from '@/lib/seo/getBaseUrl';
 
 export const metadata: Metadata = {
@@ -66,5 +69,16 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <HomePage />;
+  const baseUrl = getBaseUrl();
+  
+  return (
+    <>
+      {/* Multiple schemas for rich results - OrganizationSchema is already in layout.tsx */}
+      <WebSiteSchema baseUrl={baseUrl} />
+      <HomePageItemListSchema baseUrl={baseUrl} />
+      <HomePageBreadcrumbSchema baseUrl={baseUrl} />
+      <ServiceSchema baseUrl={baseUrl} />
+      <HomePage />
+    </>
+  );
 }
