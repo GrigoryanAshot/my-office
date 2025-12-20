@@ -186,7 +186,7 @@ const NavbarSection = ({ style, logo }: Props) => {
         </div>
 
         <NavigationSection
-          position="ms-auto"
+          position=""
           btnPosition={false}
           navRef={navMenuRef}
         />

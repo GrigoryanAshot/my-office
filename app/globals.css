@@ -756,11 +756,66 @@ body {
     display: none !important;
   }
   
-  /* Header row wrapper - keeps button position fixed */
-  .navbar-header-row {
+/* Header row wrapper - keeps button position fixed */
+.navbar-header-row {
+  position: relative !important;
+  min-height: 60px !important; /* Fixed height to prevent movement */
+}
+
+/* Fix navbar navigation items to be in one row and centered */
+@media (min-width: 992px) {
+  .main_menu .container {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
     position: relative !important;
-    min-height: 60px !important; /* Fixed height to prevent movement */
   }
+  
+  .main_menu .navbar-header-row {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .main_menu .navbar-collapse {
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .main_menu .navbar-nav {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 20px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Override the 50px margin from main CSS - reduce spacing */
+  .main_menu .navbar-nav .nav-item {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    position: relative !important;
+  }
+  
+  .main_menu .navbar-nav .nav-item:last-child {
+    margin-right: 0 !important;
+  }
+  
+  /* Ensure logo doesn't take too much space */
+  .main_menu .navbar-brand {
+    flex-shrink: 0 !important;
+    margin-right: 40px !important;
+  }
+}
   
   /* Show phone button in center of navbar on mobile - always visible even when menu is open */
   .navbar-phone-button {
