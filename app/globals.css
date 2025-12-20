@@ -437,24 +437,33 @@ body {
   }
 }
 
-/* Center burger menu icon vertically and horizontally */
-.navbar-toggler {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 !important;
+/* Center burger menu icon vertically and horizontally - only on mobile */
+@media (max-width: 991px) {
+  .navbar-toggler {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+
+  .navbar-toggler .menu_icon,
+  .navbar-toggler .close_icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+  }
 }
 
-.navbar-toggler .menu_icon,
-.navbar-toggler .close_icon {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  line-height: 1 !important;
+/* Hide burger menu on desktop */
+@media (min-width: 992px) {
+  .navbar-toggler {
+    display: none !important;
+  }
 }
 
 /* Mobile responsive styles for sale detail page */
