@@ -957,6 +957,28 @@ body {
   }
 }
 
+/* Mobile Call Button - Only visible on screens less than 600px */
+.mobile-call-button {
+  display: none !important;
+}
+
+@media (max-width: 599px) {
+  .mobile-call-button {
+    display: flex !important;
+    position: static !important;
+    animation: callButtonPulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes callButtonPulse {
+    0%, 100% {
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    }
+    50% {
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.7);
+    }
+  }
+}
+
 /* Show phone button in burger menu on desktop */
 @media (min-width: 992px) {
   .navbar-phone-menu-item {
