@@ -2,14 +2,24 @@ import React from 'react';
 
 /**
  * SEO-optimized text section for homepage
+ * Hidden from users but visible to search engines
  * Includes keywords in Armenian, translit, Russian, and English
  */
 export default function HomePageSeoText() {
   return (
-    <section className="tf__home_seo_text" style={{ 
-      padding: '60px 0',
-      backgroundColor: '#f8f9fa',
-    }}>
+    <section 
+      className="tf__home_seo_text" 
+      style={{ 
+        // Hide from users but keep in DOM for search engines
+        position: 'absolute',
+        left: '-9999px',
+        width: '1px',
+        height: '1px',
+        overflow: 'hidden',
+        // Alternative: display: 'none' - but some prefer absolute positioning
+      }}
+      aria-hidden="true"
+    >
       <div className="container">
         <div className="row">
           <div className="col-xl-12">
