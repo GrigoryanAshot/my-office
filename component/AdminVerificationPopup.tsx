@@ -59,17 +59,10 @@ const AdminVerificationPopup: React.FC<AdminVerificationPopupProps> = ({ isOpen,
           // If parsing fails, use default message
         }
 
-        // In development mode, if email is not configured, auto-bypass verification
-        if (isEmailNotConfigured && (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))) {
-          console.log('[CLIENT] Development mode - email not configured, auto-bypassing verification');
-          // Set verification cookie and redirect
-          document.cookie = 'admin-verified=true; path=/; max-age=86400'; // 24 hours
-          setSuccess('Development mode: Bypassing email verification...');
-          setTimeout(() => {
-            window.location.href = '/admin-panel';
-            onClose();
-          }, 1000);
-          return;
+        // In development mode, if email is not configured, show error but don't auto-bypass
+        // User can use the "Skip verification" button if needed
+        if (isEmailNotConfigured) {
+          errorMessage = 'Email service is not configured. Use "Skip verification" button below for development.';
         }
         
         throw new Error(errorMessage);
@@ -240,11 +233,40 @@ const AdminVerificationPopup: React.FC<AdminVerificationPopupProps> = ({ isOpen,
                   borderRadius: '4px',
                   fontSize: '14px',
                   cursor: isLoading ? 'not-allowed' : 'pointer',
-                  opacity: isLoading ? 0.7 : 1
+                  opacity: isLoading ? 0.7 : 1,
+                  marginBottom: (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) ? '10px' : '0'
                 }}
               >
                 {isLoading ? 'Ուղարկվում է...' : 'Ուղարկել կոդ'}
               </button>
+              {/* Development mode skip button - only shown on localhost */}
+              {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Set verification cookie and redirect
+                    document.cookie = 'admin-verified=true; path=/; max-age=86400'; // 24 hours
+                    setSuccess('Development mode: Skipping verification...');
+                    setTimeout(() => {
+                      window.location.href = '/admin-panel';
+                      onClose();
+                    }, 500);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    marginTop: '5px'
+                  }}
+                >
+                  Skip verification (Dev mode)
+                </button>
+              )}
             </form>
           </>
         ) : (
