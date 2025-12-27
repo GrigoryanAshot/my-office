@@ -10,6 +10,8 @@ interface AdminPanelProps {
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint }) => {
+  const [showSeoSection, setShowSeoSection] = useState(false);
+  
   const {
     activeAction,
     setActiveAction,

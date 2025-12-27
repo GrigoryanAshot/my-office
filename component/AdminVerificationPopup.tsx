@@ -41,18 +41,37 @@ const AdminVerificationPopup: React.FC<AdminVerificationPopupProps> = ({ isOpen,
 
       if (!response.ok) {
         let errorMessage = 'Սխալ է տեղի ունեցել: Խնդրում ենք փորձել կրկին';
+        let isEmailNotConfigured = false;
+        
         try {
           const errorData = JSON.parse(responseBody);
           if (errorData.error) {
             errorMessage = errorData.error;
-            // In development, if email is not configured, suggest direct access
-            if (process.env.NODE_ENV === 'development' && errorMessage.includes('not configured')) {
-              errorMessage += ' (Development mode: You can access /admin-panel directly)';
+            // Check if email is not configured (either by message or code)
+            if (errorData.code === 'EMAIL_NOT_CONFIGURED' || 
+                errorData.devMode ||
+                errorMessage.includes('not configured') || 
+                errorMessage.includes('Email service')) {
+              isEmailNotConfigured = true;
             }
           }
         } catch {
           // If parsing fails, use default message
         }
+
+        // In development mode, if email is not configured, auto-bypass verification
+        if (isEmailNotConfigured && (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))) {
+          console.log('[CLIENT] Development mode - email not configured, auto-bypassing verification');
+          // Set verification cookie and redirect
+          document.cookie = 'admin-verified=true; path=/; max-age=86400'; // 24 hours
+          setSuccess('Development mode: Bypassing email verification...');
+          setTimeout(() => {
+            window.location.href = '/admin-panel';
+            onClose();
+          }, 1000);
+          return;
+        }
+        
         throw new Error(errorMessage);
       }
 

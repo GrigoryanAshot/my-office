@@ -16,10 +16,15 @@ export async function POST(request: Request) {
     }
 
     // Check if email credentials are configured
+    // In development mode, return a specific error code that client can detect
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       console.error('Email credentials not configured');
       return NextResponse.json(
-        { error: 'Email service is not configured. Please contact administrator.' },
+        { 
+          error: 'Email service is not configured. Please contact administrator.',
+          code: 'EMAIL_NOT_CONFIGURED',
+          devMode: process.env.NODE_ENV === 'development'
+        },
         { status: 500 }
       );
     }
