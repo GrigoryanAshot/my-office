@@ -277,7 +277,8 @@ export const useAdminPanel = (apiEndpoint: string) => {
 
       const itemWithImage = {
         ...itemToSave,
-        imageUrl: selectedItem?.imageUrl || newItem.imageUrl
+        imageUrl: selectedItem?.imageUrl || newItem.imageUrl,
+        seoKeywords: selectedItem?.seoKeywords || newItem.seoKeywords || '' // Preserve SEO keywords
       };
 
       const updatedTypes = [...types];
