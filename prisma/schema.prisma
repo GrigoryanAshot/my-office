@@ -43,6 +43,7 @@ model Wardrobe {
   images      String[]
   isAvailable Boolean  @default(true)
   url         String?
+  seoKeywords String?
   typeId      String?
   type        WardrobeType? @relation(fields: [typeId], references: [id])
   createdAt   DateTime @default(now())

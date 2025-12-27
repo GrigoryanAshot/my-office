@@ -76,6 +76,7 @@ export async function POST(request: Request) {
           images: data.images || [],
           isAvailable: data.isAvailable !== undefined ? data.isAvailable : true,
           url: data.url || null,
+          seoKeywords: data.seoKeywords || null,
           typeId: data.typeId || null,
         },
       });
@@ -120,6 +121,7 @@ export async function PUT(request: Request) {
         images: data.images || [],
         isAvailable: data.isAvailable !== undefined ? data.isAvailable : true,
         url: data.url || null,
+        seoKeywords: data.seoKeywords || null,
         typeId: typeId,
       },
       include: { type: true }
