@@ -12,6 +12,7 @@ interface FurnitureItem {
   typeId?: string | number | null;
   url: string;
   isAvailable: boolean;
+  seoKeywords?: string; // SEO keywords/tools
 }
 
 interface TypeObject {
@@ -43,7 +44,8 @@ export const useAdminPanel = (apiEndpoint: string) => {
     images: [],
     type: '',
     url: '',
-    isAvailable: true
+    isAvailable: true,
+    seoKeywords: ''
   });
   const [newType, setNewType] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -194,7 +196,8 @@ export const useAdminPanel = (apiEndpoint: string) => {
           isAvailable: itemToSave.isAvailable,
           url: itemToSave.url,
           type: itemToSave.type, // Send type name for API to resolve
-          typeId: typeId
+          typeId: typeId,
+          seoKeywords: itemToSave.seoKeywords || '' // Add SEO keywords
         };
         
         console.log('Sending wardrobe data to API:', {
@@ -241,7 +244,8 @@ export const useAdminPanel = (apiEndpoint: string) => {
           images: [],
           type: '',
           url: '',
-          isAvailable: true
+          isAvailable: true,
+          seoKeywords: ''
         });
         setActiveAction(null);
         return;
@@ -345,7 +349,8 @@ export const useAdminPanel = (apiEndpoint: string) => {
         images: [],
         type: '',
         url: '',
-        isAvailable: true
+        isAvailable: true,
+        seoKeywords: ''
       });
       setActiveAction(null);
     } catch (error) {

@@ -1,4 +1,5 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import { useAdminPanel } from '@/hooks/useAdminPanel';
 import NavbarSection from '@/component/navbar/NavbarSection';
 
@@ -280,6 +281,84 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
                   />
                   <span>Առկա է</span>
                 </div>
+                
+                {/* SEO Tools/Keywords Section */}
+                <div style={{ 
+                  border: '1px solid #ddd', 
+                  borderRadius: '4px', 
+                  padding: '10px',
+                  backgroundColor: '#f9f9f9'
+                }}>
+                  <div 
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                      marginBottom: showSeoSection ? '10px' : '0'
+                    }}
+                    onClick={() => setShowSeoSection(!showSeoSection)}
+                  >
+                    <label style={{ display: 'block', margin: 0, fontWeight: '500' }}>
+                      Ավելացնել SEO գործիքներ (կամ բանալի բառեր)
+                    </label>
+                    <button
+                      type="button"
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        border: '1px solid #ddd',
+                        backgroundColor: 'white',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '18px',
+                        lineHeight: '1',
+                        padding: 0,
+                        color: '#2196F3'
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowSeoSection(!showSeoSection);
+                      }}
+                    >
+                      {showSeoSection ? '−' : '+'}
+                    </button>
+                  </div>
+                  
+                  {showSeoSection && (
+                    <div style={{ marginTop: '10px' }}>
+                      <textarea
+                        value={selectedItem?.seoKeywords || newItem.seoKeywords || ''}
+                        onChange={(e) => selectedItem 
+                          ? setSelectedItem({ ...selectedItem, seoKeywords: e.target.value })
+                          : setNewItem({ ...newItem, seoKeywords: e.target.value })}
+                        placeholder="Մուտքագրեք SEO բանալի բառերը (բաժանված ստորակետերով կամ նոր տողերով)"
+                        style={{ 
+                          width: '100%', 
+                          padding: '8px', 
+                          borderRadius: '4px', 
+                          border: '1px solid #ddd', 
+                          minHeight: '120px',
+                          fontFamily: 'inherit',
+                          fontSize: '14px',
+                          resize: 'vertical'
+                        }}
+                      />
+                      <p style={{ 
+                        marginTop: '5px', 
+                        fontSize: '12px', 
+                        color: '#666',
+                        fontStyle: 'italic'
+                      }}>
+                        Օրինակ: office furniture, գրասենյակային կահույք, стол, стул, мебель
+                      </p>
+                    </div>
+                  )}
+                </div>
+                
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                   <button
                     type="button"
@@ -294,8 +373,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ title, description, apiEndpoint
                         images: [],
                         type: '',
                         url: '',
-                        isAvailable: true
+                        isAvailable: true,
+                        seoKeywords: ''
                       });
+                      setShowSeoSection(false);
                       setActiveAction(null);
                     }}
                     style={{ padding: '8px 16px', backgroundColor: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
