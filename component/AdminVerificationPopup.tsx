@@ -59,10 +59,23 @@ const AdminVerificationPopup: React.FC<AdminVerificationPopupProps> = ({ isOpen,
           // If parsing fails, use default message
         }
 
-        // In development mode, if email is not configured, show error but don't auto-bypass
-        // User can use the "Skip verification" button if needed
+        // In development mode, if email is not configured, automatically skip verification
+        if (isEmailNotConfigured && (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))) {
+          console.log('[CLIENT] Development mode - email not configured, automatically skipping verification');
+          // Set verification cookie and redirect
+          document.cookie = 'admin-verified=true; path=/; max-age=86400'; // 24 hours
+          setSuccess('Development mode: Automatically skipping verification...');
+          setTimeout(() => {
+            window.location.href = '/admin-panel';
+            onClose();
+          }, 500);
+          setIsLoading(false);
+          return;
+        }
+        
+        // If not in dev mode or email is configured but failed, show error
         if (isEmailNotConfigured) {
-          errorMessage = 'Email service is not configured. Use "Skip verification" button below for development.';
+          errorMessage = 'Email service is not configured. Please contact administrator.';
         }
         
         throw new Error(errorMessage);
