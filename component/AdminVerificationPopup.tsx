@@ -40,8 +40,20 @@ const AdminVerificationPopup: React.FC<AdminVerificationPopupProps> = ({ isOpen,
       console.log('[CLIENT] Response body:', responseBody);
 
       if (!response.ok) {
-        // Construct a more informative error
-        throw new Error(`Failed to send verification code. Status: ${response.status}. Body: ${responseBody}`);
+        let errorMessage = 'Սխալ է տեղի ունեցել: Խնդրում ենք փորձել կրկին';
+        try {
+          const errorData = JSON.parse(responseBody);
+          if (errorData.error) {
+            errorMessage = errorData.error;
+            // In development, if email is not configured, suggest direct access
+            if (process.env.NODE_ENV === 'development' && errorMessage.includes('not configured')) {
+              errorMessage += ' (Development mode: You can access /admin-panel directly)';
+            }
+          }
+        } catch {
+          // If parsing fails, use default message
+        }
+        throw new Error(errorMessage);
       }
 
       setStep('verification');
@@ -49,7 +61,8 @@ const AdminVerificationPopup: React.FC<AdminVerificationPopupProps> = ({ isOpen,
     } catch (err) {
       // ==> CLIENT-SIDE DEBUGGING
       console.error('[CLIENT] An error occurred in handleSendCode:', err);
-      setError('Սխալ է տեղի ունեցել: Խնդրում ենք փորձել կրկին');
+      const errorMessage = err instanceof Error ? err.message : 'Սխալ է տեղի ունեցել: Խնդրում ենք փորձել կրկին';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -8,16 +8,29 @@ function generateVerificationCode(): string {
 }
 
 export async function POST(request: Request) {
-  // ==> TEMPORARY DEBUGGING: Log all available environment variables
-  console.log("--- VERCEL RUNTIME ENVIRONMENT VARIABLES ---");
-  console.log(process.env);
-  console.log("------------------------------------------");
-  
   try {
     const { email } = await request.json();
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
+
+    // Check if email credentials are configured
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error('Email credentials not configured');
+      return NextResponse.json(
+        { error: 'Email service is not configured. Please contact administrator.' },
+        { status: 500 }
+      );
+    }
+
+    // Check if Redis is configured
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+      console.error('Redis credentials not configured');
+      return NextResponse.json(
+        { error: 'Storage service is not configured. Please contact administrator.' },
+        { status: 500 }
+      );
     }
 
     // Clean up expired codes
@@ -28,17 +41,30 @@ export async function POST(request: Request) {
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
     // Store the code
-    await verificationStorage.set(email, code, expiresAt);
+    try {
+      await verificationStorage.set(email, code, expiresAt);
+    } catch (storageError) {
+      console.error('Failed to store verification code:', storageError);
+      return NextResponse.json(
+        { error: 'Failed to store verification code. Please try again.' },
+        { status: 500 }
+      );
+    }
     
     // Debug logging
     console.log(`Verification code generated for ${email}: ${code}`);
-    console.log(`Stored codes:`, verificationStorage.debug());
-
-    // ==> ADDED FOR DEBUGGING
-    console.log(`Is EMAIL_USER configured: ${!!process.env.EMAIL_USER}`);
 
     // Send email using the new email configuration
-    await sendVerificationEmail(email, code);
+    try {
+      await sendVerificationEmail(email, code);
+    } catch (emailError) {
+      console.error('Failed to send email:', emailError);
+      // Still return success if code was stored (user can request code again)
+      return NextResponse.json(
+        { error: 'Failed to send email. Please check email configuration.' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ 
       success: true, 
