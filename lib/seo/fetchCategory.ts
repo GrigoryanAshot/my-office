@@ -65,7 +65,7 @@ export async function fetchCategoryProducts(
     async (cat: string) => fetchCategoryProductsFromRedis(cat),
     [`category-products-${category}`],
     {
-      revalidate: 60, // Revalidate every 60 seconds
+      revalidate: 10, // Revalidate every 10 seconds (reduced from 60 for better freshness)
       tags: [`category-${category}`], // Allow manual revalidation via tag
     }
   );

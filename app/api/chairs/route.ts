@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag, revalidatePath } from 'next/cache';
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
@@ -110,6 +111,11 @@ export async function POST(request: Request) {
     const finalData = { items: updatedItems, types: updatedTypes };
     await redis.set(DATA_KEY, JSON.stringify(finalData));
     const afterSet = await redis.get(DATA_KEY);
+    
+    // Revalidate the cache for chairs category to ensure listing page shows updated data
+    revalidateTag('category-chairs');
+    revalidatePath('/furniture/chairs');
+    
     return NextResponse.json({
       debug: {
         action: 'updateItemsOrTypes',
@@ -172,6 +178,10 @@ export async function DELETE(request: Request) {
     const finalData = { items: updatedItems, types: updatedTypes };
     console.log('After deletion:', JSON.stringify(finalData));
     await redis.set(DATA_KEY, JSON.stringify(finalData));
+    
+    // Revalidate the cache for chairs category to ensure listing page shows updated data
+    revalidateTag('category-chairs');
+    revalidatePath('/furniture/chairs');
 
     return NextResponse.json({
       success: true,
