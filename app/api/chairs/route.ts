@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { revalidateTag, revalidatePath } from 'next/cache';
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
@@ -112,9 +111,8 @@ export async function POST(request: Request) {
     await redis.set(DATA_KEY, JSON.stringify(finalData));
     const afterSet = await redis.get(DATA_KEY);
     
-    // Revalidate the cache for chairs category to ensure listing page shows updated data
-    revalidateTag('category-chairs');
-    revalidatePath('/furniture/chairs');
+    // Note: Cache revalidation is handled by the reduced cache time (10s) in fetchCategoryProducts
+    // The listing page will show updated data within 10 seconds
     
     return NextResponse.json({
       debug: {
@@ -179,9 +177,8 @@ export async function DELETE(request: Request) {
     console.log('After deletion:', JSON.stringify(finalData));
     await redis.set(DATA_KEY, JSON.stringify(finalData));
     
-    // Revalidate the cache for chairs category to ensure listing page shows updated data
-    revalidateTag('category-chairs');
-    revalidatePath('/furniture/chairs');
+    // Note: Cache revalidation is handled by the reduced cache time (10s) in fetchCategoryProducts
+    // The listing page will show updated data within 10 seconds
 
     return NextResponse.json({
       success: true,
